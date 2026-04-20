@@ -2,7 +2,35 @@ import { useMemo, useState } from 'react';
 import questionsData from '../data/questions.json';
 import type { Product, Question, Role } from '../types';
 import { FlashCard } from '../components/FlashCard';
-import { loadProgress, recordRating, resetProgress } from '../lib/storage';
+import { loadProgress, priorityBucket, recordRating, resetProgress, type QuizProgress } from '../lib/storage';
+
+function PoolSummary({
+  pool,
+  progress,
+  count,
+  prioritise,
+}: {
+  pool: Question[];
+  progress: QuizProgress;
+  count: number;
+  prioritise: boolean;
+}) {
+  const buckets = [0, 0, 0, 0]; // missed, unsure, unseen, got-it
+  for (const q of pool) buckets[priorityBucket(progress, q.id)]++;
+  const draw = Math.min(count, pool.length);
+  return (
+    <p className="muted">
+      {pool.length} questions match your filters. Will draw {draw}.
+      {' '}In this pool: {buckets[0]} missed · {buckets[1]} unsure · {buckets[2]} unseen · {buckets[3]} got-it.
+      {prioritise && pool.length > 0 && (
+        <>
+          {' '}With <strong>Prioritise</strong> on, the next {draw} will come from weak
+          spots first.
+        </>
+      )}
+    </p>
+  );
+}
 
 const questions = questionsData as Question[];
 const ALL_PRODUCTS: Product[] = ['MQ', 'ACE', 'Cloud', 'General'];
@@ -16,6 +44,7 @@ export function Quiz() {
   const [roles, setRoles] = useState<Role[]>(['Admin', 'Dev', 'Any']);
   const [count, setCount] = useState(10);
   const [shuffle, setShuffle] = useState(true);
+  const [prioritise, setPrioritise] = useState(true);
 
   const [queue, setQueue] = useState<Question[]>([]);
   const [index, setIndex] = useState(0);
@@ -31,12 +60,20 @@ export function Quiz() {
   };
 
   function startQuiz() {
-    const working = [...pool];
+    let working = [...pool];
     if (shuffle) {
       for (let i = working.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [working[i], working[j]] = [working[j], working[i]];
       }
+    }
+    if (prioritise) {
+      // Stable sort by priority bucket — missed first, then unsure, then unseen,
+      // then got-it. Within each bucket the prior shuffle order is preserved.
+      working = working
+        .map((q, i) => ({ q, i, b: priorityBucket(progress, q.id) }))
+        .sort((a, b) => (a.b - b.b) || (a.i - b.i))
+        .map((x) => x.q);
     }
     setQueue(working.slice(0, Math.min(count, working.length)));
     setIndex(0);
@@ -125,11 +162,19 @@ export function Quiz() {
               {shuffle ? 'On' : 'Off'}
             </button>
           </div>
+          <div>
+            <label>Prioritise weak spots</label>
+            <button
+              className={prioritise ? 'primary' : 'ghost'}
+              onClick={() => setPrioritise((p) => !p)}
+              title="Show previously missed, unsure and unseen questions first"
+            >
+              {prioritise ? 'On' : 'Off'}
+            </button>
+          </div>
         </div>
 
-        <p className="muted">
-          {pool.length} questions match your filters. Will draw {Math.min(count, pool.length)}.
-        </p>
+        <PoolSummary pool={pool} progress={progress} count={count} prioritise={prioritise} />
         <button className="primary" onClick={startQuiz} disabled={pool.length === 0}>
           Start quiz
         </button>

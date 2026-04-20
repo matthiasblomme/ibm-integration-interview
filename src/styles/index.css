@@ -1,4 +1,5 @@
-:root {
+:root,
+:root[data-theme='dark'] {
   --bg: #0f1115;
   --surface: #171a21;
   --surface-2: #1f2430;
@@ -13,6 +14,28 @@
   --tag-bg: #242a38;
   --radius: 8px;
 }
+
+:root[data-theme='light'] {
+  --bg: #f7f8fa;
+  --surface: #ffffff;
+  --surface-2: #eef1f6;
+  --border: #d9dee7;
+  --text: #1a1d23;
+  --text-dim: #5a6270;
+  --accent: #1f6feb;
+  --accent-dim: #1f6feb;
+  --success: #1a7f4e;
+  --warn: #a86100;
+  --danger: #b42318;
+  --tag-bg: #eef1f6;
+}
+
+:root[data-theme='light'] .tag.product-MQ { color: #0b5ea8; }
+:root[data-theme='light'] .tag.product-ACE { color: #1a7f4e; }
+:root[data-theme='light'] .tag.product-Cloud { color: #a86100; }
+:root[data-theme='light'] .tag.product-General { color: #6039a6; }
+:root[data-theme='light'] .tag.role { color: #8a4b00; }
+:root[data-theme='light'] button.primary { color: #ffffff; }
 
 * {
   box-sizing: border-box;

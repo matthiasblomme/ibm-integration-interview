@@ -56,3 +56,19 @@ export function resetProgress(): QuizProgress {
   saveProgress({ ...empty });
   return { ...empty };
 }
+
+/**
+ * Priority bucket for picking which questions to show next.
+ * Lower = higher priority (shown first).
+ *   0 — previously missed
+ *   1 — previously unsure
+ *   2 — never seen
+ *   3 — previously got it
+ */
+export function priorityBucket(progress: QuizProgress, id: string): number {
+  const rating = progress.ratings[id];
+  if (rating === 'missed') return 0;
+  if (rating === 'unsure') return 1;
+  if (!progress.seen[id]) return 2;
+  return 3; // got-it
+}
