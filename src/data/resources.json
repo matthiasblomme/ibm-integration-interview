@@ -1,0 +1,116 @@
+[
+  {
+    "title": "IBM MQ Documentation (Knowledge Center)",
+    "url": "https://www.ibm.com/docs/en/ibm-mq",
+    "product": "MQ",
+    "kind": "docs",
+    "note": "Canonical reference. Start here for any MQ concept or command."
+  },
+  {
+    "title": "IBM MQ Developer",
+    "url": "https://developer.ibm.com/components/ibm-mq/",
+    "product": "MQ",
+    "kind": "docs",
+    "note": "Tutorials, container images, downloads, community pieces."
+  },
+  {
+    "title": "ibm-messaging on GitHub",
+    "url": "https://github.com/ibm-messaging",
+    "product": "MQ",
+    "kind": "github",
+    "note": "Official samples, container images, MQ operator, performance reports."
+  },
+  {
+    "title": "MQ Performance Reports (Tim Zielke et al.)",
+    "url": "https://github.com/ibm-messaging/mqperf",
+    "product": "MQ",
+    "kind": "github",
+    "note": "Detailed performance numbers per platform and version."
+  },
+  {
+    "title": "IBM MQ Community (Support forum)",
+    "url": "https://community.ibm.com/community/user/integration/communities/community-home?CommunityKey=183ec850-4947-49c8-9a2e-8e7c7fc46c64",
+    "product": "MQ",
+    "kind": "community"
+  },
+  {
+    "title": "MQ High Availability (MQTC 2018)",
+    "url": "https://www.ibm.com/support/pages/system/files/inline-files/MQTC_v2018_High_Availability.pdf",
+    "product": "MQ",
+    "kind": "pdf",
+    "note": "Solid deep dive into MI, RDQM and cluster HA. Also stashed locally at Docs/MQTC_v2018_High_Availability.pdf in the original repo."
+  },
+
+  {
+    "title": "IBM ACE Documentation (v12)",
+    "url": "https://www.ibm.com/docs/en/app-connect/12.0",
+    "product": "ACE",
+    "kind": "docs"
+  },
+  {
+    "title": "App Connect on IBM Developer",
+    "url": "https://developer.ibm.com/components/app-connect/",
+    "product": "ACE",
+    "kind": "docs"
+  },
+  {
+    "title": "ot4i on GitHub",
+    "url": "https://github.com/ot4i",
+    "product": "ACE",
+    "kind": "github",
+    "note": "ACE container samples, patterns, toolkit extensions."
+  },
+  {
+    "title": "BIP message reference",
+    "url": "https://www.ibm.com/docs/en/app-connect/12.0?topic=messages-bip",
+    "product": "ACE",
+    "kind": "docs",
+    "note": "Look up any BIPxxxx code. Equivalent to running `mqsiexplain <code>`."
+  },
+  {
+    "title": "IBM Integration Community",
+    "url": "https://community.ibm.com/community/user/integration/home",
+    "product": "ACE",
+    "kind": "community"
+  },
+
+  {
+    "title": "IBM Cloud Pak for Integration docs",
+    "url": "https://www.ibm.com/docs/en/cloud-paks/cp-integration",
+    "product": "Cloud",
+    "kind": "docs"
+  },
+  {
+    "title": "Red Hat OpenShift documentation",
+    "url": "https://docs.openshift.com/",
+    "product": "Cloud",
+    "kind": "docs"
+  },
+  {
+    "title": "IBM Operator Catalog",
+    "url": "https://www.ibm.com/docs/en/cloud-paks/cp-integration/operators",
+    "product": "Cloud",
+    "kind": "docs"
+  },
+  {
+    "title": "DFDL spec (OGF)",
+    "url": "https://www.ogf.org/documents/GFD.240.pdf",
+    "product": "ACE",
+    "kind": "pdf",
+    "note": "Formal DFDL specification. Overkill for daily work but the reference."
+  },
+
+  {
+    "title": "IBM Integration blog",
+    "url": "https://community.ibm.com/community/user/integration/blogs/matthias-jung1",
+    "product": "All",
+    "kind": "blog"
+  },
+  {
+    "title": "IBM Redbooks — integration",
+    "url": "https://www.redbooks.ibm.com/",
+    "product": "All",
+    "kind": "book",
+    "note": "Search for 'IBM MQ', 'App Connect Enterprise', 'Cloud Pak for Integration'."
+  }
+]
