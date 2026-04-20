@@ -34,20 +34,21 @@ npm run gen:md   # regenerate interview_questions.md from JSON
 - **Resources** — curated IBM docs, community sites, GitHub repos and
   reference PDFs, filterable by product.
 
+## GitHub workflows
+
+Two workflows live under [.github/workflows/](.github/workflows/):
+
+- [ci.yml](.github/workflows/ci.yml) — runs on every pull request (and push to
+  `main`): typechecks, builds, and verifies `interview_questions.md` is in sync
+  with the JSON. Use this as the required status check in branch protection.
+- [deploy.yml](.github/workflows/deploy.yml) — runs on push to `main`: builds
+  and publishes to GitHub Pages.
+
 ## Deploy to GitHub Pages
-
-The repo ships with a GitHub Actions workflow at
-[.github/workflows/deploy.yml](.github/workflows/deploy.yml) that:
-
-1. Builds the Vite app on every push to `main`.
-2. Uploads `dist/` as a Pages artefact.
-3. Deploys via `actions/deploy-pages`.
-
-To use it:
 
 1. Push this repo to GitHub.
 2. In repo **Settings → Pages**, set **Source** to **GitHub Actions**.
-3. Push to `main` — the workflow runs and publishes to
+3. Push to `main` — `deploy.yml` runs and publishes to
    `https://<user>.github.io/<repo>/`.
 
 **Important:** the Vite `base` in
@@ -58,6 +59,68 @@ is different, update `REPO_BASE` in `vite.config.ts` to match.
 The app uses `HashRouter`, so routes look like `/#/browse`. This avoids the
 GitHub Pages 404-on-refresh problem for client-side routes without needing a
 `404.html` fallback.
+
+## Protect `main` (require PR + passing build)
+
+Branch protection lives on GitHub, not in the repo, so this has to be enabled
+once the repo is pushed. You have two options.
+
+### Option A — GitHub UI
+
+Repo **Settings → Branches → Branch protection rules → Add rule**:
+
+- **Branch name pattern:** `main`
+- ✅ **Require a pull request before merging**
+  - Required approvals: 0 (solo) or 1+ (team)
+  - ✅ Dismiss stale pull request approvals when new commits are pushed
+- ✅ **Require status checks to pass before merging**
+  - ✅ Require branches to be up to date before merging
+  - Search for and add the check named **`Typecheck & Build`** (from
+    `ci.yml`) — it appears in the list after the workflow has run at least
+    once (open a throwaway PR first if needed)
+- Leave **Include administrators** off if you're the only admin, so you don't
+  lock yourself out.
+
+### Option B — one-liner with `gh` CLI
+
+After the CI workflow has run at least once so the check name is registered:
+
+```bash
+gh api -X PUT repos/:owner/:repo/branches/main/protection \
+  -H "Accept: application/vnd.github+json" \
+  --input - <<'JSON'
+{
+  "required_status_checks": {
+    "strict": true,
+    "contexts": ["Typecheck & Build"]
+  },
+  "enforce_admins": false,
+  "required_pull_request_reviews": {
+    "required_approving_review_count": 0,
+    "dismiss_stale_reviews": true
+  },
+  "restrictions": null,
+  "allow_force_pushes": false,
+  "allow_deletions": false
+}
+JSON
+```
+
+Replace `:owner/:repo` with your `user/ibm-integration-interview` path.
+
+### Day-to-day workflow after that
+
+```bash
+git checkout -b feat/add-questions
+# edit files...
+git commit -am "Add MQ clustering questions"
+git push -u origin feat/add-questions
+gh pr create --fill
+# CI runs. Once it's green, merge the PR in the UI or with `gh pr merge --squash`.
+```
+
+Direct pushes to `main` will be rejected by GitHub, and merging a PR without a
+green build will be blocked.
 
 ## Adding / editing questions
 

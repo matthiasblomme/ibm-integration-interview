@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Typecheck & Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Typecheck
+        run: npx tsc -b
+      - name: Build
+        run: npm run build
+      - name: Verify markdown is up to date
+        run: |
+          npm run gen:md
+          if ! git diff --quiet -- interview_questions.md; then
+            echo "interview_questions.md is stale. Run 'npm run gen:md' and commit the result."
+            git --no-pager diff -- interview_questions.md | head -80
+            exit 1
+          fi
