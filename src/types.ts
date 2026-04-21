@@ -12,6 +12,8 @@ export interface Question {
   answerExplanation: string;
   tags: string[];
   difficulty: Difficulty;
+  /** Optional list of URLs to authoritative sources for this question. */
+  references?: string[];
 }
 
 export interface Resource {

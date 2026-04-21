@@ -78,6 +78,13 @@ for (const k of orderedKeys) {
       out.push('');
       out.push(q.answerExplanation);
       out.push('');
+      if (Array.isArray(q.references) && q.references.length) {
+        out.push('_References:_');
+        for (const url of q.references) {
+          out.push(`- <${url}>`);
+        }
+        out.push('');
+      }
     }
   }
 }

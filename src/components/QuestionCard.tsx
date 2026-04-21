@@ -1,6 +1,16 @@
 import { useState } from 'react';
 import type { Question } from '../types';
 
+function prettyUrl(url: string): string {
+  try {
+    const u = new URL(url);
+    const path = u.pathname.replace(/\/$/, '');
+    return `${u.hostname}${path}`;
+  } catch {
+    return url;
+  }
+}
+
 export function QuestionCard({ q, defaultOpen = false }: { q: Question; defaultOpen?: boolean }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
@@ -27,6 +37,20 @@ export function QuestionCard({ q, defaultOpen = false }: { q: Question; defaultO
             ))}
           </ul>
           <p>{q.answerExplanation}</p>
+          {q.references && q.references.length > 0 && (
+            <div className="references">
+              <strong>References</strong>
+              <ul>
+                {q.references.map((url) => (
+                  <li key={url}>
+                    <a href={url} target="_blank" rel="noopener noreferrer">
+                      {prettyUrl(url)}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       )}
     </div>

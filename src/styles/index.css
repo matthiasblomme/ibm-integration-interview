@@ -202,6 +202,14 @@ label { display: block; margin-bottom: 0.3rem; color: var(--text-dim); font-size
 .answer ul { margin: 0 0 0.6rem 1.2rem; padding: 0; }
 .answer li { margin-bottom: 0.25rem; }
 .answer p { color: var(--text-dim); margin: 0; }
+.answer .references {
+  margin-top: 0.8rem;
+  padding-top: 0.6rem;
+  border-top: 1px dashed var(--border);
+  font-size: 0.85rem;
+}
+.answer .references ul { margin-top: 0.3rem; }
+.answer .references a { word-break: break-all; }
 
 .stats-grid {
   display: grid;

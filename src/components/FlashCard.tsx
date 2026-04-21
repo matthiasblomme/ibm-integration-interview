@@ -37,6 +37,20 @@ export function FlashCard({ q, index, total, onRate, onSkip }: Props) {
                 ))}
               </ul>
               <p>{q.answerExplanation}</p>
+              {q.references && q.references.length > 0 && (
+                <div className="references">
+                  <strong>References</strong>
+                  <ul>
+                    {q.references.map((url) => (
+                      <li key={url}>
+                        <a href={url} target="_blank" rel="noopener noreferrer">
+                          {url}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           ) : (
             <p className="muted">Think it through, then reveal.</p>
