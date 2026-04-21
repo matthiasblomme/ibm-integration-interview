@@ -1,14 +1,12 @@
 import { Link } from 'react-router-dom';
-import questions from '../data/questions.json';
-import type { Question } from '../types';
+import { questions } from '../data/questions';
 
 export function Home() {
-  const qs = questions as Question[];
-  const byProduct = qs.reduce<Record<string, number>>((acc, q) => {
+  const byProduct = questions.reduce<Record<string, number>>((acc, q) => {
     acc[q.product] = (acc[q.product] ?? 0) + 1;
     return acc;
   }, {});
-  const byRole = qs.reduce<Record<string, number>>((acc, q) => {
+  const byRole = questions.reduce<Record<string, number>>((acc, q) => {
     acc[q.role] = (acc[q.role] ?? 0) + 1;
     return acc;
   }, {});
@@ -25,7 +23,7 @@ export function Home() {
       <h2>At a glance</h2>
       <div className="stats-grid">
         <div className="stat-card">
-          <div className="value">{qs.length}</div>
+          <div className="value">{questions.length}</div>
           <div className="label">Total questions</div>
         </div>
         {Object.entries(byProduct).map(([p, n]) => (

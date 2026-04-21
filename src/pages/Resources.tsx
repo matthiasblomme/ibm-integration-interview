@@ -1,8 +1,7 @@
 import { useMemo, useState } from 'react';
-import resourcesData from '../data/resources.json';
+import { resources } from '../data/resources';
 import type { Resource } from '../types';
 
-const resources = resourcesData as Resource[];
 const PRODUCTS: (Resource['product'])[] = ['MQ', 'ACE', 'Cloud', 'General', 'All'];
 
 export function Resources() {

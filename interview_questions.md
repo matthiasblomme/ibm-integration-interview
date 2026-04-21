@@ -2,11 +2,11 @@
 
 Generated from `src/data/questions.json` — edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 89
+**Total questions:** 90
 
 ## Table of contents
 - [General (3)](#general)
-- [MQ — Admin (26)](#mq-admin)
+- [MQ — Admin (27)](#mq-admin)
 - [MQ — Dev (11)](#mq-dev)
 - [ACE — Admin (18)](#ace-admin)
 - [ACE — Dev (26)](#ace-dev)
@@ -31,10 +31,11 @@ Open-ended opener. The point is less the exact rating and more whether the perso
 
 - Describes the problem in concrete terms (symptoms, scope, impact)
 - Own troubleshooting steps: logs, traces, reproduction, isolation
-- When and how they escalated (IBM case, colleague, community)
-- What was learned and what documentation/tooling improved afterwards
+- When and how they escalated (IBM case, colleague, community) — comfortable asking for help at the right moment rather than grinding alone or punting too early
+- Documents the issue as they go (tickets, runbooks, internal wiki, PR descriptions) so the next person doesn't have to start from scratch
+- Captures what was learned afterwards and turns it into an improvement — updated docs, a tweaked runbook, a small script, a regression test
 
-Looking for someone who asks for help at the right moment rather than grinding alone or punting too early. Bonus for a post-mortem mindset (what changed after).
+Looking for three traits in one story: (1) structured troubleshooting rather than flailing, (2) comfort asking for help when needed, and (3) a post-mortem mindset that actually improves something afterwards — notes written, runbooks updated, tooling added. An answer that nails the debugging steps but leaves no trace for the team is only half the job.
 
 ### Keeping up
 
@@ -273,33 +274,51 @@ _References:_
 
 ### High availability
 
-**Q: Give an overview of MQ HA options.**
+**Q: What HA options does IBM MQ offer?**
 
-- Externally managed: system-level HA (clustered storage + failover — VCS, MSCS, Pacemaker), Multi-Instance QMGR (shared filesystem, active/standby)
-- MQ-managed on Linux: Replicated Data Qmgr (RDQM) for HA and DR (cross-site)
-- MQ Appliance — pairs of appliances with built-in replication
-- Containers / cloud: Native HA (3-node quorum, no shared storage), Uniform Clusters for app-level rebalance
-- MQ Cluster — not message HA, but enables app continuity across instances
+- **Externally managed (traditional installs)** — OS/cluster-level HA (Pacemaker, VCS, MSCS) plus Multi-Instance QMGR on shared storage (active/standby)
+- **MQ-managed on Linux** — RDQM: HA RDQM (three-node, synchronous, single site) and DR RDQM (two-node, asynchronous, cross-site); no shared storage needed
+- **MQ Appliance** — paired physical appliances with built-in replication, maintained as a unit
+- **MQ Cluster** — horizontal workload distribution across many active qmgrs; not message HA by itself, but enables application continuity when combined with per-qmgr HA
+- **Containers / cloud (modern)** — Native HA (3-node quorum, no shared storage) for in-cluster resilience, and Uniform Clusters for elastic app-level rebalance; typically layered together (Uniform Cluster of Native HA qmgrs)
+- Typical selection heuristic: legacy on-prem → clusters + MI or HA RDQM; new container / cloud deployment → Native HA + Uniform Cluster; mission-critical hardware appliance → MQ Appliance
 
-Always split 'system HA' (qmgr stays up) from 'message HA' (no message loss) and 'application HA' (clients keep working). A full answer picks the mechanism per layer.
+Always split 'system HA' (qmgr stays up), 'message HA' (no message loss) and 'application HA' (clients keep working) — a full answer picks a mechanism per layer. The modern direction is clearly Native HA + Uniform Clusters in containers; on traditional installs, HA RDQM has largely replaced MI as the default HA choice on Linux.
+
+_References:_
+- <https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=configuring-high-availability>
 
 **Q: What is Multi-Instance QMGR and what is its biggest weakness?**
 
-- Active / standby qmgr pair sharing the qmgr data and logs on a shared filesystem (NFSv4 with proper locking)
-- Only one instance has the qmgr started at a time; the other waits for a file lock
-- Failover is automatic when the active dies; clients reconnect via CCDT or client reconnect
-- Biggest weakness: the storage layer — if the NFS server or shared disk fails, both instances go down
+- MI = Multi-Instance queue manager: IBM MQ's built-in active/standby model with the SAME queue manager configured on two servers — not two qmgrs kept in sync
+- One qmgr, data + logs on shared storage (typically NFSv4 with proper locking). Both servers point at the same data; the first instance to acquire the required read/write locks becomes active, the other stays standby
+- Only ONE active + ONE standby at a time — you can't configure one active with two standbys
+- Failover triggers: the active instance dies, loses storage, or is detected as unresponsive and shut down; the standby then acquires the locks and becomes active
+- Clients need to be reconnectable via CCDT / client reconnect to follow the failover — IBM MQ classes for Java don't support automatic reconnect, worth knowing
+- Operationally: stop all MI instances before doing maintenance on the shared storage, and keep backups — MI doesn't protect against storage corruption
+- **Biggest weakness:** the storage layer. If the shared filesystem / NFS server goes away or locking misbehaves, both instances are dead — MI protects qmgr availability but inherits storage availability as a single point of failure
 
-MI is elegant and cheap but it only covers compute failure, not storage. You still need a reliable and correctly configured shared filesystem.
+MI is an elegant, low-ceremony failover model — one qmgr, two servers, shared storage, automatic failover — but it hard-depends on the shared filesystem behaving correctly. Most real MI incidents come from NFS or locking issues, not from MQ itself, so the honest summary is that MI converts 'server availability' into 'storage availability + locking correctness'.
+
+_References:_
+- <https://www.ibm.com/docs/en/ibm-mq/9.3.x?topic=configurations-multi-instance-queue>
 
 **Q: What is RDQM and how does HA RDQM differ from DR RDQM?**
 
-- RDQM = Replicated Data Queue Manager on Linux using DRBD block replication and Pacemaker
-- HA RDQM — three-node cluster in a single site, synchronous replication, automatic failover, designed for high availability
-- DR RDQM — two-node, usually across sites, asynchronous replication, manual failover, designed for disaster recovery
-- Both avoid the shared filesystem dependency of MI
+- RDQM = Replicated Data Queue Manager — an IBM MQ availability option on **Linux** (RHEL x86-64 in 9.4) where the qmgr's data is replicated between nodes so another node can take over if the original is lost
+- Uses **DRBD** for block-level data replication and **Pacemaker** for cluster/failover behaviour; no shared filesystem required (unlike MI)
+- **HA RDQM** — three nodes in an HA group, each holding an instance of the same qmgr. Only one is primary at a time; it synchronously replicates to the two secondaries. Uses a **three-node quorum** to avoid split-brain, automatic failover, optional floating IP so clients see one address
+- **DR RDQM** — primary on one node/site, secondary on another. Replication can be **synchronous or asynchronous, async is the default** — meaning some recent updates may not have reached the DR copy at the moment of disaster. Failover is **manual**: you promote the secondary then start the qmgr
+- **HA RDQM** is about fast local failover after a node failure (3 nodes, quorum, sync replication, automatic). **DR RDQM** is about site recovery after a bigger outage (2 nodes across sites, sync/async replication, manual promotion)
+- The two can be combined — an HA RDQM group at the primary site with a DR RDQM copy at a second site — for both node-level HA and cross-site DR
+- Since **MQ 9.4.4** IBM recommends Native HA as the preferred Linux HA option for new deployments; RDQM remains fully supported but is no longer the default recommendation
 
-HA RDQM is the replacement for the old MI pattern on Linux with no NFS. DR RDQM adds a cross-site copy; the two can even be combined for HA+DR.
+RDQM solves the 'HA without shared storage' problem that plagued MI on Linux — DRBD replicates the data, Pacemaker handles failover, and a three-node quorum keeps split-brain off the table. Know the two flavours cold: HA RDQM = 3 nodes, sync, automatic, fast local failover; DR RDQM = 2 nodes, sync-or-async (async default), manual promotion, cross-site recovery. Mention that since 9.4.4 Native HA is IBM's recommended direction on Linux — RDQM still works and is supported, but the story for new deployments is increasingly 'Native HA in containers'.
+
+_References:_
+- <https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=configuring-high-availability>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=availability-rdqm-high>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=availability-rdqm-disaster-recovery>
 
 **Q: What is Native HA and where does it fit?**
 
@@ -318,6 +337,20 @@ Native HA is quorum-based and self-contained, which is exactly what you want in 
 - Often combined with Native HA qmgrs underneath for both node and cluster resilience
 
 Think of it as an app-aware, workload-balanced cluster — the cluster itself distributes connections, not just messages. It addresses the 'clients all glued to one qmgr' problem classic clusters still have.
+
+**Q: How does Multi-Instance differ from true HA?**
+
+- MI is active/standby with a single live qmgr at any moment — traffic flows through one instance, the other just waits
+- A true HA pool has multiple live instances sharing the workload; loss of one instance is absorbed by the others with minimal or no perceived outage
+- MI failover takes time — lock release, storage handoff, channel restart, clients reconnect — so there's a brief outage even on a clean switch
+- Because only one instance is live, MI protects against losing the **active server**, not against higher rates of incoming traffic or against storage failure
+- In practice this positions MI closer to **DR** (minimise downtime when something breaks) than HA (be continuously available) — a genuine HA story adds something else: MQ Cluster, HA RDQM, Native HA, or Uniform Cluster
+- Common real-world pattern: MI (or HA RDQM) for per-qmgr resilience, combined with an MQ Cluster or Uniform Cluster in front so traffic always has a live qmgr to land on
+
+The clearest way to frame this: MI guarantees you'll still HAVE a qmgr after a failure, but not that you'll still be PROCESSING during the failover. True HA (clusters, Native HA, Uniform Cluster) keeps processing. A mature architecture usually combines both — MI/HA RDQM/Native HA to protect each qmgr individually, and clustering in front to keep the overall service live.
+
+_References:_
+- <https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=configuring-high-availability>
 
 ### Monitoring
 

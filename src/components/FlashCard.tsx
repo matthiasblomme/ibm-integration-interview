@@ -15,6 +15,38 @@ export function FlashCard({ q, index, total, onRate, onSkip }: Props) {
     setRevealed(false);
   }, [q.id]);
 
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      const target = e.target as HTMLElement | null;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
+        return;
+      }
+      if (!revealed) {
+        if (e.key === ' ' || e.key === 'Enter') {
+          e.preventDefault();
+          setRevealed(true);
+        } else if (e.key === 's' || e.key === 'S') {
+          e.preventDefault();
+          onSkip();
+        }
+      } else {
+        if (e.key === '1') {
+          e.preventDefault();
+          onRate('got-it');
+        } else if (e.key === '2') {
+          e.preventDefault();
+          onRate('unsure');
+        } else if (e.key === '3') {
+          e.preventDefault();
+          onRate('missed');
+        }
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [revealed, onRate, onSkip]);
+
   return (
     <div>
       <div className="quiz-progress">
@@ -60,15 +92,15 @@ export function FlashCard({ q, index, total, onRate, onSkip }: Props) {
           {!revealed ? (
             <>
               <button className="primary" onClick={() => setRevealed(true)}>
-                Reveal answer
+                Reveal answer <span className="kbd">Space</span>
               </button>
-              <button onClick={onSkip}>Skip</button>
+              <button onClick={onSkip}>Skip <span className="kbd">S</span></button>
             </>
           ) : (
             <>
-              <button className="primary" onClick={() => onRate('got-it')}>Got it</button>
-              <button onClick={() => onRate('unsure')}>Unsure</button>
-              <button onClick={() => onRate('missed')}>Missed</button>
+              <button className="primary" onClick={() => onRate('got-it')}>Got it <span className="kbd">1</span></button>
+              <button onClick={() => onRate('unsure')}>Unsure <span className="kbd">2</span></button>
+              <button onClick={() => onRate('missed')}>Missed <span className="kbd">3</span></button>
             </>
           )}
         </div>

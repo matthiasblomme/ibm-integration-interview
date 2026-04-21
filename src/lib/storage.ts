@@ -1,4 +1,5 @@
 const PROGRESS_KEY = 'ibm-interview-quiz-progress-v1';
+const SESSION_KEY = 'ibm-interview-quiz-session-v1';
 
 export type RatingValue = 'got-it' | 'unsure' | 'missed';
 
@@ -55,6 +56,49 @@ export function recordRating(
 export function resetProgress(): QuizProgress {
   saveProgress({ ...empty });
   return { ...empty };
+}
+
+export interface QuizSessionStats {
+  got: number;
+  unsure: number;
+  missed: number;
+  skipped: number;
+}
+
+export interface QuizSession {
+  queueIds: string[];
+  index: number;
+  stats: QuizSessionStats;
+  savedAt: number;
+}
+
+export function loadSession(): QuizSession | null {
+  try {
+    const raw = localStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as QuizSession;
+    if (!Array.isArray(parsed.queueIds) || parsed.queueIds.length === 0) return null;
+    if (parsed.index >= parsed.queueIds.length) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+export function saveSession(session: Omit<QuizSession, 'savedAt'>): void {
+  try {
+    localStorage.setItem(SESSION_KEY, JSON.stringify({ ...session, savedAt: Date.now() }));
+  } catch {
+    // ignore quota errors
+  }
+}
+
+export function clearSession(): void {
+  try {
+    localStorage.removeItem(SESSION_KEY);
+  } catch {
+    // ignore
+  }
 }
 
 /**

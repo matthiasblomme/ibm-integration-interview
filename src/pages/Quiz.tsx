@@ -1,8 +1,18 @@
-import { useMemo, useState } from 'react';
-import questionsData from '../data/questions.json';
+import { useEffect, useMemo, useState } from 'react';
+import { questions } from '../data/questions';
 import type { Product, Question, Role } from '../types';
 import { FlashCard } from '../components/FlashCard';
-import { loadProgress, priorityBucket, recordRating, resetProgress, type QuizProgress } from '../lib/storage';
+import {
+  clearSession,
+  loadProgress,
+  loadSession,
+  priorityBucket,
+  recordRating,
+  resetProgress,
+  saveSession,
+  type QuizProgress,
+  type QuizSession,
+} from '../lib/storage';
 
 function PoolSummary({
   pool,
@@ -32,7 +42,6 @@ function PoolSummary({
   );
 }
 
-const questions = questionsData as Question[];
 const ALL_PRODUCTS: Product[] = ['MQ', 'ACE', 'Cloud', 'General'];
 const ALL_ROLES: Role[] = ['Admin', 'Dev', 'Any'];
 
@@ -50,6 +59,40 @@ export function Quiz() {
   const [index, setIndex] = useState(0);
   const [stats, setStats] = useState({ got: 0, unsure: 0, missed: 0, skipped: 0 });
   const [progress, setProgress] = useState(loadProgress());
+  const [savedSession, setSavedSession] = useState<QuizSession | null>(() => loadSession());
+
+  useEffect(() => {
+    if (phase === 'run' && queue.length > 0) {
+      saveSession({
+        queueIds: queue.map((q) => q.id),
+        index,
+        stats,
+      });
+    }
+  }, [phase, queue, index, stats]);
+
+  function resumeSession() {
+    if (!savedSession) return;
+    const byId = new Map(questions.map((q) => [q.id, q]));
+    const restoredQueue = savedSession.queueIds
+      .map((id) => byId.get(id))
+      .filter((q): q is Question => q !== undefined);
+    if (restoredQueue.length === 0) {
+      clearSession();
+      setSavedSession(null);
+      return;
+    }
+    setQueue(restoredQueue);
+    setIndex(Math.min(savedSession.index, restoredQueue.length - 1));
+    setStats(savedSession.stats);
+    setSavedSession(null);
+    setPhase('run');
+  }
+
+  function discardSession() {
+    clearSession();
+    setSavedSession(null);
+  }
 
   const pool = useMemo(() => {
     return questions.filter((q) => products.includes(q.product) && roles.includes(q.role));
@@ -78,6 +121,7 @@ export function Quiz() {
     setQueue(working.slice(0, Math.min(count, working.length)));
     setIndex(0);
     setStats({ got: 0, unsure: 0, missed: 0, skipped: 0 });
+    setSavedSession(null);
     setPhase('run');
   }
 
@@ -100,6 +144,7 @@ export function Quiz() {
 
   function advance() {
     if (index + 1 >= queue.length) {
+      clearSession();
       setPhase('done');
     } else {
       setIndex((i) => i + 1);
@@ -114,6 +159,20 @@ export function Quiz() {
           Pick what to practise. You'll flip through flashcards and rate yourself — progress is saved
           in this browser.
         </p>
+        {savedSession && (
+          <div className="resume-banner">
+            <div>
+              <strong>Resume quiz in progress?</strong>
+              <div className="muted" style={{ fontSize: '0.85rem' }}>
+                {savedSession.queueIds.length} questions, on question {savedSession.index + 1}.
+              </div>
+            </div>
+            <div>
+              <button className="primary" onClick={resumeSession}>Resume</button>
+              <button onClick={discardSession} style={{ marginLeft: 8 }}>Discard</button>
+            </div>
+          </div>
+        )}
 
         <div className="filters">
           <div>
@@ -143,8 +202,9 @@ export function Quiz() {
             ))}
           </div>
           <div>
-            <label>Number of questions</label>
+            <label htmlFor="quiz-count">Number of questions</label>
             <input
+              id="quiz-count"
               type="text"
               value={count}
               onChange={(e) => {

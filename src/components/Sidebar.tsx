@@ -23,8 +23,9 @@ export function Filters({ state, onChange, topics, allProducts, allRoles }: Prop
     <div>
       <div className="filters">
         <div>
-          <label>Search</label>
+          <label htmlFor="filter-search">Search</label>
           <input
+            id="filter-search"
             type="search"
             value={state.query}
             placeholder="e.g. RDQM, callable flow, ibmint"
@@ -62,8 +63,9 @@ export function Filters({ state, onChange, topics, allProducts, allRoles }: Prop
           </div>
         </div>
         <div>
-          <label>Topic</label>
+          <label htmlFor="filter-topic">Topic</label>
           <select
+            id="filter-topic"
             value=""
             onChange={(e) => {
               const v = e.target.value;
@@ -81,9 +83,17 @@ export function Filters({ state, onChange, topics, allProducts, allRoles }: Prop
               <span
                 key={t}
                 className="tag"
+                role="button"
+                tabIndex={0}
                 style={{ cursor: 'pointer' }}
                 onClick={() => onChange({ ...state, topics: toggle(state.topics, t) })}
-                title="click to remove"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onChange({ ...state, topics: toggle(state.topics, t) });
+                  }
+                }}
+                aria-label={`Remove topic filter ${t}`}
               >
                 {t} ✕
               </span>

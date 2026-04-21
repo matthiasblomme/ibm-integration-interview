@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { Question } from '../types';
+import type { RatingValue } from '../lib/storage';
 
 function prettyUrl(url: string): string {
   try {
@@ -11,12 +12,46 @@ function prettyUrl(url: string): string {
   }
 }
 
-export function QuestionCard({ q, defaultOpen = false }: { q: Question; defaultOpen?: boolean }) {
+interface QuestionCardProps {
+  q: Question;
+  defaultOpen?: boolean;
+  rating?: RatingValue;
+}
+
+const ratingLabel: Record<RatingValue, string> = {
+  'got-it': 'Last marked: got it',
+  unsure: 'Last marked: unsure',
+  missed: 'Last marked: missed',
+};
+
+export function QuestionCard({ q, defaultOpen = false, rating }: QuestionCardProps) {
   const [open, setOpen] = useState(defaultOpen);
+  const toggle = () => setOpen((o) => !o);
   return (
     <div className="card">
-      <div className="question-header" onClick={() => setOpen((o) => !o)}>
-        <div className="q-text">{q.question}</div>
+      <div
+        className="question-header"
+        role="button"
+        tabIndex={0}
+        aria-expanded={open}
+        onClick={toggle}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggle();
+          }
+        }}
+      >
+        <div className="q-text">
+          {rating && (
+            <span
+              className={`status-dot ${rating}`}
+              aria-label={ratingLabel[rating]}
+              title={ratingLabel[rating]}
+            />
+          )}
+          {q.question}
+        </div>
         <div>
           <span className={`tag product-${q.product}`}>{q.product}</span>
           <span className="tag role">{q.role}</span>
