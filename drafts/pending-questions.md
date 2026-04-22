@@ -275,14 +275,15 @@ already in the bank: this is 'what is it', that is 'how is it shipped'.
 
 ---
 
-## 8. `ace-dev-031` — ESQL `[>]` and `[<]` in the logical tree
+## 8. `ace-dev-031` — ESQL `[>]` and `[<]` in the logical tree (and building object arrays)
 
 - **Product / Role / Topic:** ACE / Dev / ESQL
 - **Difficulty:** medium
-- **Tags:** esql, logical-tree, indexing, array
+- **Tags:** esql, logical-tree, indexing, array, json
 
 ### Question
-In ESQL, when do you use the `[>]` or `[<]` operator on a tree path?
+In ESQL, when do you use the `[>]` or `[<]` operator on a tree path, and
+how do they help when building an array of JSON objects?
 
 ### Answer — bullets
 - `[>]` and `[<]` are **index qualifiers** used when navigating or
@@ -298,6 +299,11 @@ In ESQL, when do you use the `[>]` or `[<]` operator on a tree path?
 - Contrast with `[N]` (position N) and `[=N]` (exactly position N) —
   `[>]` / `[<]` are positional relative to the current set rather than
   absolute
+- **Building an array of JSON objects** — the idiomatic pattern is:
+  `CREATE LASTCHILD OF OutputRoot.JSON.Data.Items NAME 'Item';` to open
+  the array element, then `CREATE LASTCHILD OF OutputRoot.JSON.Data.Items.Item[<]`
+  to add each nested field to the newly-created last item. Repeat per
+  record from the source
 - Common pattern in transformation flows: loop over an input array, push
   each shaped output element with `Target.Items.Item[>]`
 
@@ -305,9 +311,13 @@ In ESQL, when do you use the `[>]` or `[<]` operator on a tree path?
 These operators let ESQL build up arrays in the output tree without
 tracking indices by hand. The mnemonic: `>` points past the last element
 (append), `<` points before the first (prepend). Most of the time you'll
-see `[>]` in output-building code and `[<]` / `[N]` when reading specific
-positions. Candidates who use these fluently have written non-trivial
-ESQL transforms — beginners tend to increment their own counters.
+see `[>]` in output-building code and `[<]` / `[N]` when reading or
+pushing into the newly-created last record. Building a JSON array of
+objects is exactly this pattern: `CREATE LASTCHILD` to add the outer
+Item, then use `Item[<]` to populate fields on that latest item.
+Candidates who use these fluently have written non-trivial ESQL
+transforms — beginners tend to increment their own counters or end up
+with malformed arrays.
 
 ### References
 - (pending) IBM ACE ESQL reference — element indexing
