@@ -433,12 +433,18 @@
     "topic": "High availability",
     "question": "What is Native HA and where does it fit?",
     "answerBullets": [
-      "Three-instance qmgr with an active and two replicas; data is replicated over the network, no shared storage",
-      "Designed for containers / Kubernetes — pod anti-affinity + persistent volume per pod",
-      "Automatic leader election and failover; one node failure is transparent",
-      "The 'cloud-native' HA option; prefer over MI in Kubernetes"
+      "Native HA is IBM MQ's built-in HA model for containers (and Linux) — three instances of the same queue manager, one active, two replicas",
+      "Uses the **Raft consensus algorithm**: the active can only confirm a logged write once a majority (2 of 3) of nodes have ACKed; this is what keeps data consistent and prevents split-brain. If the active loses the ability to maintain the majority, it stops itself rather than continuing unsafely",
+      "Shared-nothing — each node keeps its own local copy of the recovery log and rebuilds state from the replicated log. Replication happens over the network, removing MI's shared-storage dependency; distinct from RDQM which uses DRBD/Pacemaker (Native HA uses MQ's own replication + consensus)",
+      "Same qmgr name across all three instances; each instance has its own unique instance name. Nodes can be containers, VMs or bare-metal, but all three must be the same type and on Linux the same processor architecture and geographical region, with consistent install paths, data paths and access to referenced files (e.g. keystores)",
+      "Log is replicated by recovery-log extents — size the log the same way you would for a linear-logging qmgr. The extent size is fixed at qmgr creation and key log settings must be consistent across all three instances. MQ schedules media images automatically for recovery",
+      "On Linux (non-k8s) there are no built-in liveness probes, so you need your own supervision (systemd or equivalent) to restart instances that fall over. In Kubernetes / OpenShift the operator handles liveness and restart",
+      "Client connectivity: outside k8s/OpenShift, point clients at a comma-separated list of all three node addresses so the client can reconnect to whichever is currently active"
     ],
-    "answerExplanation": "Native HA is quorum-based and self-contained, which is exactly what you want in Kubernetes where shared storage is a liability. It's the default choice for new container deployments.",
+    "answerExplanation": "Native HA is MQ's own Raft-based, shared-nothing HA model: three instances, one active, two replicas, a replicated recovery log, majority-quorum writes, and automatic takeover. It's cleaner than MI because there's no shared storage to go wrong, and stricter than people expect about node uniformity (same processor arch, same install paths, same keystores). Since 9.4.4 it's IBM's preferred Linux HA direction for new deployments, and it's the default HA story in containers / CP4I.",
+    "references": [
+      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=availability-native-ha"
+    ],
     "tags": ["native-ha", "kubernetes", "cp4i"],
     "difficulty": "hard"
   },
@@ -449,12 +455,17 @@
     "topic": "High availability",
     "question": "What is a Uniform Cluster?",
     "answerBullets": [
-      "A small MQ cluster (typically 3-6 qmgrs) where every member is configured identically — same queues, same topics, same applications",
-      "Applications use a reconnectable JMS/MQI client with CCDT and are automatically balanced across members",
-      "Enables rolling restarts and elastic scale without app reconfiguration",
-      "Often combined with Native HA qmgrs underneath for both node and cluster resilience"
+      "A Uniform Cluster is a specific IBM MQ cluster pattern where you build a small set of near-identical queue managers and let applications treat them as one logical group — connect to any member, get the same service",
+      "**Operating-model rules (stricter than a normal cluster):** all members configured almost identically; usually serving one app or one related app set; keep the cluster small — IBM recommends no more than 10 qmgrs; number of application instances should be at least equal to (preferably higher than) the number of qmgrs",
+      "**What sits on every member:** same local queues, same SVRCONN channels, similar security/auth. Whichever qmgr a client reaches, it gets the same messaging service",
+      "**Application balancing** is the key feature — MQ groups connections by application name, treats same-name instances as equivalent, and can automatically spread instances more evenly across members or move them when needed. This is what a plain MQ cluster does NOT do",
+      "**Limits:** non-reconnectable clients can't be moved to another qmgr, and locally bound (bindings-mode) applications don't fit the model because they're tied to one qmgr — Uniform Clusters are really a reconnectable-client pattern",
+      "Often combined with **Native HA** qmgrs underneath — the Uniform Cluster handles app-level rebalance, Native HA handles per-qmgr node failure — giving both node and cluster resilience"
     ],
-    "answerExplanation": "Think of it as an app-aware, workload-balanced cluster — the cluster itself distributes connections, not just messages. It addresses the 'clients all glued to one qmgr' problem classic clusters still have.",
+    "answerExplanation": "A plain MQ cluster is about clustered resources and message routing; a Uniform Cluster adds a stricter operating model that turns a handful of near-identical qmgrs into one horizontally scaled service. The thing that makes it 'uniform' rather than 'just a small cluster' is automatic application balancing — MQ itself decides which member each reconnectable client instance should land on, based on actual activity. Mention the main caveat: it only works for reconnectable clients, and locally bound apps are a poor fit.",
+    "references": [
+      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=cluster-about-uniform-clusters"
+    ],
     "tags": ["uniform-cluster", "reconnect", "ccdt"],
     "difficulty": "hard"
   },
@@ -463,15 +474,25 @@
     "product": "MQ",
     "role": "Admin",
     "topic": "Monitoring",
-    "question": "Where do you look first when troubleshooting MQ issues?",
+    "question": "How do you troubleshoot MQ issues — what's your default workflow?",
     "answerBullets": [
-      "Qmgr error logs: `AMQERR01.LOG` under `<mqmdata>/qmgrs/<QMGR>/errors` (and under `<mqmdata>/errors` for top-level)",
-      "FDC files (`*.FDC`) — first-failure data capture, indicates a real qmgr problem",
-      "`dspmq` and `dspmq -x` — qmgr status and MI state",
-      "`DIS CHSTATUS`, `DIS QSTATUS` — channel and queue runtime state",
-      "Event messages via amqsevt (performance, authority, channel events)"
+      "**Don't guess first** — capture the exact symptom, time, qmgr name, and category (startup? channels? apps? missing messages? performance? security/TLS?). IBM's own flow is: record symptoms → reproduce if possible → eliminate causes",
+      "**1. Read the MQ error logs.** `AMQERR0*.LOG` in the errors directories (qmgr-level and top-level). Modern MQ tags messages with severity (I/W/E/S/T) and UTC ISO-8601 timestamps so you can line events up with OS and app logs. Look for recent AMQxxxx codes, repeated errors around the incident time, and whether it's qmgr, channel, command server, logging or app-connection flavoured",
+      "**2. Confirm the qmgr is actually healthy.** `dspmq` for state (Running / Ended normally / Ended unexpectedly). Then inside runmqsc: `DISPLAY QMSTATUS ALL`, `DISPLAY CHSTATUS(*) ALL`, `DISPLAY LSSTATUS(*) ALL` — fastest way to separate 'MQ is down' from 'MQ is up but connectivity is broken'",
+      "**3. Scope the problem.** Is it one qmgr or several? One app or all clients? Local puts/gets or only remote channels/queues? Did it start after a config change, maintenance, cert rotation, or server restart?",
+      "**4. 'Messages not arriving' — inspect queues + channels.** `DISPLAY QLOCAL(*) CURDEPTH IPPROCS OPPROCS`, `DISPLAY QSTATUS(<queue>) TYPE(QUEUE) CURDEPTH IPPROCS OPPROCS UNCOM`, `DISPLAY CHSTATUS(*) STATUS XQMSGS MSGS`. Clues: queue depth growing, UNCOM growing (syncpoint / backout issues), transmission queue backing up, channels in RETRYING/STOPPED",
+      "**5. Trust MQRC / JMS exception codes from the app side** over vague 'MQ is broken' statements. You want: exact MQRC, whether it fails on connect / open / put / get / commit, and whether it's one instance or all",
+      "**6. FFST / FDC files only if logs suggest an internal MQ problem.** FFST is IBM-Support-level diagnostic data — not the first stop for normal operational incidents",
+      "**7. Don't skip the boring checks early.** Disk space, memory, recent OS patching, network reachability, recent edits to `qm.ini`, channels, listeners, TLS config. IBM's 'initial checks' pages are deliberately basic because these checks often resolve the incident faster than deep tracing",
+      "**Default order:** (1) AMQERR logs → (2) `dspmq` → (3) QMSTATUS / CHSTATUS / LSSTATUS → (4) queue + UNCOM inspection → (5) app MQRCs → (6) FFST / trace only if still unclear"
     ],
-    "answerExplanation": "Start with the error log and any FDCs, then runtime status. Events are invaluable for pinpointing authority failures or deep queues before they become outages.",
+    "answerExplanation": "The best answer is structured, not a grab-bag of commands. Lead with 'don't guess, capture symptoms', then walk through the layers: logs → qmgr health → scope → queues/channels → app reason codes → FFST/trace as a last resort. Mentioning UNCOM and CHSTATUS values (RETRYING / STOPPED) signals you've actually diagnosed a flow-not-moving incident, not just read the docs. FFST/FDC is a genuine MQ-internals red flag — if it's in the answer as 'step 1', that's a sign the candidate jumps to vendor-support mode before doing basic triage.",
+    "references": [
+      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=mq-troubleshooting-support",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=checks-making-initial-linux",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=checks-making-initial-windows",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=support-using-error-logs"
+    ],
     "tags": ["logs", "fdc", "amqsevt", "troubleshooting"],
     "difficulty": "medium"
   },
@@ -480,14 +501,21 @@
     "product": "MQ",
     "role": "Admin",
     "topic": "Upgrades",
-    "question": "What is the difference between LTS and CD MQ releases, and how do fix packs fit in?",
+    "question": "What is the difference between LTS and CD MQ releases, and how do fix packs and CSUs fit in?",
     "answerBullets": [
-      "LTS (Long Term Support) — major version released every ~2 years, supported for 5 years, fix packs only",
-      "CD (Continuous Delivery) — quarterly releases with new features, supported until the next CD or next LTS",
-      "Fix Packs apply to LTS; CSUs (Cumulative Security Updates) are security-only updates between fix packs",
-      "Plan upgrades: CD for teams that want features sooner, LTS for teams that want stability"
+      "**Two release streams:** LTS (Long Term Support) — slower, steadier, change introduced more conservatively; CD (Continuous Delivery) — new MQ function sooner, on a faster cadence",
+      "The streams are distinguished in the version number by the Modification digit (LTS = M0, CD = M>0) — see the versioning question for the full V.R.M.F breakdown",
+      "**Support model:** LTS is supported for the duration of that release (typically years); CD is supported for 12 months OR while it's one of the two most recent CD releases, whichever is longer — so CD forces you to stay current",
+      "**Fix packs vs CSUs:** fix packs deliver functional + security fixes; CSUs deliver security fixes only. Fix packs apply to LTS; CSUs apply to both LTS and CD. Both are cumulative — jump straight to a later one without installing every earlier one",
+      "**Migration impact:** moving between CD releases is a real upgrade, not just a patch — the modification level changes, qmgr objects migrate on first start, back up first. A fix pack / CSU that only bumps F doesn't change the command level",
+      "**Picking a stream:** LTS for slower-moving production estates; CD when you want early access to features and are prepared to move forward regularly. Many shops run LTS in prod and CD in dev/labs to preview what's coming"
     ],
-    "answerExplanation": "Picking a release stream is a product decision: feature velocity vs patch cadence. Many enterprises stay on LTS in prod and use CD in dev/labs to evaluate what is coming.",
+    "answerExplanation": "LTS is steady, CD is fast. The two details that separate 'read the docs' from 'done the upgrade': (1) CD support forces you to stay within the last two CD releases or 12 months, and (2) CD-to-CD is an upgrade (command level migrates, needs a backup), not a patch. For the underlying V.R.M.F / F-digit mechanics, see the MQ versioning question.",
+    "references": [
+      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=mq-release-types-versioning",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=planning-mq-release-types-considerations",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=mq-migrating-from-one-continuous-delivery-release-another"
+    ],
     "tags": ["lts", "cd", "fixpack", "csu"],
     "difficulty": "medium"
   },
@@ -514,18 +542,70 @@
     ]
   },
   {
+    "id": "mq-adm-025",
+    "product": "MQ",
+    "role": "Admin",
+    "topic": "Versions",
+    "question": "Explain the IBM MQ versioning scheme (V.R.M.F) and what each digit means.",
+    "answerBullets": [
+      "IBM MQ uses a four-digit version scheme: **V.R.M.F** — Version . Release . Modification . Fix",
+      "**V (Version)** — major; a new V starts a whole new product lifecycle and support clock (e.g. MQ 8 → 9)",
+      "**R (Release)** — within a major; major new features that also start a new support clock. V and R together identify a supported release line (e.g. 9.3 vs 9.4)",
+      "**M (Modification)** — the LTS vs CD tell. **M = 0 → LTS baseline** (e.g. 9.4.0); **M > 0 → CD release** (9.4.1, 9.4.2…). CD modifications add features without creating a new R",
+      "**F (Fix / maintenance level)** — maintenance digit; does NOT change the qmgr command level. On LTS: F divisible by 5 = fix pack (functional + security), F non-divisible-by-5 = CSU (security-only). On CD: F is 0 or a CSU level",
+      "The initial .0 of a new version serves as BOTH the new LTS baseline AND the first CD release — identical bits, different support clocks from there",
+      "**Command level is tied to V.R.M, not F** — so a fix pack / CSU is a safe patch (no object migration), but moving V, R or M is an upgrade (qmgr objects migrate on first start, back up first)"
+    ],
+    "answerExplanation": "Once V.R.M.F is internalised, most release-and-support questions answer themselves: V and R set the support clock, M tells you LTS vs CD, F tells you fix pack vs CSU, and the command level only moves when V.R.M does. That last point is the one that trips people up — a CSU looks like a version bump but doesn't actually migrate the qmgr; a CD modification bump does.",
+    "tags": ["vrmf", "versioning", "lts", "cd", "fixpack", "csu", "command-level"],
+    "difficulty": "medium",
+    "references": [
+      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=mq-release-types-versioning"
+    ]
+  },
+  {
+    "id": "mq-adm-026",
+    "product": "MQ",
+    "role": "Admin",
+    "topic": "Pub/Sub",
+    "question": "How can you temporarily disable an MQ subscription without deleting it?",
+    "answerBullets": [
+      "There is no direct 'disable' flag on a subscription — `ALTER SUB` doesn't expose an ENABLED/DISABLED attribute, so the admin surface doesn't have a clean pause button",
+      "**Cleanest per-subscription pause:** switch the subscription's **REQONLY** attribute from NO to YES — `ALTER SUB('<name>') REQONLY(YES)` (or in MQ Explorer change 'Request update' from 'All' to 'Publish on request')",
+      "With REQONLY(YES) the qmgr stops pushing publications to the destination queue; the subscriber would now only receive messages when it explicitly issues `MQSUBREQ`. If no one calls MQSUBREQ, nothing accumulates — effectively a pause",
+      "To resume, flip it back: `ALTER SUB('<name>') REQONLY(NO)`",
+      "**Blunter alternatives with wider blast radius:**",
+      "— `ALTER TOPIC(<topic>) SUB(DISABLED)` disables subscriptions to the entire topic for everyone, not just the subscription you wanted to pause",
+      "— `ALTER QLOCAL(<dest>) PUT(DISABLED)` + the topic's `NPMSGDLV` / `PMSGDLV` set to tolerate delivery failures — but this also affects any OTHER subscribers whose destination happens to fail for an unrelated reason",
+      "Delete-and-recreate works too, but loses any state (durable subscription history, specific SubName) — prefer REQONLY for durable subs you plan to resume"
+    ],
+    "answerExplanation": "Pausing one specific subscription is a genuine gap in the MQ admin surface — there's no ENABLED/DISABLED flag. The REQONLY(YES) trick (from the classic mqseries.net thread with Morag Hughson) is the least-damaging workaround: switch the sub from push mode ('Publish all') to pull mode ('Publish on request'), and because nothing calls MQSUBREQ in the meantime, no publications flow to the destination queue. Topic-level and queue-level disables exist but have broader side effects.",
+    "tags": ["subscription", "reqonly", "pubsub", "pause", "admin"],
+    "difficulty": "hard",
+    "references": [
+      "https://mqseries.net/phpBB/viewtopic.php?t=69195"
+    ]
+  },
+  {
     "id": "mq-dev-001",
     "product": "MQ",
     "role": "Dev",
     "topic": "Connectivity",
     "question": "What's the difference between a client (MQI) connection and a bindings (local) connection?",
     "answerBullets": [
-      "Bindings — app is on the same host as the qmgr, uses shared memory, lowest latency and no network",
-      "Client — app connects over TCP/IP to a SVRCONN channel, can be remote, needs channel + possibly TLS",
-      "Bindings cannot cross hosts; client is mandatory for containers, microservices, or remote apps",
-      "MQCONNX lets you pass MQCNO options to control the mode (local/client/reconnectable)"
+      "**Bindings (local)** — app is on the same host as the qmgr and connects directly through the local MQ installation; no TCP/IP, lowest latency, no channel/listener needed",
+      "**Client (MQI)** — app connects over a network via an MQ client channel; needs host, port, SVRCONN channel name and qmgr name; requires a listener and channel definition on the MQ side",
+      "Bindings can't cross hosts; client is mandatory for containers, microservices, or any app not co-located with the qmgr",
+      "`MQCONNX` + `MQCNO` options let an app pick the mode explicitly (local / client / reconnectable) rather than relying on env vars",
+      "**Dependency model:** bindings needs a local MQ installation on the app host; client needs only the MQ client libraries and the remote connection details — that's why client is the default for distributed architectures",
+      "In **ACE** the two paths are configured separately: a client connection needs a SVRCONN channel + listener on the remote qmgr, a local connection just names the co-located qmgr"
     ],
-    "answerExplanation": "Bindings is the fastest path but locks you to the host. Modern deployments (containers, separate app/qmgr pods) almost always use client mode, with reconnection enabled.",
+    "answerExplanation": "The essence: client = network access via a channel, bindings = same-host direct access through the local MQ runtime. Bindings is simpler and faster when app and qmgr live on the same server; client is more flexible and is the normal choice when they're separate. In ACE this shows up as two distinct configuration paths — client needs a channel + listener on the MQ side, local just needs the co-located qmgr name. Modern deployments (containers, separate app/qmgr pods) almost always use client mode with reconnection enabled.",
+    "references": [
+      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q030760_.html",
+      "https://www.ibm.com/docs/en/app-connect/11.0.0?topic=mq-configuring-client-connection",
+      "https://www.ibm.com/docs/en/app-connect/11.0.0?topic=mq-configuring-local-connection"
+    ],
     "tags": ["client", "bindings", "mqconnx"],
     "difficulty": "easy"
   },
@@ -536,12 +616,20 @@
     "topic": "Connectivity",
     "question": "What is a CCDT and how do you use it?",
     "answerBullets": [
-      "Client Channel Definition Table — a JSON (from v9) or binary file listing SVRCONN channel definitions the app can use",
-      "App points at the CCDT via MQCHLLIB / MQCHLTAB env vars or a JMS property",
-      "Supports multiple channels per connection name (failover, load balancing with CLNTWGHT/AFFINITY)",
-      "Central place to manage qmgr hostnames, ports and TLS settings without touching the app"
+      "**Client Channel Definition Table** — a file that carries the client-connection channel definitions and auth-related connection info an MQ client needs, so apps don't hardcode host/port/channel details",
+      "Two formats: **binary** (classic, default name `AMQCLCHL.TAB`, edited with `runmqsc`) and **JSON** (newer, human-editable, IBM recommends for new setups); a typical entry has channel name, qmgr name, host, port, TLS settings",
+      "**Auto-created on Multiplatforms** — when you create a queue manager, MQ creates a default binary CCDT in the qmgr's `@ipcc` directory and keeps it in sync as you `DEFINE` / `ALTER` / `DELETE` client channels",
+      "**Four ways to point a client at a CCDT:** `MQCHLLIB` + `MQCHLTAB` env vars (local file), `MQCCDTURL` env var (remote URL), or the MQ client config file via `ChannelDefinitionDirectory` + `ChannelDefinitionFile`. JMS apps use equivalent JMS properties",
+      "Supports multiple channels per connection name for failover and load balancing via `CLNTWGHT` / `AFFINITY`",
+      "You can create a CCDT directly on a client with `runmqsc -n` — writes to the location named by `MQCHLLIB` / `MQCHLTAB`, no qmgr required on the client",
+      "**In ACE** the same idea ships as the `mqccdt` configuration type: an `mqccdt.json` file imported/pasted into the config, then referenced (e.g. from an MQ Endpoint policy) by integrations to resolve connection details"
     ],
-    "answerExplanation": "A CCDT keeps connection knowledge out of the application and enables failover/balancing. The JSON format from v9 is also human-editable, which is a huge improvement over the old binary AMQCLCHL.TAB.",
+    "answerExplanation": "A CCDT is the central connection-definition file for MQ clients — you put channels, hosts, ports and TLS details in one place and point clients at it, instead of embedding that knowledge in every app. Modern JSON format is human-editable (big win over the old binary `AMQCLCHL.TAB`), and multiple entries per connection name unlock failover and load balancing. ACE plugs into the same mechanism via the `mqccdt` config type.",
+    "references": [
+      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=tables-configuring-binary-format-ccdt",
+      "https://www.ibm.com/docs/en/ace-ipaas?topic=types-mqccdt",
+      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.mig.doc/q001640_.html"
+    ],
     "tags": ["ccdt", "json", "clntwght"],
     "difficulty": "medium"
   },
@@ -552,12 +640,23 @@
     "topic": "Connectivity",
     "question": "How do you make an MQ client application resilient to qmgr failures?",
     "answerBullets": [
-      "Use reconnectable clients: MQCNO_RECONNECT (or JMS autoReconnect) — the client library reconnects transparently",
-      "CCDT with multiple entries per connection name to failover to another qmgr",
-      "Keep the app idempotent / stateless so a reconnect mid-operation is safe",
-      "Handle MQRC_RECONNECTING and MQRC_RECONNECTED events for visibility"
+      "**Three building blocks:** automatic client reconnection + multiple connection endpoints + sensible failure detection. Miss any one and 'resilience' is only partial",
+      "**Automatic client reconnect (MQI):** set `MQCNO_RECONNECT` (reconnect to any eligible qmgr in the group) or `MQCNO_RECONNECT_Q_MGR` (same qmgr only, correct choice for MI-style HA). Or set `DefRecon=YES|QMGR` in `mqclient.ini` to enable it without code changes",
+      "**Automatic client reconnect (JMS):** enable via connection-factory properties `CLIENTRECONNECTOPTIONS` + `CONNECTIONNAMELIST` (or `CCDTURL`). Caveats: not supported in most Java EE scenarios, and NOT supported by IBM MQ classes for Java",
+      "**Requirements for auto-reconnect to work:** a supported client level, a threaded app, and a channel with `SHARECNV > 0`",
+      "**Multiple endpoints:** a CCDT or connection-name list with all candidate qmgrs — for MI include both active and standby addresses; for RDQM / MQ Appliance a floating IP is often simpler",
+      "**Failure detection — Heartbeat (HBINT):** MQ-layer liveness check on the channel; catches stuck MQ conversations that look fine to TCP. Set deliberately rather than leaving at the default when you want fast failure detection",
+      "**Failure detection — TCP KeepAlive:** OS-layer liveness; catches dead network paths and firewall idle-timeout drops. Enable on both the channel AND the OS (kernel defaults are often 2 hours — far too long). See the heartbeat and keepalive questions for details",
+      "**Application still has to cooperate:** reconnect doesn't make every app safe for free. Handle syncpoint / UOW correctly, be idempotent where it matters, resubmit backed-out transactions, restore state after reconnect",
+      "**Observability:** handle `MQRC_RECONNECTING` / `MQRC_RECONNECTED` (MQI) or the JMS reconnect callbacks so you know when it's happening and can log / alert"
     ],
-    "answerExplanation": "MQ already does the reconnect heavy lifting once you opt in. The app's job is to stay idempotent and react to reconnection events rather than crash on temporary failures.",
+    "answerExplanation": "Resilience = reconnect + endpoints + failure detection + well-behaved app logic. MQ does a lot of the reconnect heavy lifting once you opt in, but only if the pieces line up: the right `MQCNO_*` flag, a CCDT/connection list with multiple targets, HBINT and TCP KeepAlive tuned so failures are actually detected, and app logic that tolerates a reconnect mid-operation. Mentioning that IBM MQ classes for Java do NOT support auto-reconnect, and that Java EE scenarios have caveats, is a good precision tell.",
+    "references": [
+      "https://www.ibm.com/docs/en/ibm-mq/9.3.x?topic=restart-automatic-client-reconnection",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=configuring-recovery-restart",
+      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.con.doc/q081900_.html",
+      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q032520_.html"
+    ],
     "tags": ["reconnect", "ccdt", "resilience"],
     "difficulty": "medium"
   },
@@ -566,14 +665,20 @@
     "product": "MQ",
     "role": "Dev",
     "topic": "Messages",
-    "question": "How do you set a message as persistent from the application?",
+    "question": "How do you set a message as persistent from an MQ application?",
     "answerBullets": [
-      "Set MQMD.Persistence = MQPER_PERSISTENT when putting the message",
-      "Or rely on DEFPSIST on the queue and set MQMD.Persistence = MQPER_PERSISTENCE_AS_Q_DEF",
-      "In JMS set message.setJMSDeliveryMode(DeliveryMode.PERSISTENT)",
-      "Make sure you also put under syncpoint if you need the all-or-nothing guarantee"
+      "Persistence is carried on the message itself in `MQMD.Persistence` — set it before the put and your choice wins",
+      "Three values: `MQPER_PERSISTENT` (1), `MQPER_NOT_PERSISTENT` (0), `MQPER_PERSISTENCE_AS_Q_DEF` (2, defer to the queue's DEFPSIST)",
+      "**Important:** the queue's `DEFPSIST` is only a default used when the app chooses `AS_Q_DEF` — it does NOT override an app that sets persistence explicitly, so persistent and non-persistent messages can coexist on the same queue",
+      "In JMS: `message.setJMSDeliveryMode(DeliveryMode.PERSISTENT)` (or `NON_PERSISTENT`) — mapped to the equivalent MQPER_* under the hood",
+      "Pair with syncpoint (`MQPMO_SYNCPOINT` or JMS transacted session) when you need the all-or-nothing guarantee — persistence without transactional puts still leaves gaps",
+      "For ACE flows, setting persistence on the MQOutput node is covered in the ACE-specific question"
     ],
-    "answerExplanation": "Persistence is per message, but most shops configure a sensible default on the queue and leave the app on AS_Q_DEF. Persistence + syncpoint is the recipe for once-and-only-once semantics.",
+    "answerExplanation": "Set persistence explicitly if the message matters — don't rely on queue defaults unless you deliberately want AS_Q_DEF behaviour. DEFPSIST is a suggestion, not an override, and persistent + non-persistent messages can sit on the same queue. Persistence alone doesn't give you atomicity — pair it with syncpoint when the message represents business state you can't afford to partially process.",
+    "references": [
+      "https://www.ibm.com/support/pages/ibm-mq-message-persistence-faqs",
+      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=descriptor-persistence-mqlong"
+    ],
     "tags": ["persistence", "mqmd", "jms"],
     "difficulty": "easy"
   },
@@ -584,12 +689,22 @@
     "topic": "Messages",
     "question": "What are MQ message properties and how do they relate to MQRFH2?",
     "answerBullets": [
-      "Properties are key/value metadata on a message, settable via MQSETMP / JMS setStringProperty",
-      "Under the hood they are stored in an MQRFH2 header or in a private qmgr-managed store depending on PROPCTL",
-      "PROPCTL on the queue controls exposure: ALL, COMPAT, NONE, RFH2, V6COMPAT",
-      "Use properties for routing, filtering (selectors) and correlation metadata without touching the body"
+      "**Message properties are the logical / API concept** — typed name/value pairs attached to a message, set with `MQSETMP` or JMS `setStringProperty`. They're how an app attaches metadata for routing, filtering (selectors) or correlation without touching the body",
+      "**MQRFH2 is a wire-format header**, not the definition of what a property is. It's one possible physical carrier for some property data — not all properties live in an MQRFH2, and applications can access properties via MQI calls without ever parsing an MQRFH2",
+      "**MQRFH2 structure:** fixed part + variable `NameValueData` section containing XML-like folders; well-known folders include `mcd`, `jms`, `usr`, `mqext`, `mqps`. User-defined properties typically live in the `usr` folder (e.g. `usr.myproperty`)",
+      "**JMS interop is where MQRFH2 really matters:** JMS headers and properties that don't fit in the MQMD get carried in an MQRFH2. A property set as `usr.myproperty` in an MQI app is visible to a JMS app as a user property, and vice versa",
+      "**`PROPCTL`** (queue attribute) controls how properties are surfaced to older apps: `ALL`, `COMPAT`, `NONE`, `RFH2`, `V6COMPAT` — chooses whether downstream sees an actual MQRFH2, properties only via the API, or both",
+      "Modern code almost always works with the properties API directly; manual MQRFH2 parsing is only needed for bridges, raw inspection, or interop with legacy systems that expect the header shape"
     ],
-    "answerExplanation": "Properties decouple the API from the wire format. The PROPCTL setting decides whether downstream consumers see an MQRFH2 header or get the properties via the API only — mismatches here are a common integration bug.",
+    "answerExplanation": "The clean framing is: **properties = API abstraction, MQRFH2 = on-the-wire header format that sometimes carries them**. Not everything is always stored in an MQRFH2, and you don't need to parse an MQRFH2 to read or set a property — the MQI exposes them directly. Candidates who conflate the two ('properties live in MQRFH2') give themselves away; the `PROPCTL` values and the usr/jms/mcd folder names are the precision tells.",
+    "references": [
+      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q032000_.htm",
+      "https://www.ibm.com/docs/en/ibm-mq/9.3.x?topic=mqi-mqrfh2-rules-formatting-header-2",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=2-field-details-mqrfh2",
+      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q029560_.htm",
+      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q022860_.htm",
+      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q022920_.htm"
+    ],
     "tags": ["properties", "mqrfh2", "propctl"],
     "difficulty": "medium"
   },
@@ -598,14 +713,27 @@
     "product": "MQ",
     "role": "Dev",
     "topic": "Pub/Sub",
-    "question": "How does an application subscribe to a topic and how do durable subscriptions differ?",
+    "question": "How does an application subscribe to a topic, and how do durable subscriptions differ?",
     "answerBullets": [
-      "MQSUB specifying a topic string (or TOPIC object) and sub options (MQSO_CREATE, MQSO_DURABLE, ...)",
-      "Non-durable — tied to the subscriber's connection; messages flow only while connected",
-      "Durable — identified by a subscription name; survives disconnect and app restart; messages are held in a named subscriber queue",
-      "Subscription selectors and wildcards (+, #) let a subscriber pick a slice of the topic tree"
+      "A subscription is a definition that tells the qmgr which topic string to listen on and **where to deliver matching publications** — it always resolves to a queue (the subscriber queue)",
+      "**Two ways to create one:** `MQSUB` from the application (API subscription) or `DEFINE SUB` administratively. In both cases you bind the subscription to a destination",
+      "**Destination options:** a **managed queue** that MQ creates and owns for the subscription, or a **provided queue** supplied by the application (e.g. an existing local queue)",
+      "Subscription properties include: topic string, destination, selector, scope, durability, and how pub/sub metadata is delivered (as message properties, as an RFH2 header, or not at all)",
+      "Wildcards `+` (single level) and `#` (multi-level) in the topic string let a subscriber pick a slice of the topic tree",
+      "**Non-durable** — lives only while the subscribing app is connected; the qmgr removes it on disconnect. Use for transient event streams where missing messages while offline is acceptable",
+      "**Durable** — survives disconnect; needs a unique `SubName`. The app can resume it later with `MQSUB` + `MQSO_RESUME`. Use when the subscriber must not miss publications during outages",
+      "**Warning for durable:** while the subscriber is offline, publications pile up on the subscriber queue — IBM flags this explicitly. Prefer non-durable unless you genuinely need offline retention",
+      "**ACE specifically does not subscribe natively** — an ACE flow doesn't issue `MQSUB`. Instead you create an MQ subscription (admin-side) that routes publications to a queue, then the ACE flow reads from that queue with an MQInput node. Subscription lifecycle is managed in MQ, flow logic stays queue-shaped"
     ],
-    "answerExplanation": "Durability choice mirrors the use case: event streams that are fine to miss while offline → non-durable; commands/audit events that must be kept → durable with a managed subscriber queue.",
+    "answerExplanation": "Subscribing is really about two choices: a topic string to listen on and a destination queue to receive matches. Non-durable sub = subscription disappears with the client; durable sub = subscription persists, messages keep arriving, app resumes by name. The key ACE nuance: ACE flows don't subscribe directly — you wire up an MQ subscription that feeds an ordinary queue, and the flow reads that queue. That's a common gotcha in interviews when someone expects a 'subscribe to a topic' flow primitive and the answer is 'no, you set up the subscription in MQ and read the resulting queue'.",
+    "references": [
+      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=properties-mq-subscription",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=objects-working-subscriptions",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=objects-mq-console-working-subscriptions",
+      "https://www.ibm.com/docs/en/ibm-mq/9.3.x?topic=consumers-durable-subscribers",
+      "https://www.ibm.com/docs/en/ibm-mq/9.3.x?topic=subscriptions-subscription-durability",
+      "https://www.mqtechconference.com/sessions_v2017/MQTC_2017_MQ_Pub-Sub_Getting_the_Most.pdf"
+    ],
     "tags": ["mqsub", "durable", "wildcards"],
     "difficulty": "medium"
   },
@@ -616,12 +744,22 @@
     "topic": "Transactions",
     "question": "When would you use an XA transaction with MQ?",
     "answerBullets": [
-      "When you need atomic commit across MQ and another XA resource (usually a database)",
-      "A transaction manager (app server, Narayana, Tuxedo) coordinates both participants via prepare/commit",
-      "Classic use case: read message → update DB → commit both, no duplicates on failure",
-      "Costs: XA overhead is significant; avoid when a local transaction + idempotent write is possible"
+      "**Use XA when a single transaction must cover MQ + at least one other resource manager (typically a database) atomically.** A plain MQ client can do a MQ-only UOW, but not an MQ + another RM UOW — that's exactly the gap the extended transactional client / XA model fills",
+      "**Classic use case:** read a message → update a DB → commit both under one transaction. Either both land or neither does; no duplicate processing on failure",
+      "**Role shift:** with XA, the **queue manager is a resource manager, NOT the transaction manager** — an external TM (app server, Narayana, Tuxedo, WebSphere Liberty, …) coordinates the 2PC prepare/commit",
+      "Because the TM is in charge, the app does NOT use `MQBEGIN` / `MQCMIT` / `MQBACK` for that transaction — commit and rollback happen through the TM's API (`UserTransaction`, `TransactionManager.commit()`, JTA, etc.)",
+      "Each participant RM provides an **XA switch structure**; IBM MQ ships these, and IBM recommends the dynamic XA resource management interface where the TM supports it",
+      "**Only one qmgr at a time** can participate in a transaction coordinated by one instance of an external sync-point coordinator",
+      "**Extended transactional client constraint:** the external TM must run on the same system as the client application",
+      "**Costs to weigh:** XA adds real latency and operational complexity (in-doubt transactions, heuristic outcomes, recovery). If the work is MQ-only, or your design tolerates eventual consistency, prefer a local MQ UOW + idempotent consumer (transactional outbox / dedupe) over XA"
     ],
-    "answerExplanation": "XA gives you true 2PC across resources but at real performance cost. Many modern designs prefer an outbox pattern or idempotent consumer over XA to keep things simple.",
+    "answerExplanation": "XA is the correct answer when 'commit MQ and another resource together' is a hard requirement. The mental shift candidates sometimes miss: the qmgr becomes a participant, not the coordinator, and the app stops using MQCMIT/MQBACK in favour of the TM's API. Naming the extended transactional client explicitly, the XA switch structure, and the 'one qmgr per coordinator instance' rule are the precision tells. For modern architectures, mention that an outbox / idempotent consumer pattern is often a simpler alternative to XA for new designs.",
+    "references": [
+      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=clients-what-is-extended-transactional-client",
+      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.con.doc/q016540_.htm",
+      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/xms_managed_mq.html",
+      "https://www.ibm.com/docs/en/ibm-mq/9.3.x?topic=coordination-mq-xa-switch-structure"
+    ],
     "tags": ["xa", "2pc", "transaction"],
     "difficulty": "hard"
   },
@@ -632,12 +770,21 @@
     "topic": "Error handling",
     "question": "How does an application handle poison messages?",
     "answerBullets": [
-      "On each rollback MQ increments MQMD.BackoutCount for the message",
-      "App checks BackoutCount >= BOTHRESH on the queue; if reached, move the message to BOQNAME (or DLQ)",
-      "Frameworks (JMS, ACE, Spring) usually do this automatically via built-in backout handlers",
-      "Alert / log when a message is quarantined so the cause can be investigated"
+      "**Definition:** a poison message is a message that repeatedly fails processing and is rolled back every time — without a threshold or app-level handling, it just loops forever on the input queue, blocking the consumer and spinning downstream connections",
+      "On each rollback the qmgr increments `MQMD.BackoutCount` on the message — that's the hook, but only a hook: the qmgr itself does NOT move the message anywhere",
+      "**Who actually moves it:** the consumer (or a framework wrapping it) compares `BackoutCount` to the queue's `BOTHRESH`; if the count reaches the threshold, it puts the message to `BOQNAME` (backout queue) or the qmgr DLQ if `BOQNAME` is not set",
+      "**Crucial trap:** `BOTHRESH` defaults to 0 on a queue, which means 'no threshold' — so unless you set `BOTHRESH` (and ideally `BOQNAME`) explicitly, or handle the limit in code, the message loops indefinitely. That infinite-loop state IS the poison-message problem",
+      "Frameworks (JMS listener containers, ACE, Spring JMS, IIB backout handlers) do this automatically, but they still depend on `BOTHRESH` being configured — if you deploy a framework handler onto a queue with `BOTHRESH(0)`, you still get an infinite loop",
+      "**Fallback when the backout put fails:** if the message hits the threshold but can't be put to the configured `BOQNAME` (queue full, doesn't exist, permissions wrong), it goes to the qmgr DLQ. For XMS non-persistent messages the docs specifically say it may be discarded — always monitor BOQNAME health and DLQ depth",
+      "**Backout count durability:** by default `BackoutCount` survives most restarts, but if you need it to be accurate across every qmgr restart scenario, MQ has a 'hardened backout count' option — turn it on only if you need it, it has a performance cost",
+      "Sensible defaults: set `BOTHRESH` (e.g. 3 or 5) and `BOQNAME` on every input queue as a standard, alert when a message is moved to the backout queue, and monitor both BOQNAME depth and DLQ depth so poison events are caught early"
     ],
-    "answerExplanation": "Poison message handling is about not being stuck on one bad record. The consumer (or the framework around it) is responsible for actually requeueing; the qmgr just increments the counter.",
+    "answerExplanation": "Two things to nail in an answer: (1) the actual definition — a poison message is one that loops forever because nothing stops it — and (2) the collaboration model between MQ and the consumer. MQ provides the bookkeeping (BackoutCount) and the policy hooks (BOTHRESH, BOQNAME), but the consumer (or its framework) is what actually reroutes the message. With `BOTHRESH(0)` there IS no threshold, and 'I have a backout handler' doesn't help because it never fires — the number one operational mistake is assuming framework-level handling compensates for queue defaults that don't enable it. Know the fallback (DLQ if BOQNAME put fails) and the hardened-backout-count option for the precision tells.",
+    "references": [
+      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=consumers-poison-messages-in-xms",
+      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q032280_.html",
+      "https://www.ibm.com/support/pages/ibm-mq-message-persistence-faqs"
+    ],
     "tags": ["poison", "backout", "bothresh"],
     "difficulty": "medium"
   },
@@ -648,12 +795,19 @@
     "topic": "APIs",
     "question": "MQI vs JMS — when do you pick which?",
     "answerBullets": [
-      "MQI — native MQ API (C, Java, .NET, Go); full feature set, best control, slightly lower-level",
-      "JMS — standard Java API over MQ; portable across brokers, higher-level, integrates with Java EE / Spring",
-      "MQI gives you direct access to MQMD fields, custom headers, admin calls; JMS gives you portability and framework integration",
-      "In practice: Java app in a Java stack → JMS; bridge, custom broker, non-Java, or advanced MQ features → MQI"
+      "**MQI** — IBM MQ's **native** API (C, Java, .NET, Go). Full feature set, best control, MQ-specific semantics. Classic client/server apps link the MQ client library and connect with `MQCONN` / `MQCONNX`",
+      "**JMS** — the **standard Java messaging API**, which IBM MQ also supports. Portable across brokers, higher-level, fits Java EE / Spring / application-server style development. JMS send/receive maps onto MQI put/get",
+      "**MQI gives you** direct access to MQMD fields, custom headers, PCF / admin calls, and every MQ-specific feature as it's released — no abstraction in the way",
+      "**JMS gives you** the portable Java programming model, familiar JMS patterns (connection factories, sessions, listeners), and clean integration with Java EE / Spring / MDBs",
+      "**Trade-off framing:** MQI = MQ-native and product-specific; JMS = Java-standard and abstraction-oriented",
+      "**Practical rule:** Java app in a Java stack, especially in a WebSphere / Spring / app-server environment → **JMS**. Bridge, non-Java language, custom broker code, or MQ features JMS doesn't expose → **MQI**"
     ],
-    "answerExplanation": "JMS is the ergonomic, portable choice for Java; MQI is the escape hatch when you need something JMS doesn't expose or when you're outside Java altogether.",
+    "answerExplanation": "JMS is the ergonomic, portable choice for Java apps — especially anything that lives inside an app server or Spring — and it maps onto the same MQI put/get model under the hood. MQI is the escape hatch when you need something JMS doesn't surface, when you're outside Java altogether, or when the app is genuinely MQ-native rather than 'a Java app that happens to use messaging'. The framing that separates a good answer from a great one: MQ-native vs Java-standard.",
+    "references": [
+      "https://www.ibm.com/docs/en/was/9.0.5?topic=network-differences-between-service-integration-mq",
+      "https://www.ibm.com/docs/SSFKSJ_9.2.0/com.ibm.mq.pro.doc/q003460_.htm",
+      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q123770_.html"
+    ],
     "tags": ["mqi", "jms"],
     "difficulty": "easy"
   },
@@ -664,13 +818,23 @@
     "topic": "MQGET",
     "question": "What are the important MQGET options you use in practice?",
     "answerBullets": [
-      "MQGMO_WAIT + MQGMO_WaitInterval — block until a message arrives, the standard consumer pattern",
-      "MQGMO_SYNCPOINT — get under transaction, paired with backout handling",
-      "MQGMO_BROWSE_FIRST / BROWSE_NEXT — inspect without removing; useful for admin apps and selectors",
-      "MQGMO_CONVERT — apply data conversion based on MQMD.Format and CCSID",
-      "Match criteria via MQMD.MsgId / CorrelId for request/reply correlation"
+      "**`MQGMO_WAIT` + `WaitInterval`** — block until a message arrives (or the interval expires). The standard consumer pattern; default without it is to return immediately if the queue is empty",
+      "**`MQGMO_FAIL_IF_QUIESCING`** — a must-have in practice. If the qmgr is quiescing, the call fails cleanly instead of hanging. IBM best-practice explicitly says don't use `MQOPEN` / `MQGET` / `MQPUT` without the corresponding FAIL_IF_QUIESCING; combined with an unbounded WAIT, its absence is how apps block qmgr shutdowns",
+      "**`MQGMO_SYNCPOINT`** — get the message under the current unit of work so a rollback returns it to the queue. Essential for reliable processing; paired with backout-count handling for poison-message defence. Without syncpoint, the message is gone the moment MQGET returns",
+      "**`MQGMO_BROWSE_FIRST` / `MQGMO_BROWSE_NEXT` / `MQGMO_BROWSE_MSG_UNDER_CURSOR`** — inspect messages without removing them, walk a queue, or re-read the current browsed message. Useful for admin tools, diagnostics, selectors, and peek-then-destructive-get patterns",
+      "**Get by correlation (request/reply, grouping, targeted retrieval):** set `MQMD.MsgId` / `MQMD.CorrelId` / `MQMD.GroupId` on the MQMD you pass in, and set `MQGMO.MatchOptions` to the corresponding `MQMO_MATCH_MSG_ID` / `MQMO_MATCH_CORREL_ID` / `MQMO_MATCH_GROUP_ID` so only a matching message is returned. Canonical request/reply: requester sends with `MsgId=A`, replier sets `CorrelId=A` on the reply, requester gets with `MatchOptions=MQMO_MATCH_CORREL_ID` + `MQMD.CorrelId=A`",
+      "**`MQGMO_CONVERT`** — asks MQ to convert the message body to the receiving app's CCSID and encoding where supported. Use it when consumers sit on different platforms and you want MQ to do the conversion for you",
+      "**`MQGMO_ACCEPT_TRUNCATED_MSG`** — return whatever fits in the supplied buffer with a truncated reason code instead of failing outright when the message is larger than the buffer. Useful when you deliberately want partial data rather than an error",
+      "**Other flags to know:** `MQGMO_NO_SYNCPOINT` (explicit opt-out), the `MQGMO_PROPERTIES_*` variants (control whether properties come back inline, as MQRFH2, or via the API only)"
     ],
-    "answerExplanation": "The MQGET call is highly configurable via MQGMO flags and match options; most real apps only use a handful but should know them — browse and correl id matching in particular come up often.",
+    "answerExplanation": "MQGET's behaviour is split across two inputs: the `MQGMO` flags (wait, fail-if-quiescing, syncpoint, browse, convert…) and the `MQMD` fields you pass in for matching (MsgId, CorrelId, GroupId, plus `MQGMO.MatchOptions` saying which of those to match on). Mixing those up — e.g. saying 'CorrelId is an MQGMO flag' — is a small giveaway. In practice the default loop is **WAIT + FAIL_IF_QUIESCING + often SYNCPOINT**; add match options for targeted retrieval, browse flags for inspection, and CONVERT / ACCEPT_TRUNCATED_MSG only when the app really needs them. The FAIL_IF_QUIESCING habit is the one people forget most often, and it's the one that'll bite you during an orderly qmgr shutdown.",
+    "references": [
+      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=reference-mqgmo-get-message-options",
+      "https://www.mqtechconference.com/sessions_v2013/WMQ_Best_Practices.pdf",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=multiplatforms-get-sample-programs",
+      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.dev.doc/q101830_.html",
+      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q026320_.html"
+    ],
     "tags": ["mqget", "mqgmo", "browse"],
     "difficulty": "medium"
   },
@@ -695,6 +859,70 @@
       "https://www.ibm.com/support/pages/ibm-mq-message-persistence-faqs",
       "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=constants-mqper-persistence-values",
       "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=descriptor-persistence-mqlong"
+    ]
+  },
+  {
+    "id": "mq-dev-012",
+    "product": "MQ",
+    "role": "Dev",
+    "topic": "Connectivity",
+    "question": "What is the MQ heartbeat (HBINT)?",
+    "answerBullets": [
+      "**HBINT** = Heartbeat Interval, configured on a channel (both SVRCONN and sender/receiver channels). It's an **MQ-layer** liveness check",
+      "When a channel is idle for longer than HBINT, MQ sends a small heartbeat flow to verify the other side is still alive and responsive",
+      "The two ends negotiate HBINT at channel start — the **lower** of the two configured values wins",
+      "Default is 300 seconds (5 minutes). Lower it when you need faster failure detection (at the cost of a bit more chatter)",
+      "Crucially, heartbeat works **even on an idle channel** — e.g. when a client is sitting inside a long-running MQGET with WAIT; without HBINT a dead-but-not-torn-down conversation looks fine",
+      "Because it's an MQ conversation, HBINT can catch situations where the MQ agent is stuck even though the underlying TCP socket still appears connected"
+    ],
+    "answerExplanation": "HBINT is MQ's own liveness ping between a client and the qmgr (or between two qmgrs over a message channel). It operates above TCP, so it can notice problems with the MQ conversation that TCP itself doesn't see. Negotiated between peers — the lower value wins — so both sides should be set deliberately, not left at whatever was defined on one end.",
+    "tags": ["hbint", "heartbeat", "channel", "liveness"],
+    "difficulty": "medium",
+    "references": [
+      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.con.doc/q081890_.html"
+    ]
+  },
+  {
+    "id": "mq-dev-013",
+    "product": "MQ",
+    "role": "Dev",
+    "topic": "Connectivity",
+    "question": "What is the MQ TCP KeepAlive?",
+    "answerBullets": [
+      "**TCP KeepAlive** is an OS/network-layer mechanism — not MQ-specific. It asks the kernel to periodically probe idle TCP sockets to detect dead peers or broken network paths",
+      "Enabling it for MQ needs **two steps**: `KEEPALIVE(YES)` on the channel (or `TCP:KeepAlive=YES` in `qm.ini`), AND OS-level KeepAlive tuning — because kernel defaults are typically **2 hours** before the first probe, which is useless for most production scenarios",
+      "**Linux sysctls:** `net.ipv4.tcp_keepalive_time` (idle before first probe), `tcp_keepalive_intvl` (probe gap), `tcp_keepalive_probes` (how many failed probes before declaring dead)",
+      "**Windows:** equivalent registry values under `HKLM\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters`",
+      "Main failures it catches: firewalls silently dropping idle connections, NAT entries timing out, dead network paths where the remote host disappeared without a proper close",
+      "Tune the idle time to beat your firewall's idle-drop window (often 15–30 minutes) rather than leaving it at the OS default"
+    ],
+    "answerExplanation": "TCP KeepAlive is the network layer's 'is this socket actually alive?' probe. It's a standard socket option — MQ just asks the OS to turn it on for its sockets. The subtlety is that enabling `KEEPALIVE(YES)` on the channel is only half the job; without tuning the OS-level interval the kernel default is so long that firewalls will silently drop connections long before a probe fires. IBM has a dedicated support note about this exact two-step setup.",
+    "tags": ["keepalive", "tcp", "channel", "network"],
+    "difficulty": "medium",
+    "references": [
+      "https://www.ibm.com/support/pages/two-steps-are-needed-setting-tcpip-keepalive-ibm-mq"
+    ]
+  },
+  {
+    "id": "mq-dev-014",
+    "product": "MQ",
+    "role": "Dev",
+    "topic": "Connectivity",
+    "question": "What's the difference between MQ Heartbeat (HBINT) and TCP KeepAlive, and how do they work together?",
+    "answerBullets": [
+      "**Different layers, different blind spots.** HBINT runs at the **MQ / MQI layer**; KeepAlive runs at the **TCP / OS layer** — neither sees what the other sees",
+      "**HBINT catches:** MQ conversation stuck while TCP looks fine (hung agent, long idle MQGET WAIT with a broken peer, mis-behaving client that no longer processes flows)",
+      "**KeepAlive catches:** network paths gone away, firewall silently dropping idle sockets, NAT entry timing out, peer host disappearing without a proper close — none of which HBINT notices because no MQ flow attempts are being made",
+      "**Use both.** They're complementary, not alternatives. HBINT defends the MQ conversation; KeepAlive defends the underlying socket. Disabling one leaves the other's blind spot exposed",
+      "**Rough tuning:** HBINT somewhere between 60 s and the default 300 s (shorter = faster failure detection, a little more chatter). KeepAlive idle tuned to fire sooner than your network's firewall idle timeout (often 15 minutes or less)",
+      "On the channel config that means `HBINT(300)` (or lower) plus `KEEPALIVE(YES)` — and don't forget the OS-level keepalive knobs, otherwise KeepAlive is only nominally enabled"
+    ],
+    "answerExplanation": "The cleanest way to frame it is by what each protocol sees: HBINT knows about MQ conversations but not about sockets, KeepAlive knows about sockets but not about MQ. Each blind spot is the other's strength, which is why production MQ setups enable both. The common mistake is turning on `KEEPALIVE(YES)` on the channel and assuming that's sufficient — kernel defaults of 2 hours before the first probe mean you'll still hit firewall idle drops, so OS-level tuning is mandatory for KeepAlive to actually do its job.",
+    "tags": ["hbint", "keepalive", "channel", "network", "liveness", "tuning"],
+    "difficulty": "hard",
+    "references": [
+      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.con.doc/q081890_.html",
+      "https://www.ibm.com/support/pages/two-steps-are-needed-setting-tcpip-keepalive-ibm-mq"
     ]
   },
   {
@@ -727,12 +955,11 @@
       "Support policy is **5 + 1 + 3** (new from v13): 5 years standard support, then 1 year extended support for new defects, then 3 years extended support for usage / known defects only",
       "For v13 that means end of standard support 2029, end of extended support 2033",
       "Older cycles for reference: v12 = 5+3, v11 = 5+3 later extended to 6+2, IIB v10 = 5+3 extended to 7+3",
-      "V.R.M.F numbering: a Version or Release change starts a new lifecycle; Modifications add features but keep the original dates; Fix-packs are maintenance",
-      "Continuous Delivery stream — frequent mod-releases (12.0.x, 13.0.x) add new features inside the same lifecycle dates",
+      "Continuous Delivery stream — frequent mod-releases (12.0.x, 13.0.x) add new features inside the same lifecycle dates (see the ACE versioning question for how V.R.M.F maps to this)",
       "Product editions were renamed in v13: Developer → **Evaluation**, Non-Production-Free → **Development**, Non-Production stays, Advanced → **Production-Advanced**, Standard → **Production-Standard**",
       "Evaluation is unsupported and capped at 1 msg/sec; Development/Non-Production/Production-* are all Unlimited performance; Production-Standard has production rights but not in containers and is limited to 1 integration server per integration node"
     ],
-    "answerExplanation": "ACE has both a version lifecycle (V.R changes start a new clock) and mod-releases (M changes add features without moving the clock), layered with fix-packs. The v13 shift to a 5+1+3 support policy is worth knowing — it's the new IBM-wide model. Equally important for licensing conversations: v13 renamed the product editions to make the permitted usage explicit (Evaluation / Development / Non-Production / Production-Advanced / Production-Standard). Note: all of the above is the ON-PREM release model — the ACE Operator (CP4I / OpenShift) has its own release model, channels and lifecycle, covered separately.",
+    "answerExplanation": "The headlines to remember: v13 is current, support is 5+1+3 (new from v13), and editions were renamed to make permitted usage explicit. For how V.R.M.F maps to lifecycle vs mod-releases, see the ACE versioning question. Note: all of the above is the ON-PREM release model — the ACE Operator (CP4I / OpenShift) has its own release model, channels and lifecycle, covered separately.",
     "tags": ["release-cadence", "lts", "cd", "support-policy", "editions", "on-prem"],
     "references": [
       "https://www.ibm.com/docs/en/app-connect/13.0?topic=new-whats-app-connect-enterprise"
@@ -1032,6 +1259,27 @@
     "difficulty": "easy",
     "references": [
       "https://matthiasblomme.github.io/blogs/posts/ace-v13-new-features-overview/v13-new-features/#log-analyzer"
+    ]
+  },
+  {
+    "id": "ace-adm-019",
+    "product": "ACE",
+    "role": "Admin",
+    "topic": "Versions",
+    "question": "Explain the ACE versioning scheme (V.R.M.F) and what each digit means.",
+    "answerBullets": [
+      "ACE uses the standard IBM **V.R.M.F** scheme — Version . Release . Modification . Fix",
+      "**V (Version)** and **R (Release)** — major changes that start a new support lifecycle (e.g. ACE 12 → 13). V/R is what the 5+1+3 support clock is tied to",
+      "**M (Modification)** — adds new features within the existing V.R lifecycle without restarting the support clock; this is where the Continuous Delivery cadence sits (13.0.1, 13.0.2, …)",
+      "**F (Fix-pack / maintenance)** — fixes only, doesn't change the command level; applied on top of a given V.R.M",
+      "Unlike MQ, ACE doesn't split its numbering into distinct LTS vs CD streams — it's the same V.R.M.F where M is where new features land and F is maintenance",
+      "Practical rule: a V or R change is a real upgrade (new support window, plan it); M is a mod-release with new features but same window; F is a patch"
+    ],
+    "answerExplanation": "V.R.M.F is the same four-digit scheme IBM uses across its products, but ACE applies it without MQ's LTS/CD split — new features arrive as modifications inside the current V.R lifecycle, and the support clock only resets on V or R changes. Being crisp about which digit moves tells you exactly what kind of change you're planning: V/R = new lifecycle, M = features inside the same lifecycle, F = fixes only.",
+    "tags": ["vrmf", "versioning", "release", "modification", "fix-pack"],
+    "difficulty": "easy",
+    "references": [
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=new-whats-app-connect-enterprise"
     ]
   },
   {
