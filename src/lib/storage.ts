@@ -107,9 +107,9 @@ export type Grade = 'correct' | 'partial' | 'wrong';
 
 /**
  * Grade an auto-graded (single/multi) answer against the choice list.
- *   correct — all correct choices picked, no incorrect ones
- *   partial — at least one correct pick, but some missed or extras
- *   wrong   — no correct picks
+ *   correct, all correct choices picked, no incorrect ones
+ *   partial, at least one correct pick, but some missed or extras
+ *   wrong  , no correct picks
  */
 export function gradeChoiceAnswer(choices: Choice[], selectedIndices: Set<number>): Grade {
   const correctSet = new Set<number>();
@@ -128,10 +128,10 @@ export function gradeChoiceAnswer(choices: Choice[], selectedIndices: Set<number
 /**
  * Priority bucket for picking which questions to show next.
  * Lower = higher priority (shown first).
- *   0 — previously missed
- *   1 — previously unsure
- *   2 — never seen
- *   3 — previously got it
+ *   0, previously missed
+ *   1, previously unsure
+ *   2, never seen
+ *   3, previously got it
  */
 export function priorityBucket(progress: QuizProgress, id: string): number {
   const rating = progress.ratings[id];

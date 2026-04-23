@@ -31,7 +31,7 @@ if (urls.size === 0) {
 const TIMEOUT_MS = 15000;
 const CONCURRENCY = 8;
 
-// Current supported versions. Bump these as IBM ships new majors — the script
+// Current supported versions. Bump these as IBM ships new majors, the script
 // advises swapping anything older to these, when the same topic also resolves
 // under the new version.
 const LATEST = {
@@ -135,7 +135,7 @@ if (advisory) {
   advisories.sort((a, b) => a.url.localeCompare(b.url));
   console.log(`\nAdvisories (${advisories.length}):`);
   if (advisories.length === 0) {
-    console.log('  (none — either already on latest, or newer-version topic does not resolve)');
+    console.log('  (none, either already on latest, or newer-version topic does not resolve)');
   } else {
     for (const a of advisories) {
       console.log(`  ${a.url}\n    → ${a.candidate}`);
@@ -157,7 +157,7 @@ if (failed.length) {
   console.log(`\nFailed (${failed.length}):`);
   for (const f of failed) {
     const reason = f.error ? `error: ${f.error}` : `HTTP ${f.status}`;
-    console.log(`  ${f.url} — ${reason}`);
+    console.log(`  ${f.url}, ${reason}`);
   }
   process.exit(1);
 }

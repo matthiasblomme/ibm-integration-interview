@@ -1,4 +1,4 @@
-# Blog-sourced T items — handover batch (16 of 32)
+# Blog-sourced T items, handover batch (16 of 32)
 
 Interview-question candidates marked `T` (tweak) in the project's
 blog-sourced review. The author is an ACE/MQ specialist; he's sifted a
@@ -9,25 +9,25 @@ Flows & ESQL, Connectors, AI/tools, Install, and overlap-with-existing**.
 
 For each item you'll see:
 
-- **Question** — a candidate interview question (the thing we want to refine)
-- **Source post** — the blog post it was derived from (optional to look up)
-- **Hook** — the specific point in the source that makes it interesting
+- **Question**: a candidate interview question (the thing we want to refine)
+- **Source post**: the blog post it was derived from (optional to look up)
+- **Hook**: the specific point in the source that makes it interesting
 
 Your job: refine the question and its answer. Fill in the **Your
 refinement** block with any of:
 
 - A corrected or sharpened question wording
 - Bullets of facts the answer should hit (3–6 ideal)
-- A short paragraph of context (2–3 sentences) — the "why" / what
+- A short paragraph of context (2–3 sentences), the "why" / what
   interviewers should listen for
 - Authoritative references (IBM Docs / MQ Tech Conf / blog URLs / IBM
-  Community links) — ideally 1–3 per question
+  Community links), ideally 1–3 per question
 - Any traps, gotchas or production tells worth flagging
 
 If a question feels weak or redundant once you've looked at it, it's
-fine to write **"Drop — reason"** and we'll skip it.
+fine to write **"Drop, reason"** and we'll skip it.
 
-Once you've worked through the file, send it back — the maintainer
+Once you've worked through the file, send it back, the maintainer
 will fold the refinements into a structured question bank.
 
 **Target answer style:** bullets + a short explanation paragraph,
@@ -36,7 +36,7 @@ Aim for precision over volume.
 
 ---
 
-## Section 5 — Logging, tracing & monitoring
+## Section 5, Logging, tracing & monitoring
 
 ### 1. `flow-order-context-tree` · Context Tree vs Environment copies
 
@@ -71,7 +71,7 @@ Aim for precision over volume.
 ### 4. `log-nodes-tips-tricks` · JSONata fallback for missing fields
 
 - **Question:** How do you provide a default or fallback value in an ACE Log node's JSONata expression for a field that may be missing?
-- **Hook:** Sequence-flattening trick `[field, "FALLBACK"][0]` — missing fields otherwise leave blanks in logs and complicate troubleshooting.
+- **Hook:** Sequence-flattening trick `[field, "FALLBACK"][0]`, missing fields otherwise leave blanks in logs and complicate troubleshooting.
 
 **Your refinement:**
 
@@ -88,7 +88,7 @@ Aim for precision over volume.
 
 ---
 
-## Section 6 — Unit testing & development
+## Section 6, Unit testing & development
 
 ### 6. `ibm-dfdl-tester` · DFDL Tester setup steps
 
@@ -110,7 +110,7 @@ Aim for precision over volume.
 
 ---
 
-## Section 7 — BAR files & deploy
+## Section 7, BAR files & deploy
 
 ### 8. `ace-migration` · "Deploy stopped, start in groups" migration pattern
 
@@ -122,7 +122,7 @@ Aim for precision over volume.
 
 ---
 
-## Section 8 — Flows & ESQL
+## Section 8, Flows & ESQL
 
 ### 9. `select-the-row` · SELECT / ROW / THE in ESQL
 
@@ -137,14 +137,14 @@ Aim for precision over volume.
 ### 10. `flow-order-context-tree` · Flow Order node solves array collapse
 
 - **Question:** How does a Flow Order node solve "my array collapses when I stash a value in the Environment"?
-- **Hook:** Two sequential branches — top branch stashes simple values (tokens) in Environment; bottom branch preserves the original message structure intact.
+- **Hook:** Two sequential branches, top branch stashes simple values (tokens) in Environment; bottom branch preserves the original message structure intact.
 
 **Your refinement:**
 
 
 ---
 
-## Section 9 — Connectors & v13 features
+## Section 9, Connectors & v13 features
 
 ### 11. `ace-v13-new-features-overview` · Dynamic credentials vs static updates
 
@@ -156,7 +156,7 @@ Aim for precision over volume.
 
 ---
 
-## Section 11 — AI & productivity
+## Section 11, AI & productivity
 
 ### 12. `ace-v13-new-features-overview` · Designer vs Toolkit decision
 
@@ -168,28 +168,28 @@ Aim for precision over volume.
 
 ---
 
-## Section 12 — Install & Windows
+## Section 12, Install & Windows
 
 ### 13. `ace-v13-new-features-overview` · Three install options on Windows
 
 - **Question:** What three install options does ACE 13 on Windows offer, and what command-line flags control each?
-- **Hook:** `-installToolkit`, `-installElectronApp`, `-installCloudConnectors` — granular control; reduces footprint for runtime-only or dev-only setups.
+- **Hook:** `-installToolkit`, `-installElectronApp`, `-installCloudConnectors`, granular control; reduces footprint for runtime-only or dev-only setups.
 
 **Your refinement:**
 
 
 ---
 
-## Section 14 — Overlaps with existing bank
+## Section 14, Overlaps with existing bank
 
 These are candidates that likely overlap with existing questions in the
-bank — the author wants them refined with the idea of **merging into
+bank, the author wants them refined with the idea of **merging into
 the existing question** rather than creating a new one. Treat them as
 "what additional detail should the existing question pick up?".
 
-### 14. Designer vs Toolkit — merge into App Connect runtimes question
+### 14. Designer vs Toolkit, merge into App Connect runtimes question
 
-- **Question (candidate):** Designer vs Toolkit — which is for which kind of integration?
+- **Question (candidate):** Designer vs Toolkit, which is for which kind of integration?
 - **Existing question target:** "Which runtimes are available in the App Connect family?" (a pending draft covering on-prem ACE, certified container, Operator, ACEaaS, Designer).
 - **Hook:** Designer is for connector/pattern/template-based low-code flows; Toolkit is for custom logic; they're complementary surfaces, not a replacement pair.
 
@@ -198,7 +198,7 @@ the existing question** rather than creating a new one. Treat them as
 
 ---
 
-### 15. What are the vault types in ACE — merge into DBparms vs vault
+### 15. What are the vault types in ACE, merge into DBparms vs vault
 
 - **Question (candidate):** What are the vault types in ACE?
 - **Existing question target:** "What are the two main ways to securely store credentials in ACE?" (DBparms vs vault).
@@ -209,7 +209,7 @@ the existing question** rather than creating a new one. Treat them as
 
 ---
 
-### 16. What is the App Connect Operator — merge into existing operator coverage
+### 16. What is the App Connect Operator, merge into existing operator coverage
 
 - **Question (candidate):** What is the App Connect Operator?
 - **Existing question target:** "How does the release model of the ACE Operator (CP4I / OpenShift) differ from on-prem ACE?" (covers operator release model and channels). A shorter intro draft exists as "What is the App Connect Operator and what is it used for?".

@@ -119,7 +119,7 @@ export function Quiz() {
       }
     }
     if (prioritise) {
-      // Stable sort by priority bucket — missed first, then unsure, then unseen,
+      // Stable sort by priority bucket, missed first, then unsure, then unseen,
       // then got-it. Within each bucket the prior shuffle order is preserved.
       working = working
         .map((q, i) => ({ q, i, b: priorityBucket(progress, q.id) }))
@@ -164,7 +164,7 @@ export function Quiz() {
       <div>
         <h1>Quiz</h1>
         <p className="muted">
-          Pick what to practise. You'll flip through flashcards and rate yourself — progress is saved
+          Pick what to practise. You'll flip through flashcards and rate yourself, progress is saved
           in this browser.
         </p>
         {savedSession && (

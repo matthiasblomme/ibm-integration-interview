@@ -80,7 +80,7 @@ export function QuestionCard({ q, defaultOpen = false, rating }: QuestionCardPro
         <div className="answer">
           {showShortMissing && (
             <p className="muted" style={{ fontStyle: 'italic', marginBottom: '0.5rem' }}>
-              Long answer only — no short version written yet.
+              Long answer only, no short version written yet.
             </p>
           )}
           {hasChoices && (
@@ -91,7 +91,7 @@ export function QuestionCard({ q, defaultOpen = false, rating }: QuestionCardPro
                     {c.correct ? '✓' : '·'}
                   </span>
                   {c.text}
-                  {c.explanation && <span className="muted"> — {c.explanation}</span>}
+                  {c.explanation && <span className="muted">, {c.explanation}</span>}
                 </li>
               ))}
             </ul>
