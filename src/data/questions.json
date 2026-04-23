@@ -120,6 +120,48 @@
     "difficulty": "medium"
   },
   {
+    "id": "mq-adm-027",
+    "product": "MQ",
+    "role": "Admin",
+    "topic": "Logging",
+    "question": "Which of these are supported IBM MQ logging types? (select all that apply)",
+    "answerType": "multi",
+    "choices": [
+      {
+        "text": "Rectangular logging",
+        "correct": false,
+        "explanation": "Not a real IBM MQ logging type. A distractor."
+      },
+      {
+        "text": "Circular logging",
+        "correct": true,
+        "explanation": "The default model. A ring of primary (plus optional secondary) log files that get reused. Supports restart recovery only."
+      },
+      {
+        "text": "Block logging",
+        "correct": false,
+        "explanation": "Not a real IBM MQ logging type. A distractor."
+      },
+      {
+        "text": "Linear logging",
+        "correct": true,
+        "explanation": "Log records kept in a continuous sequence. Supports both restart recovery and media recovery (replay the log to rebuild a damaged object)."
+      }
+    ],
+    "answerBullets": [
+      "**Circular logging** (default): ring of log files reused over time; supports restart recovery only; lowest admin overhead",
+      "**Linear logging**: continuous log sequence; supports restart recovery AND media recovery; needs `rcdmqimg` housekeeping to reap old logs",
+      "Rectangular and Block are not real IBM MQ logging types",
+      "Full treatment of circular vs linear trade-offs lives in the 'Explain the difference between linear and circular logging' question"
+    ],
+    "answerExplanation": "IBM MQ supports exactly two logging types: circular (default, restart-only recovery) and linear (restart + media recovery). Candidates picking rectangular or block are simply recognising plausible-sounding distractors; the real answer is circular and linear.",
+    "tags": ["logging", "circular", "linear", "mcq"],
+    "difficulty": "easy",
+    "references": [
+      "https://www.ibm.com/support/pages/ibm-mq-linear-and-circular-logging"
+    ]
+  },
+  {
     "id": "mq-adm-005",
     "product": "MQ",
     "role": "Admin",
@@ -1224,6 +1266,46 @@
     ]
   },
   {
+    "id": "ace-adm-029",
+    "product": "ACE",
+    "role": "Admin",
+    "topic": "CLI",
+    "question": "How do you create and start a local standalone Integration Server?",
+    "answerType": "single",
+    "choices": [
+      {
+        "text": "`mqsicreateworkdir` + `IntegrationServer`",
+        "correct": true,
+        "explanation": "Correct. `mqsicreateworkdir <dir>` lays out the work directory, then `IntegrationServer --work-dir <dir>` runs the server. This is the supported standalone flow."
+      },
+      {
+        "text": "`mqsicreateworkdir` + `IntegrationServer` + `mqsistart`",
+        "correct": false,
+        "explanation": "`mqsistart` is for starting an Integration Node, not a standalone server. Running it on a standalone setup does nothing useful and is not part of the standalone lifecycle."
+      },
+      {
+        "text": "`ibmint create server`",
+        "correct": false,
+        "explanation": "There is no `ibmint create server` command for creating a runtime server. `ibmint` covers build / package / deploy / optimize, not runtime lifecycle."
+      },
+      {
+        "text": "`ibmint create server` + `mqsistartmsgflow`",
+        "correct": false,
+        "explanation": "Both parts are wrong. There is no `ibmint create server`, and `mqsistartmsgflow` starts a specific flow inside a running server, not the server itself."
+      }
+    ],
+    "answerBullets": [
+      "**Create the work directory**: `mqsicreateworkdir <dir>` lays out the standard directory structure (config, run, server, etc.)",
+      "**Start the server**: run the `IntegrationServer` command pointing at that work directory, typically `IntegrationServer --work-dir <dir>`",
+      "`mqsistart` and related node commands do NOT apply to standalone: they are for Integration Node lifecycle, not for a standalone server",
+      "`ibmint` is for build, package, deploy and optimise, not for creating or starting a runtime server",
+      "Deploy BARs to the running server with `ibmint deploy` or by dropping them into the work directory's `run/` folder"
+    ],
+    "answerExplanation": "Standalone Integration Server lifecycle is just two commands: `mqsicreateworkdir` to create the layout and `IntegrationServer` to run it. Everything else (`mqsistart`, `mqsistartmsgflow`, or a made-up `ibmint create server`) either belongs to the Integration Node world or does not exist. This is a direct follow-up to the 'which ACE commands apply to standalone vs node' question.",
+    "tags": ["cli", "standalone", "integration-server", "mcq"],
+    "difficulty": "easy"
+  },
+  {
     "id": "ace-adm-017",
     "product": "ACE",
     "role": "Admin",
@@ -1282,6 +1364,95 @@
     "references": [
       "https://www.ibm.com/docs/en/app-connect/13.0?topic=new-whats-app-connect-enterprise"
     ]
+  },
+  {
+    "id": "ace-adm-028",
+    "product": "ACE",
+    "role": "Admin",
+    "topic": "Containers",
+    "question": "In the 'bake vs fry' pattern for ACE container images, what is the trade-off between rebuild frequency and artefact size?",
+    "answerBullets": [
+      "**Baked image**: the BAR files, `server.conf.yaml`, policies, keystores, shared libs are all built into the container image. The image is fully self-contained and large, but starts fast because nothing has to be fetched or deployed at boot",
+      "**Fried image**: the image is a minimal ACE runtime; BARs and configuration are pulled in at deploy time or start time (ConfigMap, mounted volume, artifact repo, Dashboard, etc.). The image is small and reusable across apps, but startup is slower because the runtime has to load and deploy content first",
+      "**Rebuild frequency**: baked needs a new image for every BAR change, every config tweak, every certificate rotation. Fried keeps the runtime image stable and only re-deploys the content layer, so rebuilds are rare",
+      "**Artefact size**: baked images are large (content + runtime + libs all in one); fried images are small (runtime only) but you now have a separate artefact pipeline for the content",
+      "**Traceability**: baked images are fully reproducible from a single tag, which is what GitOps / SBOM / air-gapped workflows want. Fried images decouple content lifecycle from runtime, which is what platform teams offering a shared runtime want",
+      "Real deployments rarely sit at the extremes; **semi-baked** (base dependencies baked, BARs injected) is the common middle ground"
+    ],
+    "answerExplanation": "Baking trades image size and rebuild cost for runtime determinism; frying trades runtime complexity for image reuse and update speed. The choice is driven by who owns what: if the same team builds both runtime and content, baked is simpler; if a platform team ships the runtime and many app teams ship BARs into it, fried wins. Candidates who name the semi-baked middle ground, and place a real deployment on that spectrum, signal they have actually shipped ACE in containers.",
+    "tags": ["container", "bake", "fry", "image", "deployment"],
+    "difficulty": "medium"
+  },
+  {
+    "id": "ace-adm-027",
+    "product": "ACE",
+    "role": "Admin",
+    "topic": "Credentials",
+    "question": "How does the ACE vault API let you manage credentials, and what replaces `mqsisetdbparms`?",
+    "answerBullets": [
+      "Two modern paths, both backed by the ACE vault: **`mqsicredentials`** and **`ibmint`**. Same mental model as `mqsisetdbparms` (store a credential against a named resource alias), but storage is AES-256 encrypted in the vault rather than lightly obfuscated in the work directory",
+      "**`mqsicredentials`** covers create / update / delete / report against a work directory (`-w`) or a node (`-n`), naming the credential type (e.g. `odbc`, `jdbc`, `kafka`, user-defined)",
+      "**`ibmint`** has an equivalent family for the standalone / modern tooling path, e.g. `ibmint create credentials`, `ibmint update credentials`, `ibmint read credentials`, `ibmint delete credentials`. Use this in CI and container image builds",
+      "Flows and connectors reference credentials by alias, so flow code never holds a secret directly; the vault does the resolution at runtime",
+      "From ACE 13, credentials can be updated dynamically without restarting the server for most connector types, so secret rotation no longer needs an outage window",
+      "In containers, credentials can be loaded into the vault at startup from Kubernetes secrets, keeping the lifecycle: secret in Kubernetes, vault held in memory, alias referenced from the flow"
+    ],
+    "answerExplanation": "If someone answers `mqsisetdbparms` for a v13 install, it is a legacy reflex. The modern answer names both `mqsicredentials` and `ibmint` against the vault, with `mqsisetdbparms` kept only for backwards compatibility. Candidates who mention dynamic credential rotation and the Kubernetes-secret loading pattern show awareness of how this slots into a real deployment.",
+    "tags": ["vault", "credentials", "mqsicredentials", "ibmint"],
+    "difficulty": "medium"
+  },
+  {
+    "id": "ace-adm-026",
+    "product": "ACE",
+    "role": "Admin",
+    "topic": "Credentials",
+    "question": "What does the `--vault-key` parameter do when starting an integration server?",
+    "answerBullets": [
+      "`--vault-key` supplies the master key that unlocks the server's vault at start time, so the server can decrypt the AES-256-encrypted credentials stored in it",
+      "Without it, the server still starts, but any flow that tries to resolve a vault-backed credential fails at runtime, and any connector that needs a stored secret at startup fails to initialise",
+      "Two common ways to supply it: literally on the command line (fine for dev, bad for prod because it ends up in process listings) or by pointing the server at a key file, environment variable, or Kubernetes secret",
+      "On CP4I, the operator does this for you: it reads the master key from a Kubernetes secret and injects it at pod start, so the key never lands on a shared filesystem",
+      "If you lose the master key, you cannot recover the credentials stored in the vault; you have to re-create them. That is the whole point of the design"
+    ],
+    "answerExplanation": "`--vault-key` is the unlock step. Everything else about the vault (AES-256 encryption, separate storage of data and key, `mqsicredentials` for management) falls into place once the server has been unlocked. The operator hides the mechanics on CP4I; off-CP4I you have to source the key yourself, and 'on the command line' is the easy-wrong answer.",
+    "tags": ["vault", "credentials", "vault-key", "startup"],
+    "difficulty": "easy"
+  },
+  {
+    "id": "ace-adm-025",
+    "product": "ACE",
+    "role": "Admin",
+    "topic": "Credentials",
+    "question": "What are the three vault types in ACE, and which ones are NOT managed by the ACE operator on Kubernetes?",
+    "answerBullets": [
+      "**Node vault**: one vault per Integration Node, stored in the node's data directory. Traditional on-prem pattern; used when flows run under a managed node",
+      "**Server vault**: one vault per standalone Integration Server, stored in the server's work directory. Default for standalone installs and containerised deployments",
+      "**External vault**: credentials live outside the ACE process entirely, typically in an external secret store (HashiCorp Vault, a cloud KMS, an externally-managed Kubernetes secret the operator does not own). ACE reads the values at start time",
+      "On Kubernetes / CP4I, the **ACE operator manages only the server vault**, via the IntegrationServer CRD and a linked Kubernetes secret. The operator unlocks the vault at pod start",
+      "**Node vaults are not sensibly used on Kubernetes**: running an Integration Node in a container would require a custom image that includes a node, which is not the supported or recommended pattern, so in practice the operator does not manage node vaults on k8s",
+      "**External vaults are also not managed by the operator**: you decide how they are provisioned, rotated, and reached, and you wire the credential references into the server config yourself",
+      "In practice, container deployments almost always use server vaults unlocked via Kubernetes secrets; external vaults are reserved for cases where an enterprise secret store is the source of truth for all apps"
+    ],
+    "answerExplanation": "Three vault types exist, but on Kubernetes the operator only really manages server vaults. Node vaults are an on-prem concept; putting a node inside a container just to get a node-vault is technically possible but not a sensible pattern. External vaults are by definition outside the operator's remit: you own the provisioning, rotation, and wiring. Getting that ownership picture right is what candidates most often miss.",
+    "tags": ["vault", "credentials", "operator", "kubernetes"],
+    "difficulty": "medium"
+  },
+  {
+    "id": "ace-adm-024",
+    "product": "ACE",
+    "role": "Admin",
+    "topic": "Credentials",
+    "question": "When `mqsisetdbparms` is replaced by the ACE vault, what encryption method and key size does the vault use?",
+    "answerBullets": [
+      "The ACE vault encrypts stored credentials with **AES-256**",
+      "The vault is unlocked with a **master key** (also called the vault key), which you supply at server start time via the `--vault-key` parameter or a file the server can read",
+      "Credentials land in the vault as encrypted values; the master key is not stored on disk next to the data, so losing the key means losing access to the stored secrets",
+      "This replaces the older `mqsisetdbparms` model, where credentials lived in lightly obfuscated form inside the work directory. That was fine for convenience but weak as a secret store",
+      "On containers, the common pattern is to source the master key from a Kubernetes secret at pod start, so the vault is unlocked only in memory and the key never lands on a shared filesystem"
+    ],
+    "answerExplanation": "The headline: AES-256, master-key driven, master key not stored alongside the vault file. Mentioning the Kubernetes-secret pattern for containers shows you know how the vault slots into a real deployment. If a candidate says `mqsisetdbparms` 'encrypts' credentials, that is a tell: the old model was obfuscation, not encryption, and the vault is the proper fix.",
+    "tags": ["vault", "credentials", "aes-256", "mqsisetdbparms"],
+    "difficulty": "easy"
   },
   {
     "id": "ace-adm-023",
