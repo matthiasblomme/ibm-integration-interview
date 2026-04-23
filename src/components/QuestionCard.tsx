@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Question } from '../types';
 import type { RatingValue } from '../lib/storage';
+import { useAnswerLength } from '../lib/prefs';
 
 function prettyUrl(url: string): string {
   try {
@@ -26,7 +27,18 @@ const ratingLabel: Record<RatingValue, string> = {
 
 export function QuestionCard({ q, defaultOpen = false, rating }: QuestionCardProps) {
   const [open, setOpen] = useState(defaultOpen);
+  const [length] = useAnswerLength();
   const toggle = () => setOpen((o) => !o);
+
+  const shortAvailable = !!q.answerBulletsShort && q.answerBulletsShort.length > 0;
+  const showShort = length === 'short' && shortAvailable;
+  const showShortMissing = length === 'short' && !shortAvailable;
+  const bullets = showShort ? q.answerBulletsShort! : q.answerBullets;
+  const showExplanation = !showShort;
+  const hasChoices =
+    (q.answerType === 'single' || q.answerType === 'multi') &&
+    Array.isArray(q.choices) &&
+    q.choices.length > 0;
   return (
     <div className="card">
       <div
@@ -66,12 +78,30 @@ export function QuestionCard({ q, defaultOpen = false, rating }: QuestionCardPro
       </div>
       {open && (
         <div className="answer">
+          {showShortMissing && (
+            <p className="muted" style={{ fontStyle: 'italic', marginBottom: '0.5rem' }}>
+              Long answer only — no short version written yet.
+            </p>
+          )}
+          {hasChoices && (
+            <ul className="choices">
+              {q.choices!.map((c, i) => (
+                <li key={i} className={c.correct ? 'correct' : 'incorrect'}>
+                  <span className="choice-marker" aria-hidden="true">
+                    {c.correct ? '✓' : '·'}
+                  </span>
+                  {c.text}
+                  {c.explanation && <span className="muted"> — {c.explanation}</span>}
+                </li>
+              ))}
+            </ul>
+          )}
           <ul>
-            {q.answerBullets.map((b, i) => (
+            {bullets.map((b, i) => (
               <li key={i}>{b}</li>
             ))}
           </ul>
-          <p>{q.answerExplanation}</p>
+          {showExplanation && <p>{q.answerExplanation}</p>}
           {q.references && q.references.length > 0 && (
             <div className="references">
               <strong>References</strong>

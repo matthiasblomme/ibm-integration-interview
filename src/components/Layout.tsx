@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import { ThemeToggle } from './ThemeToggle';
+import { AnswerLengthToggle } from './AnswerLengthToggle';
 
 export function Layout() {
   return (
@@ -11,6 +12,7 @@ export function Layout() {
         <NavLink to="/quiz">Quiz</NavLink>
         <NavLink to="/resources">Resources</NavLink>
         <ThemeToggle />
+        <AnswerLengthToggle />
       </nav>
       <main className="main">
         <Outlet />

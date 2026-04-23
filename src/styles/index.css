@@ -313,6 +313,54 @@ label { display: block; margin-bottom: 0.3rem; color: var(--text-dim); font-size
   flex-wrap: wrap;
 }
 
+.choices {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.8rem 0;
+}
+.choices li {
+  padding: 0.35rem 0.6rem;
+  margin-bottom: 0.3rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+.choices li.correct {
+  border-color: var(--success);
+  background: color-mix(in srgb, var(--success) 12%, var(--surface-2));
+}
+.choices li.incorrect {
+  border-color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 12%, var(--surface-2));
+}
+.choices .choice-marker {
+  display: inline-block;
+  width: 1.1rem;
+  color: var(--text-dim);
+  font-weight: 700;
+}
+.choices li.correct .choice-marker { color: var(--success); }
+
+.choices-interactive label {
+  display: inline;
+  margin: 0;
+  color: var(--text);
+  cursor: pointer;
+}
+.choices-interactive input[type='radio'],
+.choices-interactive input[type='checkbox'] {
+  margin-right: 0.3rem;
+}
+
+.grade {
+  padding: 0.4rem 0.6rem;
+  border-radius: var(--radius);
+  display: inline-block;
+}
+.grade-correct { color: var(--success); }
+.grade-partial { color: var(--warn); }
+.grade-wrong { color: var(--danger); }
+
 .muted { color: var(--text-dim); }
 .spacer { height: 1rem; }
 

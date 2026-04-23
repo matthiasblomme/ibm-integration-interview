@@ -2,13 +2,13 @@
 
 Generated from `src/data/questions.json` — edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 96
+**Total questions:** 100
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ — Admin (29)](#mq-admin)
 - [MQ — Dev (14)](#mq-dev)
-- [ACE — Admin (19)](#ace-admin)
+- [ACE — Admin (23)](#ace-admin)
 - [ACE — Dev (26)](#ace-dev)
 - [Cloud (5)](#cloud)
 
@@ -886,15 +886,16 @@ Most day-to-day policies are dynamic. The few that aren't can trip you up when y
 
 ### Build & deploy
 
-**Q: What are the ways to build a BAR file?**
+**Q: What are the ways to build a BAR file, and when do you pick which?**
 
-- Toolkit — right-click on the project and build BAR via the UI
-- `mqsipackagebar` — command line wrapper around toolkit build
-- `mqsicreatebar` — headless toolkit build from projects on disk
-- `ibmint package` — modern, no-toolkit, no-Eclipse build; used in CI
-- Maven / Gradle plugins wrapping any of the above for pipelines
+- **Toolkit** — right-click on the project and build BAR via the UI. Compiles everything on the fly (XMLNSC/DFDL/Data Maps/Java/message sets); fine for devs, not for CI
+- **`mqsicreatebar`** — headless Toolkit-based build from projects on disk. Still needs an Eclipse-style workspace; legacy-friendly
+- **`mqsipackagebar`** — CLI packager that bundles already-built artefacts into a BAR. It is a **packager, not a full compiler** — message sets and Java must be built first. In CI this usually means the developer has done a **'Build for mqsipackagebar'** step in the Toolkit (or a Maven/Gradle equivalent) to generate the binaries the pipeline then packages. `-c` compiles XMLNSC / DFDL / Data Maps; `-i` includes unsupported elements
+- **`ibmint package`** — modern, no-Toolkit, no-Eclipse build; compiles at build time; used in CI by default
+- Maven / Gradle plugins — wrap any of the above so the build plugs into a standard pipeline
+- Rule of thumb: new CI pipelines → `ibmint package`. Legacy project types that `ibmint` doesn't yet cover → `mqsicreatebar` or `mqsipackagebar` with an explicit 'Build for' prep. Toolkit build only for interactive developer loops
 
-`ibmint package` is what you want in CI because it has no Eclipse dependency and is faster. The older commands still exist and may be required for legacy project types.
+The four ways are usually listed as Toolkit / `mqsicreatebar` / `mqsipackagebar` / `ibmint package`. The practical nuance most candidates miss is that `mqsipackagebar` is a **packager**, not a compiler — Java and message sets must have been built beforehand, which is what the Toolkit's 'Build for mqsipackagebar' step (or a Maven/Gradle equivalent) produces. For new work, `ibmint package` compiles everything at build time and needs no Eclipse — this is the CI-friendly default. `mqsipackagebar` + `-c` remains useful when you want to bundle already-built XMLNSC / DFDL / Data Maps.
 
 **Q: Explain `mqsiapplybaroverride`, `mqsireload` and `ibmint optimize`.**
 
@@ -962,6 +963,52 @@ Three independent choices to reason about: which image you start from (operator-
 
 _References:_
 - <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=release-models-packaging-versions-app-connect-operator>
+
+### Migration
+
+**Q: Why should WS-Security policies be recreated from scratch rather than ported from v12 to v13?**
+
+- The way WS-Security was handled under Java 8 no longer exists in the Java 17 runtime that underpins v13, so a direct port of the v12 policy XML does not run anymore
+- Concretely, the old policies lean on the Java 8 era WebSphere callback-handler namespace (`com.ibm.websphere.wssecurity.callbackhandler.*` and friends). Those classes are not on the Java 17 classpath
+- Java 17 uses a different security library, in a different namespace, with different callback-handler and token-provider classnames. You cannot patch a v12 policy by renaming classes; the model around it changed as well
+- To make this usable, ACE introduced a **new WS-Security policy type from v13.0.7.0 onwards** that targets the Java 17 library directly. That new policy type is the supported path
+- Recreate the policy against the v13 tooling and the new policy type, rather than editing v12 XML. You'll pick up related things (algorithm suites, token references, key identifiers) that a rename-only pass would miss
+- Scope this work per service that actually uses WS-Security. The footprint is usually small and concentrated, so a rebuild per policy is cheaper than it sounds
+
+The headline is that Java 8 WS-Security and Java 17 WS-Security are different machinery, not different class names. ACE responded by shipping a new WS-Security policy type from 13.0.7.0, which targets the Java 17 library; that is the supported migration route. Candidates who default to 'I'd just rename the classes' give themselves away; the right answer is 'I'd rebuild the policy on the new v13 policy type'.
+
+**Q: Name a couple of Java 17 compatibility blockers that will fail on ACE v13 unless updated.**
+
+- **JAXB removal from the JDK** — `javax.xml.bind.*` is no longer on the classpath in Java 11+. Custom code that imports JAXB needs to pull in an explicit dependency (`jakarta.xml.bind` / Glassfish JAXB) or the flow fails at runtime with `ClassNotFoundException`
+- **`javax.xml.bind.DatatypeConverter` gone** — a surprisingly common helper (especially for base64 encode/decode). Replace with `java.util.Base64.getEncoder()` / `getDecoder()` or an explicit JAXB dep
+- **JNA version bumps** — older JNA versions bundled with v12-era projects are incompatible with the Java 17 runtime in v13. Update to a current JNA that supports Java 17; stale JNA shows up as native-load failures at startup
+- **`com.sun.*` / `sun.*` internal APIs** — Java 17 tightened encapsulation; code that reached into `sun.misc.BASE64Encoder`, `com.sun.xml.*`, reflection against JDK internals, etc., breaks with `IllegalAccessError` or just won't resolve
+- **Javadoc / build-plugin bumps** — any build or test plugins pinned to Java 8-era versions need an upgrade alongside the code itself
+
+The most common blockers the author sees are JAXB absence (and the `DatatypeConverter` shortcut) and stale JNA versions. There's a broader class of 'used internal APIs' problems around `com.sun.*` / `sun.*` that candidates should mention as a category — the specific examples matter less than showing awareness that Java 17 dropped or re-encapsulated a lot of what Java 8 code reached for. TAD will flag most of these automatically, but only if you scanned against the right fix-pack target.
+
+**Q: What does Transformation Advisor (TAD) check, and why scan against the highest fix pack you're willing to target?**
+
+- TAD analyses ACE / IIB workspaces against a target version + fix-pack profile and flags each artefact with a **complexity** (simple / moderate / complex) and **severity** (green / yellow / red)
+- Output is a compatibility report per application / flow / artefact, plus effort estimates to modernise
+- **Fix-pack scan level is not a cosmetic detail** — TAD's rules evolve between fix packs. The same workspace scanned against two different FPs can produce different verdicts: rules appear, rules change, rules get retired
+- **Always scan against the highest fix pack you're realistically willing to land on** (usually the latest stable FP of your target major). Scanning against an older FP means planning migration work against rules that have already been superseded, and missing issues that matter on the FP you'll actually install
+- TAD output is an 80% starting point, not a verdict — combine with a manual pass over shared libs, policies, custom Java, and anything environment-specific
+- The output feeds your migration-style decision (in-place / parallel / extract) and your effort/risk estimate
+
+TAD tells you *what's in scope* and *where the hard bits are*, not *what to do*. The fix-pack scan-target trap is easy to miss: if you scan against 12.0.12 but plan to land on 13.0.7, you'll plan work against old rules and miss new ones. Calibrate the scan target to your actual landing version.
+
+### Flow lifecycle
+
+**Q: What is the difference between Maintained / Manual / Automatic start modes for ACE flows?**
+
+- **Automatic**: flow starts every time the integration server starts, regardless of the state it was in when the server stopped. Default for most deployed flows
+- **Manual**: flow never auto-starts. You have to start it explicitly (console, API, `mqsistartmsgflow`). Useful for flows you only run on demand or during maintenance windows
+- **Maintained**: flow remembers the last state it was in. If it was running when the server stopped, it starts on the next server start; if it was stopped, it stays stopped. Useful when an operator has deliberately stopped a flow and you don't want a restart to silently un-stop it
+- The setting lives on the flow in the BAR properties (or via `mqsichangeproperties` on a deployed flow)
+- **CI/CD trap:** pick wrong and your pipeline either (a) starts flows that were deliberately stopped, or (b) doesn't start flows that should be running
+
+The mode you want depends on whether 'someone stopped it' is information you want the runtime to remember or throw away. Automatic ignores that history, Manual demands explicit action every time, Maintained preserves operator intent across restarts. The interview tell is someone who explicitly names the 'stop a flow for maintenance, then restart the server' scenario and picks Maintained for it.
 
 ### Troubleshooting
 

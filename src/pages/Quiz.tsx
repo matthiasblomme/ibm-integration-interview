@@ -54,6 +54,7 @@ export function Quiz() {
   const [count, setCount] = useState(10);
   const [shuffle, setShuffle] = useState(true);
   const [prioritise, setPrioritise] = useState(true);
+  const [include, setInclude] = useState<'both' | 'auto' | 'free'>('both');
 
   const [queue, setQueue] = useState<Question[]>([]);
   const [index, setIndex] = useState(0);
@@ -95,8 +96,15 @@ export function Quiz() {
   }
 
   const pool = useMemo(() => {
-    return questions.filter((q) => products.includes(q.product) && roles.includes(q.role));
-  }, [products, roles]);
+    return questions.filter((q) => {
+      if (!products.includes(q.product)) return false;
+      if (!roles.includes(q.role)) return false;
+      const isAuto = q.answerType === 'single' || q.answerType === 'multi';
+      if (include === 'auto' && !isAuto) return false;
+      if (include === 'free' && isAuto) return false;
+      return true;
+    });
+  }, [products, roles, include]);
 
   const toggle = <T,>(arr: T[], v: T, setter: (n: T[]) => void) => {
     setter(arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
@@ -231,6 +239,26 @@ export function Quiz() {
             >
               {prioritise ? 'On' : 'Off'}
             </button>
+          </div>
+          <div>
+            <label>Include</label>
+            {(['both', 'auto', 'free'] as const).map((k) => (
+              <button
+                key={k}
+                className={include === k ? 'primary' : 'ghost'}
+                onClick={() => setInclude(k)}
+                style={{ marginRight: 4, marginBottom: 4 }}
+                title={
+                  k === 'both'
+                    ? 'All questions'
+                    : k === 'auto'
+                      ? 'Only multiple-choice / checkbox'
+                      : 'Only free-text (reveal + self-rate)'
+                }
+              >
+                {k === 'both' ? 'Both' : k === 'auto' ? 'Auto-graded' : 'Free-text'}
+              </button>
+            ))}
           </div>
         </div>
 

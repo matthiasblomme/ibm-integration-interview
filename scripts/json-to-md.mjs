@@ -72,6 +72,21 @@ for (const k of orderedKeys) {
     for (const q of list) {
       out.push(`**Q: ${q.question}**`);
       out.push('');
+      if (Array.isArray(q.choices) && q.choices.length) {
+        for (const c of q.choices) {
+          const marker = c.correct ? '[x]' : '[ ]';
+          const note = c.explanation ? ` — ${c.explanation}` : '';
+          out.push(`- ${marker} ${c.text}${note}`);
+        }
+        out.push('');
+      }
+      if (Array.isArray(q.answerBulletsShort) && q.answerBulletsShort.length) {
+        out.push('_Short answer:_');
+        for (const b of q.answerBulletsShort) {
+          out.push(`- ${b}`);
+        }
+        out.push('');
+      }
       for (const b of q.answerBullets) {
         out.push(`- ${b}`);
       }
