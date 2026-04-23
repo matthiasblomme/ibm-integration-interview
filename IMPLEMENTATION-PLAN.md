@@ -93,6 +93,183 @@ Decisions that flow from this:
 
 ---
 
+## Study-app feature roadmap (phased)
+
+Drawn from a comparison with Anki, Quizlet, Duolingo, Brilliant, RemNote and
+interview-specific tools (LeetCode, Interview Cake). Captures the features
+those tools have in common that this app doesn't. Grouped into phases so
+they can be picked up one at a time on future sessions.
+
+Each phase lists its features with a high-level implementation sketch, not
+file-by-file. When a phase starts, scope the specific files + tasks fresh.
+
+### Phase 1: Foundation UX polish
+
+- **Status**: Planned
+- **Goal**: Cheap, independent wins that make the app feel more complete
+  without touching the data model. Good warm-up before the bigger phases.
+- **Rationale**: None of these features depend on each other or require a
+  schema migration. They can all ship as small PRs and the app gets visibly
+  better between each.
+
+**Features**
+
+- **Keyboard shortcut help overlay**: press `?` (or `/`) to open a modal
+  listing every shortcut. New `src/components/HelpOverlay.tsx`, global
+  keydown listener, gated by a `useState` + focus trap. Content is static.
+- **Mastery dashboard**: on Home or a new `/progress` route, render a
+  topic by product matrix showing the ratio of got-it vs total per cell,
+  plus a top-level "N of <total> mastered" summary. Pure derivation from
+  the existing `QuizProgress` + questions bank, no schema change. New
+  component plus a small helper in [src/lib/storage.ts](src/lib/storage.ts).
+- **Bookmarks / stars**: a "★" toggle on each `QuestionCard` and
+  `FlashCard`. New `localStorage` key `ibm-interview-bookmarks-v1` storing
+  `string[]` of question IDs. New filter "Bookmarked only" on Browse (and
+  an Include option on Quiz). Small storage helper, one UI control.
+- **Per-question notes**: freeform text area when a card is expanded in
+  Browse. Persisted per-ID in `localStorage` under
+  `ibm-interview-notes-v1` as `Record<string, string>`. Reveal with a
+  "✎ Add note" button to keep the normal expanded view uncluttered.
+
+**Dependencies**: none.
+
+### Phase 2: Spaced repetition
+
+- **Status**: Planned
+- **Goal**: Replace the current bucket-based weak-spot prioritisation with
+  a real spaced-repetition scheduler, so questions come back at expanding
+  intervals after the user gets them right (1d, 3d, 7d, 14d, 30d) and more
+  frequently when missed. The single biggest retention lever for a bank of
+  100+ items.
+- **Rationale**: This is the core learning mechanic that Anki, Quizlet and
+  RemNote all converged on. The current weak-spot sort only distinguishes
+  four buckets; a card you got right on Monday is indistinguishable from
+  one you got right six months ago.
+
+**High-level implementation**
+
+- **Schema**: extend `QuizProgress.ratings` from
+  `Record<string, RatingValue>` to
+  `Record<string, { rating: RatingValue; interval: number; dueAt: number; reps: number }>`.
+  Bump the storage version key to `-v2` and keep a v1 to v2 migration that
+  treats existing ratings as "just rated, interval 1 day."
+- **Scheduler**: a pure function `nextInterval(prev, rating)` returning
+  `{ interval, dueAt }`, implementing a simplified SM-2 variant:
+  - `missed`: reset interval to 1 day, `dueAt = now + 1d`.
+  - `unsure`: keep interval (or halve it), `dueAt = now + interval`.
+  - `got-it`: multiply interval by ~2.5, cap at 180 days.
+- **Quiz integration**: replace the current `priorityBucket` sort in
+  [src/pages/Quiz.tsx](src/pages/Quiz.tsx) with:
+  - Due first (`dueAt <= now`), ordered by most overdue.
+  - Then never-seen.
+  - Then not-yet-due (if the user wants more than their due list).
+- **UI surfacing**: the configure screen shows "X cards due today" so the
+  user sees the effect. Add a "Just due items" toggle that short-circuits
+  the pool to due-only.
+- **Migration + safety**: keep the old `priorityBucket` fallback for any
+  card that lacks scheduler metadata; decay gradually as cards get rated.
+
+**Dependencies**: none; internal to Quiz + storage.
+
+### Phase 3: Engagement metrics (sessions, streaks, heatmap)
+
+- **Status**: Planned
+- **Goal**: Give the user a visible record of how often they study and
+  reward consistency. Streaks and activity calendars are the single most
+  copied pattern across study apps for a reason, they materially change
+  how often people open the app.
+- **Rationale**: Grouped because streaks and the heatmap both read from
+  the same underlying piece of state (a per-day activity log). Building
+  the log once feeds both features.
+
+**High-level implementation**
+
+- **Activity log**: new `localStorage` key `ibm-interview-activity-v1` as
+  `Record<string /* YYYY-MM-DD */, { cards: number; sessions: number }>`.
+  Write from `recordRating` (increment `cards`) and from quiz-start /
+  quiz-complete (increment `sessions`). Small helper in
+  [src/lib/storage.ts](src/lib/storage.ts).
+- **Streak + daily goal**: daily goal configurable in a new Settings
+  surface (default 10 cards). Streak counted as consecutive days where
+  `cards >= goal`. Rendered on Home: "🔥 7-day streak · 6 / 10 today."
+  Graceful "freeze" day logic optional (skip now; add later if needed).
+- **Activity heatmap**: GitHub-style calendar grid, last 365 days, colour
+  intensity by `cards` bucket. New component using CSS-grid; no libraries
+  needed. Rendered on Home below the stats cards.
+
+**Dependencies**: none. Useful standalone; even better paired with
+Phase 2's "cards due today" (streak credit for clearing the due list).
+
+### Phase 4: Installable + offline (PWA)
+
+- **Status**: Planned
+- **Goal**: Make the site installable to the home screen and usable
+  offline. Primary motivation is mobile study on commutes / flights /
+  anywhere IBM docs aren't reachable.
+- **Rationale**: Standalone. Can slide into any phase window.
+
+**High-level implementation**
+
+- Add the [`vite-plugin-pwa`](https://vite-pwa-org.netlify.app/) plugin
+  (adds service worker + manifest generation with minimal config).
+- `public/manifest.webmanifest` with name, short name, theme colour,
+  background, icon entries pointing at the existing `public/icon.png`
+  (generate a few sizes: 192, 512).
+- Service worker strategy: precache the static build + the already-bundled
+  questions JSON (it's part of the JS bundle after Vite builds).
+  Network-first for reference links (won't work offline anyway, that's
+  fine, the user is studying questions, not docs).
+- `index.html` gets the manifest link + appropriate meta tags.
+- Update [.github/workflows/deploy.yml](.github/workflows/deploy.yml)
+  should work unchanged since PWA output is just more files in `dist/`.
+
+**Dependencies**: none.
+
+### Phase 5: Self-directed timed exam mode
+
+- **Status**: Planned
+- **Goal**: Timed quiz mode that mimics an interview round: a timer counts
+  down, no per-card reveal, final score screen. Distinct from the
+  "Candidate-facing assessment mode" entry below; this one is for the
+  learner themself (client-only, no backend needed).
+- **Rationale**: Uses the MCQ auto-grading already shipped. Gives the user
+  a way to rehearse under pressure.
+
+**High-level implementation**
+
+- **Mode selector** on Quiz configure: a third option alongside "free
+  quiz" / "auto-graded quiz" called "timed exam." Picks only auto-graded
+  questions, enforces a timer, hides free-text cards.
+- **Timer**: session-level countdown, rendered above the flashcard. Time
+  up means force-submit whatever's selected for the current card, then the
+  quiz ends regardless of queue length.
+- **Per-question timer (optional)**: shown on the card, advisory only.
+- **No peek**: suppress the reveal block after submit until the whole exam
+  ends. Show all answers on the summary screen.
+- **Summary screen**: score out of N, per-topic breakdown, average time
+  per question, flagged "slow" and "wrong" cards linked back to Browse.
+- **Storage**: persist exam history under `ibm-interview-exams-v1` as an
+  array of `{ date, score, topicBreakdown, durationMs }`. Useful for a
+  future "how am I trending" view.
+
+**Dependencies**: Phase 2 (SRS) is independent; feeds neatly with Phase 3
+(exam completion extends the streak). Builds on the existing MCQ flow.
+See also the "Candidate-facing assessment mode" entry below; they share
+no code, candidate mode needs a real backend.
+
+### Suggested sequence
+
+1. **Phase 1**: quick UX wins (few days of small PRs).
+2. **Phase 2**: SRS (the core learning mechanic; medium-effort,
+   high-value). Do it before Phase 3 so the streak/due combo lands
+   together.
+3. **Phase 3**: session log + streak + heatmap.
+4. **Phase 5**: timed exam mode.
+5. **Phase 4**: PWA. Can slot earlier if mobile study becomes a priority;
+   otherwise fine to finish on this.
+
+---
+
 ## Active
 
 ### Short / long answer versions + UI toggle
