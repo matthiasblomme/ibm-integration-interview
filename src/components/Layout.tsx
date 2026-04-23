@@ -6,7 +6,10 @@ export function Layout() {
   return (
     <div className="layout">
       <nav className="nav">
-        <div className="brand">IBM Integration Prep</div>
+        <div className="brand">
+          <img src={`${import.meta.env.BASE_URL}icon.png`} alt="" className="brand-icon" />
+          IBM Integration Prep
+        </div>
         <NavLink to="/" end>Home</NavLink>
         <NavLink to="/browse">Browse</NavLink>
         <NavLink to="/quiz">Quiz</NavLink>
