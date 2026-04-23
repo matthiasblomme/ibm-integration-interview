@@ -283,7 +283,7 @@
     "references": [
       "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=networks-publishsubscribe-clusters",
       "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=networks-connecting-queue-manager-publishsubscribe-hierarchy",
-      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=explorer-configuring-publishsubscribe-mq-queue-managers",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=explorer-configuring-publishsubscribe-mq-queue-managers",
       "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.con.doc/q017435_.htm",
       "https://www.ibm.com/docs/en/app-connect/11.0.0?topic=applications-publishsubscribe-overview",
       "https://www.mqtechconference.com/sessions_v2014/MQTC_pubsub_networks.pdf",
@@ -366,8 +366,8 @@
     ],
     "answerExplanation": "Persistence trades throughput for durability, and it is ALWAYS set by the putting application in MQMD.Persistence, the queue's DEFPSIST is just a suggestion used when the app opts in with AS_Q_DEF. The two gotchas to mention: NPMCLASS(HIGH) can preserve non-persistent messages across a normal restart, and non-persistent + fast channel means message loss is possible even without a restart.",
     "references": [
-      "https://www.ibm.com/docs/en/ibm-mq/9.3.x?topic=objects-persistence",
-      "https://www.ibm.com/docs/en/ibm-mq/9.3.x?topic=properties-mq-queue",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=objects-persistence",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=properties-mq-queue",
       "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=descriptor-persistence-mqlong",
       "https://www.ibm.com/docs/en/integration-bus/10.0.0?topic=messages-ensuring-that-are-not-lost",
       "https://www.ibm.com/support/pages/ibm-mq-message-persistence-faqs",
@@ -417,7 +417,7 @@
     ],
     "answerExplanation": "Always split 'system HA' (qmgr stays up), 'message HA' (no message loss) and 'application HA' (clients keep working), a full answer picks a mechanism per layer. The modern direction is clearly Native HA + Uniform Clusters in containers; on traditional installs, HA RDQM has largely replaced MI as the default HA choice on Linux.",
     "references": [
-      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=configuring-high-availability"
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=configuring-high-availability"
     ],
     "tags": ["ha", "mi", "rdqm", "native-ha"],
     "difficulty": "hard"
@@ -439,7 +439,7 @@
     ],
     "answerExplanation": "MI is an elegant, low-ceremony failover model, one qmgr, two servers, shared storage, automatic failover, but it hard-depends on the shared filesystem behaving correctly. Most real MI incidents come from NFS or locking issues, not from MQ itself, so the honest summary is that MI converts 'server availability' into 'storage availability + locking correctness'.",
     "references": [
-      "https://www.ibm.com/docs/en/ibm-mq/9.3.x?topic=configurations-multi-instance-queue"
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=configurations-multi-instance-queue"
     ],
     "tags": ["mi", "multi-instance", "nfs"],
     "difficulty": "medium"
@@ -461,9 +461,9 @@
     ],
     "answerExplanation": "RDQM solves the 'HA without shared storage' problem that plagued MI on Linux, DRBD replicates the data, Pacemaker handles failover, and a three-node quorum keeps split-brain off the table. Know the two flavours cold: HA RDQM = 3 nodes, sync, automatic, fast local failover; DR RDQM = 2 nodes, sync-or-async (async default), manual promotion, cross-site recovery. Mention that since 9.4.4 Native HA is IBM's recommended direction on Linux, RDQM still works and is supported, but the story for new deployments is increasingly 'Native HA in containers'.",
     "references": [
-      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=configuring-high-availability",
-      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=availability-rdqm-high",
-      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=availability-rdqm-disaster-recovery"
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=configuring-high-availability",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=availability-rdqm-high",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=availability-rdqm-disaster-recovery"
     ],
     "tags": ["rdqm", "ha", "dr", "drbd"],
     "difficulty": "hard"
@@ -485,7 +485,7 @@
     ],
     "answerExplanation": "Native HA is MQ's own Raft-based, shared-nothing HA model: three instances, one active, two replicas, a replicated recovery log, majority-quorum writes, and automatic takeover. It's cleaner than MI because there's no shared storage to go wrong, and stricter than people expect about node uniformity (same processor arch, same install paths, same keystores). Since 9.4.4 it's IBM's preferred Linux HA direction for new deployments, and it's the default HA story in containers / CP4I.",
     "references": [
-      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=availability-native-ha"
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=availability-native-ha"
     ],
     "tags": ["native-ha", "kubernetes", "cp4i"],
     "difficulty": "hard"
@@ -506,7 +506,7 @@
     ],
     "answerExplanation": "A plain MQ cluster is about clustered resources and message routing; a Uniform Cluster adds a stricter operating model that turns a handful of near-identical qmgrs into one horizontally scaled service. The thing that makes it 'uniform' rather than 'just a small cluster' is automatic application balancing, MQ itself decides which member each reconnectable client instance should land on, based on actual activity. Mention the main caveat: it only works for reconnectable clients, and locally bound apps are a poor fit.",
     "references": [
-      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=cluster-about-uniform-clusters"
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=cluster-about-uniform-clusters"
     ],
     "tags": ["uniform-cluster", "reconnect", "ccdt"],
     "difficulty": "hard"
@@ -530,10 +530,10 @@
     ],
     "answerExplanation": "The best answer is structured, not a grab-bag of commands. Lead with 'don't guess, capture symptoms', then walk through the layers: logs → qmgr health → scope → queues/channels → app reason codes → FFST/trace as a last resort. Mentioning UNCOM and CHSTATUS values (RETRYING / STOPPED) signals you've actually diagnosed a flow-not-moving incident, not just read the docs. FFST/FDC is a genuine MQ-internals red flag, if it's in the answer as 'step 1', that's a sign the candidate jumps to vendor-support mode before doing basic triage.",
     "references": [
-      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=mq-troubleshooting-support",
-      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=checks-making-initial-linux",
-      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=checks-making-initial-windows",
-      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=support-using-error-logs"
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=mq-troubleshooting-support",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=checks-making-initial-linux",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=checks-making-initial-windows",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=support-using-error-logs"
     ],
     "tags": ["logs", "fdc", "amqsevt", "troubleshooting"],
     "difficulty": "medium"
@@ -554,9 +554,9 @@
     ],
     "answerExplanation": "LTS is steady, CD is fast. The two details that separate 'read the docs' from 'done the upgrade': (1) CD support forces you to stay within the last two CD releases or 12 months, and (2) CD-to-CD is an upgrade (command level migrates, needs a backup), not a patch. For the underlying V.R.M.F / F-digit mechanics, see the MQ versioning question.",
     "references": [
-      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=mq-release-types-versioning",
-      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=planning-mq-release-types-considerations",
-      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=mq-migrating-from-one-continuous-delivery-release-another"
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=mq-release-types-versioning",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=planning-mq-release-types-considerations",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=mq-migrating-from-one-continuous-delivery-release-another"
     ],
     "tags": ["lts", "cd", "fixpack", "csu"],
     "difficulty": "medium"
@@ -580,7 +580,7 @@
     "tags": ["mi", "ha", "dr", "cluster", "native-ha", "uniform-cluster"],
     "difficulty": "medium",
     "references": [
-      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=configuring-high-availability"
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=configuring-high-availability"
     ]
   },
   {
@@ -602,7 +602,7 @@
     "tags": ["vrmf", "versioning", "lts", "cd", "fixpack", "csu", "command-level"],
     "difficulty": "medium",
     "references": [
-      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=mq-release-types-versioning"
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=mq-release-types-versioning"
     ]
   },
   {
@@ -668,7 +668,7 @@
     ],
     "answerExplanation": "A CCDT is the central connection-definition file for MQ clients, you put channels, hosts, ports and TLS details in one place and point clients at it, instead of embedding that knowledge in every app. Modern JSON format is human-editable (big win over the old binary `AMQCLCHL.TAB`), and multiple entries per connection name unlock failover and load balancing. ACE plugs into the same mechanism via the `mqccdt` config type.",
     "references": [
-      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=tables-configuring-binary-format-ccdt",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=tables-configuring-binary-format-ccdt",
       "https://www.ibm.com/docs/en/ace-ipaas?topic=types-mqccdt",
       "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.mig.doc/q001640_.html"
     ],
@@ -694,8 +694,8 @@
     ],
     "answerExplanation": "Resilience = reconnect + endpoints + failure detection + well-behaved app logic. MQ does a lot of the reconnect heavy lifting once you opt in, but only if the pieces line up: the right `MQCNO_*` flag, a CCDT/connection list with multiple targets, HBINT and TCP KeepAlive tuned so failures are actually detected, and app logic that tolerates a reconnect mid-operation. Mentioning that IBM MQ classes for Java do NOT support auto-reconnect, and that Java EE scenarios have caveats, is a good precision tell.",
     "references": [
-      "https://www.ibm.com/docs/en/ibm-mq/9.3.x?topic=restart-automatic-client-reconnection",
-      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=configuring-recovery-restart",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=restart-automatic-client-reconnection",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=configuring-recovery-restart",
       "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.con.doc/q081900_.html",
       "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q032520_.html"
     ],
@@ -741,8 +741,8 @@
     "answerExplanation": "The clean framing is: **properties = API abstraction, MQRFH2 = on-the-wire header format that sometimes carries them**. Not everything is always stored in an MQRFH2, and you don't need to parse an MQRFH2 to read or set a property, the MQI exposes them directly. Candidates who conflate the two ('properties live in MQRFH2') give themselves away; the `PROPCTL` values and the usr/jms/mcd folder names are the precision tells.",
     "references": [
       "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q032000_.htm",
-      "https://www.ibm.com/docs/en/ibm-mq/9.3.x?topic=mqi-mqrfh2-rules-formatting-header-2",
-      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=2-field-details-mqrfh2",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=mqi-mqrfh2-rules-formatting-header-2",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=2-field-details-mqrfh2",
       "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q029560_.htm",
       "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q022860_.htm",
       "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q022920_.htm"
@@ -770,10 +770,10 @@
     "answerExplanation": "Subscribing is really about two choices: a topic string to listen on and a destination queue to receive matches. Non-durable sub = subscription disappears with the client; durable sub = subscription persists, messages keep arriving, app resumes by name. The key ACE nuance: ACE flows don't subscribe directly, you wire up an MQ subscription that feeds an ordinary queue, and the flow reads that queue. That's a common gotcha in interviews when someone expects a 'subscribe to a topic' flow primitive and the answer is 'no, you set up the subscription in MQ and read the resulting queue'.",
     "references": [
       "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=properties-mq-subscription",
-      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=objects-working-subscriptions",
-      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=objects-mq-console-working-subscriptions",
-      "https://www.ibm.com/docs/en/ibm-mq/9.3.x?topic=consumers-durable-subscribers",
-      "https://www.ibm.com/docs/en/ibm-mq/9.3.x?topic=subscriptions-subscription-durability",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=objects-working-subscriptions",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=objects-mq-console-working-subscriptions",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=consumers-durable-subscribers",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=subscriptions-subscription-durability",
       "https://www.mqtechconference.com/sessions_v2017/MQTC_2017_MQ_Pub-Sub_Getting_the_Most.pdf"
     ],
     "tags": ["mqsub", "durable", "wildcards"],
@@ -797,10 +797,10 @@
     ],
     "answerExplanation": "XA is the correct answer when 'commit MQ and another resource together' is a hard requirement. The mental shift candidates sometimes miss: the qmgr becomes a participant, not the coordinator, and the app stops using MQCMIT/MQBACK in favour of the TM's API. Naming the extended transactional client explicitly, the XA switch structure, and the 'one qmgr per coordinator instance' rule are the precision tells. For modern architectures, mention that an outbox / idempotent consumer pattern is often a simpler alternative to XA for new designs.",
     "references": [
-      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=clients-what-is-extended-transactional-client",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=clients-what-is-extended-transactional-client",
       "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.con.doc/q016540_.htm",
       "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/xms_managed_mq.html",
-      "https://www.ibm.com/docs/en/ibm-mq/9.3.x?topic=coordination-mq-xa-switch-structure"
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=coordination-mq-xa-switch-structure"
     ],
     "tags": ["xa", "2pc", "transaction"],
     "difficulty": "hard"
@@ -823,7 +823,7 @@
     ],
     "answerExplanation": "Two things to nail in an answer: (1) the actual definition, a poison message is one that loops forever because nothing stops it, and (2) the collaboration model between MQ and the consumer. MQ provides the bookkeeping (BackoutCount) and the policy hooks (BOTHRESH, BOQNAME), but the consumer (or its framework) is what actually reroutes the message. With `BOTHRESH(0)` there IS no threshold, and 'I have a backout handler' doesn't help because it never fires, the number one operational mistake is assuming framework-level handling compensates for queue defaults that don't enable it. Know the fallback (DLQ if BOQNAME put fails) and the hardened-backout-count option for the precision tells.",
     "references": [
-      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=consumers-poison-messages-in-xms",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=consumers-poison-messages-in-xms",
       "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q032280_.html",
       "https://www.ibm.com/support/pages/ibm-mq-message-persistence-faqs"
     ],
@@ -871,9 +871,9 @@
     ],
     "answerExplanation": "MQGET's behaviour is split across two inputs: the `MQGMO` flags (wait, fail-if-quiescing, syncpoint, browse, convert…) and the `MQMD` fields you pass in for matching (MsgId, CorrelId, GroupId, plus `MQGMO.MatchOptions` saying which of those to match on). Mixing those up, e.g. saying 'CorrelId is an MQGMO flag', is a small giveaway. In practice the default loop is **WAIT + FAIL_IF_QUIESCING + often SYNCPOINT**; add match options for targeted retrieval, browse flags for inspection, and CONVERT / ACCEPT_TRUNCATED_MSG only when the app really needs them. The FAIL_IF_QUIESCING habit is the one people forget most often, and it's the one that'll bite you during an orderly qmgr shutdown.",
     "references": [
-      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=reference-mqgmo-get-message-options",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=reference-mqgmo-get-message-options",
       "https://www.mqtechconference.com/sessions_v2013/WMQ_Best_Practices.pdf",
-      "https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=multiplatforms-get-sample-programs",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=multiplatforms-get-sample-programs",
       "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.dev.doc/q101830_.html",
       "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q026320_.html"
     ],
