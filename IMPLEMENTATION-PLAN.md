@@ -4,6 +4,48 @@ Living document that tracks planned changes to the app, data schema, UI, scripts
 and workflows. Entries are added when a decision is made and moved to **Done**
 once shipped.
 
+## Current status
+
+**Bank:** 125 questions in `src/data/questions.json` (latest: `ace-adm-040`
+TAD). Export regenerated from JSON via `npm run gen:md` into
+`interview_questions.md`.
+
+**Working tracks:**
+
+- **Pending drafts review** (this plan entry "Pending question drafts"):
+  the 10-item batch has been walked, 9 graduated, 1 dropped. 3 stubs
+  remain in `drafts/pending-questions.md` awaiting authoring (OTel, cache
+  options, Designer-local).
+- **Blog-sourced candidates** (`drafts/blog-sourced-candidates.md`): 75
+  items with the author's verdicts filled in. User-half of the T items
+  (16) walked interactively and graduated. Helper-half of the T items
+  (16) sent out in `drafts/blog-tweaks-helper.md`, awaiting return. K
+  items (22) still need batch-drafting into `questions.json`.
+- **Bob-sourced candidates** (`drafts/bob-sourced-candidates.md`): 79
+  items generated from internal guidelines; Verdict column still empty,
+  awaiting author pass.
+- **25 farmed-out review batch** (`D:\tmp\review-batch-25.md`): sent to
+  an external reviewer, awaiting return.
+
+**Project-wide rules in force:**
+
+- Em dashes forbidden anywhere in the repo (swept once, script kept at
+  `scripts/em-dash-sweep.mjs` for future re-runs).
+- Every question carries `references` where authoritative links exist.
+  `scripts/check-references.mjs` (with advisory mode, pending) runs in CI.
+- Answers are written as bullets + short explanation paragraph, in a
+  "what an interviewer listens for" style.
+
+**Schemas now live:**
+
+- `answerBulletsShort?: string[]` on `Question` for the Short/Long toggle
+  (populated gradually).
+- `answerType?: 'free' | 'single' | 'multi'` + `choices?: Choice[]` for
+  MCQ / checkbox auto-grading (two samples land: `mq-adm-027` and
+  `ace-adm-029`, plus the ESQL MCQ `ace-dev-026`).
+
+---
+
 Format per entry:
 
 - **Status**: Planned / In progress / Done
@@ -142,18 +184,35 @@ Decisions that flow from this:
 
 ### Pending question drafts
 
-- **Status:** Planned (drafts authored, waiting on review)
-- **Motivation:** Questions drafted in response to review-side requests that
-  aren't ready to merge into the main bank until the author has checked
-  them. Keeps `src/data/questions.json` clean.
+- **Status:** Mostly cleared. Original 10-item batch has been walked; 9 of
+  10 graduated into `src/data/questions.json`, 1 dropped as duplicate of
+  an existing entry (`ace-adm-028` bake-vs-fry already covered it). Three
+  new items captured as stubs (content still to author).
 - **Location:** [drafts/pending-questions.md](drafts/pending-questions.md)
-- **Current batch (10):** callable-flow switch server in SaaS, fried vs
-  baked, grouping nodes, sequencing nodes, CSV parser choice, App Connect
-  runtimes, App Connect Operator (intro), ESQL `[>]`/`[<]`, Transformation
-  Advisor, ACE MQOutput persistence property.
-- **Workflow:** author reviews the drafts in place, annotates with
-  keep/tweak/rewrite, then each approved draft is moved into
-  `src/data/questions.json` and deleted from the pending file.
+- **Graduated (9):** Switch Server in SaaS (`ace-dev-027`), Grouping nodes
+  Group vs Collector vs Aggregation (`ace-dev-028`), Sequencing nodes
+  (`ace-dev-029`), CSV parser choice (`ace-dev-030`), ESQL `[>]`/`[<]`
+  positional operators (`ace-dev-031`), ACE MQOutput persistence property
+  (`ace-dev-032`), App Connect runtimes / Integration Server vs Operator
+  (`ace-adm-038`), App Connect Operator intro (`ace-adm-039`),
+  Transformation Advisor / TAD for pre-v13 estates (`ace-adm-040`).
+- **Dropped (1):** "Fried vs baked processing in App Connect", duplicate
+  of `ace-adm-028`.
+- **Merges applied to existing questions (2):**
+  - M1: `ace-dev-031` (draft, now graduated) had `[>]`/`[<]` semantics
+    reversed in the initial draft; corrected in review, and an MCQ
+    sibling `ace-dev-026` was added for the second-to-last case.
+  - M2: `ace-adm-009` (BAR build commands) picked up richer nuance on
+    `mqsipackagebar` being a packager not a compiler, the "Build for"
+    Toolkit prep step, and the `mqsicreatebar` + `xvfb-run` footprint
+    vs `ibmint package` being genuinely headless.
+- **Stubs still to author (3):** OpenTelemetry (OTEL) in ACE; cache
+  options in ACE (Global Cache / Redis); using App Connect Designer
+  locally. Stubs live in `drafts/pending-questions.md`.
+- **Workflow:** new review-side requests go in this file first; author
+  reviews, the draft is tightened or rewritten, then each approved draft
+  moves into `src/data/questions.json` and is removed from the pending
+  file.
 
 ### Normalise reference links to latest product versions
 

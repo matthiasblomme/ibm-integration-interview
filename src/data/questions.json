@@ -1401,6 +1401,43 @@
     "difficulty": "hard"
   },
   {
+    "id": "ace-adm-038",
+    "product": "ACE",
+    "role": "Admin",
+    "topic": "Runtimes",
+    "question": "Which runtimes are available in the App Connect family, and how does the Integration Server on k8s / CP4I differ from the Operator?",
+    "answerBullets": [
+      "**App Connect Enterprise (ACE), on-prem**: the traditional installed runtime on Linux / Windows; Integration Node and / or Standalone Integration Server",
+      "**ACE Certified Container (ACECC)**: the official IBM container image of the ACE runtime. An artefact you pick a version of and build on top of; not itself a management plane",
+      "**Integration Server on Kubernetes / CP4I**: the **runtime workload**, an ACE integration server running in a pod. You can run it directly with raw Kubernetes primitives (Deployment / StatefulSet + ConfigMap / Secret) using the ACECC image, no Operator required",
+      "**App Connect Operator**: the **management plane** for the above. It adds CRDs (IntegrationServer, Dashboard, DesignerAuthoring, SwitchServer, Configuration) and handles declarative lifecycle, upgrades, service wiring and health on OpenShift or vanilla Kubernetes. Standard path on CP4I",
+      "**App Connect as a Service (ACEaaS) / App Connect on IBM Cloud**: IBM-managed SaaS; you author integrations and IBM runs the runtime, including the hybrid Switch Server",
+      "**App Connect Designer**: low-code browser-based designer and light runtime; ships both as a SaaS offering and as a DesignerAuthoring resource on the Operator",
+      "Key framing for interviews: 'App Connect' is a product family, not a single runtime, and on Kubernetes the **Integration Server (runtime)** and the **Operator (management plane)** are separate concerns; you can have the runtime without the Operator, but most new CP4I work uses both together"
+    ],
+    "answerExplanation": "Candidates sometimes conflate 'App Connect' with 'ACE', and conflate 'Operator' with 'Integration Server on k8s'. The family actually spans on-prem, the certified container image, the runtime workload on k8s / CP4I, the Operator that manages that workload declaratively, the SaaS offering (ACEaaS), and the low-code Designer. Being able to name them separately, especially splitting 'the runtime' from 'the management plane', is a good signal the candidate has deployed this more than once.",
+    "tags": ["aceaas", "designer", "operator", "certified-container", "integration-server", "runtime", "cp4i"],
+    "difficulty": "easy"
+  },
+  {
+    "id": "ace-adm-039",
+    "product": "ACE",
+    "role": "Admin",
+    "topic": "Operator",
+    "question": "What is the App Connect Operator and what is it used for?",
+    "answerBullets": [
+      "A **Kubernetes / OpenShift operator**: software that extends the cluster API with custom resources (CRDs) so App Connect artefacts are managed declaratively like any other k8s resource",
+      "Provides CRDs for the key App Connect components: **IntegrationServer**, **Dashboard**, **DesignerAuthoring**, **SwitchServer**, **Configuration**",
+      "You describe the desired state in YAML (`kind: IntegrationServer …`) and the operator handles deploy, upgrade, lifecycle, service creation, storage provisioning and health monitoring",
+      "Delivered via OLM channels (LTS / CD) with subscription-based upgrades, separate from the on-prem ACE release model (see the operator release-model question)",
+      "Standard way to run ACE on Red Hat OpenShift / Cloud Pak for Integration; also works on vanilla Kubernetes",
+      "Benefits: declarative config, GitOps-friendly, consistent with other CP4I products, shifts lifecycle work from manual scripts into the cluster itself"
+    ],
+    "answerExplanation": "The operator is how you run ACE 'the Kubernetes way': you author YAML describing what you want, the operator reconciles reality to match. It is what makes declarative, GitOps-driven ACE deployments practical on OpenShift / CP4I. Good partner question to the operator-release-model one already in the bank: this is 'what is it', that one is 'how is it shipped'.",
+    "tags": ["operator", "cp4i", "openshift", "crd", "olm"],
+    "difficulty": "medium"
+  },
+  {
     "id": "ace-adm-036",
     "product": "ACE",
     "role": "Admin",
@@ -2104,6 +2141,161 @@
     "answerExplanation": "Second-to-last = `[<2]`. Mnemonic: `>` counts forward from the start, `<` counts back from the end, and the numeric suffix (if any) is a 1-based offset in that direction. The common wrong answers are habits from other languages (`[-2]`) or operator-position mix-ups (`[2<]` vs `[<2]`).",
     "tags": ["esql", "indexing", "positional", "mcq"],
     "difficulty": "medium"
+  },
+  {
+    "id": "ace-dev-027",
+    "product": "ACE",
+    "role": "Dev",
+    "topic": "Hybrid connectivity",
+    "question": "Where is the Switch Server managed when you use App Connect as a SaaS offering (App Connect on IBM Cloud / ACEaaS), and what does it do there?",
+    "answerBullets": [
+      "**Self-hosted / on-prem setup**: you deploy and run the Switch Server yourself (its own process or container), and both endpoints (cloud-side and on-prem-side) register with it",
+      "**SaaS / ACEaaS**: the Switch Server lives on the SaaS side, not in your on-prem runtime. You create and manage it as an App Connect resource in the **same namespace** as your Designer and Dashboard instances, and associate it with them so they can use it",
+      "Purpose in the SaaS model: provide the **connectivity layer for hybrid integrations**. It is not just callable flows, it is also how Designer and Dashboard reach on-prem callable flows and applications in private networks",
+      "On-prem resources are reached via **connectivity agents** and callable-flow endpoints that dial out to the Switch Server; the Switch Server never initiates inbound connections to on-prem, which is what makes the hybrid pattern work without opening firewall holes",
+      "Consequence: fewer moving parts on the customer side, but the switch is now part of IBM's availability story, so the SaaS SLA matters",
+      "Credentials / endpoint identities still belong to you; the switch routes, it does not own the content"
+    ],
+    "answerExplanation": "The Switch Server is the rendezvous point that lets on-prem and SaaS flows reach each other without inbound firewall holes. Who runs it flips with the deployment model: on-prem = you run it; SaaS = IBM hosts it and you manage it as a resource in the same namespace as Designer and Dashboard, associating it with them. Framing the Switch Server as 'the connectivity layer for hybrid App Connect' (callable flows AND private-network reach via connectivity agents) is broader and more accurate than 'it is only for callable flows'.",
+    "tags": ["switch-server", "saas", "ace-as-a-service", "callable-flow", "connectivity-agent", "hybrid"],
+    "difficulty": "medium",
+    "references": [
+      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=resources-switch-server-refere"
+    ]
+  },
+  {
+    "id": "ace-dev-028",
+    "product": "ACE",
+    "role": "Dev",
+    "topic": "Patterns",
+    "question": "What are the grouping nodes in ACE, and when do you use Group vs Collector vs the older Aggregation nodes?",
+    "answerBullets": [
+      "Three distinct families exist to bring related messages together; each solves a different problem",
+      "**Group nodes (GroupScatter / GroupGather / GroupComplete)**: fan-out / fan-in orchestration. One input message is split into multiple related outbound requests, the replies are gathered, and the group is completed into a single result for further processing. **GroupScatter** starts the group and tags each outbound request; **GroupGather** receives replies and reconciles them with in-flight groups; **GroupComplete** emits finished, timed-out or unknown groups and combines the replies into a single output message",
+      "**Why pick Group**: stateless, high-performance, no IBM MQ dependency on the integration server. **Constraint**: all nodes sharing a given group name must be deployed on the same integration server, no cross-server orchestration",
+      "**Collector node**: collects messages from one or more independent input sources into a message collection based on rules such as number of messages, timeout, or correlation path / pattern. Not a fan-out pattern; it is a message-collection-and-correlation pattern where messages can arrive at different times and in unknown order, held until the collection criteria are met",
+      "Collector state is stored on **IBM MQ storage queues**, so MQ has to be available: on an integration node the MQ install must be on the same computer as the node; on an independent integration server a remote default queue manager can be used",
+      "**Aggregation nodes (AggregateControl / AggregateRequest / AggregateReply)**: MQ-backed, recoverable, cross-server fan-out / fan-in aggregation. The older sibling of Group that you reach for when you need durable state or orchestration across integration servers",
+      "**Practical summary**: Group for fast fan-out / fan-in inside one server MQ-free; Collector for correlating messages from multiple sources over time with unknown arrival order and rule-based completion (MQ-backed); Aggregation when you need recoverable cross-server aggregation with MQ-backed state and space for large replies"
+    ],
+    "answerExplanation": "'Grouping nodes' is umbrella language that in practice covers three different ACE families with different trade-offs. Group (Scatter/Gather/Complete) is the modern, stateless, MQ-free choice for fast fan-out/fan-in inside one server. Collector is the right answer when messages arrive independently from many sources, out of order, and you want rule-based collection; it is MQ-backed, which is why it behaves more like the classic aggregation pattern than like Group. Aggregation (AggregateControl / Request / Reply) remains the right choice when you need recoverable aggregation state or cross-server orchestration.",
+    "tags": ["group", "groupscatter", "groupgather", "groupcomplete", "collector", "aggregation", "fan-out", "flow-pattern"],
+    "difficulty": "medium",
+    "references": [
+      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-groupscatter-node",
+      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-groupgather-node",
+      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-groupcomplete-node",
+      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-collector-node",
+      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-aggregatecontrol-node",
+      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-aggregatereply-node",
+      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-aggregaterequest-node",
+      "https://www.ibm.com/docs/en/app-connect/11.0.0?topic=nodes-group-aggregation"
+    ]
+  },
+  {
+    "id": "ace-dev-029",
+    "product": "ACE",
+    "role": "Dev",
+    "topic": "Patterns",
+    "question": "What are sequencing nodes used for in ACE, and what are the runtime constraints you need to know?",
+    "answerBullets": [
+      "Sequencing nodes are used when messages must be processed or delivered in a specific order, even when they arrive out of order or are handled by multiple threads. The pattern is 'number the messages on the way in, put them back in order on the way out'",
+      "Two nodes work as a pair: **Sequence** assigns a monotonically increasing sequence number to each message within a sequence group, preserving the order in which messages reach the node; **Resequence** holds and reorders messages downstream until the next expected number is available, so they leave in the required order",
+      "**Sequence groups** let you keep related streams in order independently (e.g. all messages for one customer or account) while different groups are processed in parallel. You do not have to serialise the entire flow to preserve order within a single key",
+      "Typical use cases are cases where order matters for business correctness: debits and credits on an account, record updates where a later value depends on the earlier one, or healthcare / patient records",
+      "**Runtime constraint (threads)**: only one thread at a time can process messages in the same sequence group downstream of a Sequence node. That is how ordering is preserved when the flow has multiple threads or additional instances. Different sequence groups can still run in parallel",
+      "**Runtime constraint (MQ)**: sequencing state is stored on IBM MQ storage queues. On an integration server managed by an integration node, MQ must be installed on the same machine as the integration node. On an independent integration server, a remote default queue manager can be used",
+      "Resequence-side knobs: buffer size and timeout. A stuck message in the middle of a group can stall the reordering window, so tune for the worst-case slow path"
+    ],
+    "answerExplanation": "Sequencing nodes solve the tension between 'process in parallel for throughput' and 'preserve order where it matters for correctness'. The important nuance most candidates miss is that order preservation is per-sequence-group, not flow-wide, and that sequencing is MQ-backed state (similar to the Collector node), so it picks up the same MQ co-location / remote-qmgr requirements. The 'one thread per group' property is how ACE keeps the guarantee safe under additional instances.",
+    "tags": ["sequence", "resequence", "ordering", "sequence-group", "mq-storage", "flow-pattern"],
+    "difficulty": "medium",
+    "references": [
+      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=sequences-message-sequencing",
+      "https://www.ibm.com/docs/en/app-connect/11.0.0?topic=nodes-sequence-node",
+      "https://www.ibm.com/docs/en/integration-bus/10.0.0?topic=nodes-configuring-sequence-node"
+    ]
+  },
+  {
+    "id": "ace-dev-030",
+    "product": "ACE",
+    "role": "Dev",
+    "topic": "Parsers",
+    "question": "Which parser do you use to parse CSV in ACE?",
+    "answerBullets": [
+      "**DFDL** is the modern, recommended answer: define a DFDL schema that describes the CSV (record separator, field separator, quote character, header row handling, field types) and parse with the DFDL parser",
+      "**MRM with a TDS (Tagged/Delimited String) physical format** is the legacy approach; still supported for old message sets but functionally deprecated for new work",
+      "**BLOB** if you're passing CSV through without reading it: no parsing, best performance",
+      "Don't try to write a CSV parser by hand in ESQL. DFDL handles escaped quotes, line endings, optional fields and headers correctly, and you keep the structure visible in a schema rather than buried in code",
+      "A DFDL CSV schema is reusable across flows and can ship in a shared library"
+    ],
+    "answerExplanation": "CSV is the textbook DFDL use case: delimited text, optional header, field types, quoting. New projects should default to DFDL; MRM/TDS is legacy and shouldn't be the answer for a greenfield flow. If you don't need to read the body, BLOB still wins on performance.",
+    "tags": ["parser", "dfdl", "csv", "tds", "mrm"],
+    "difficulty": "easy"
+  },
+  {
+    "id": "ace-dev-031",
+    "product": "ACE",
+    "role": "Dev",
+    "topic": "ESQL",
+    "question": "In ESQL, what do the `[>]` and `[<]` positional operators do on a tree path, and how do they help when building an array of JSON objects?",
+    "answerBullets": [
+      "`[>]` and `[<]` are **positional index operators** used when navigating or assigning to repeating tree elements (arrays)",
+      "`[>]` counts from the **start**: `Field[>]` (equivalent to `Field[>1]`) is the first occurrence, `Field[>2]` is the second, and so on",
+      "`[<]` counts from the **end**: `Field[<]` (equivalent to `Field[<1]`) is the last occurrence, `Field[<2]` is the last but one (the penultimate), `Field[<3]` is third-from-last, etc.",
+      "Compare with absolute indexing: `Field[N]` or `Field[=N]` addresses position N from the start (1-based), independent of where the array currently ends",
+      "**Building an array of JSON objects**: the idiomatic pattern is to append a new Item with `CREATE LASTCHILD OF OutputRoot.JSON.Data.Items NAME 'Item';`, then populate its fields by addressing `OutputRoot.JSON.Data.Items.Item[<]`, which now refers to that newly added last item. Repeat per record from the source",
+      "Common transform loop: iterate the input array, on each iteration `CREATE LASTCHILD` a new Item and fill its fields via `Item[<]`",
+      "See also the MCQ sibling (`ace-dev-026`) that tests second-to-last specifically with `Array.Item[<2]`"
+    ],
+    "answerExplanation": "The mnemonic to keep them straight: `>` points forward from the start, `<` points back from the end. `Field[>]` = first, `Field[<]` = last, and you can extend either with a number (`[>2]` second from start, `[<2]` second from end / penultimate). Together with `CREATE LASTCHILD` they're the idiomatic way to build up an output array without hand-rolling an index counter. Candidates who use `[<]` and `[<2]` fluently have written non-trivial ESQL transforms; beginners tend to increment their own counters or end up with malformed arrays.",
+    "tags": ["esql", "logical-tree", "indexing", "array", "json"],
+    "difficulty": "medium"
+  },
+  {
+    "id": "ace-dev-032",
+    "product": "ACE",
+    "role": "Dev",
+    "topic": "MQ",
+    "question": "How do you set message persistence on an ACE MQOutput node, and how do the options behave?",
+    "answerBullets": [
+      "The **MQOutput node's `Persistence mode` property** controls how the outgoing message's `MQMD.Persistence` is set. Values: **Yes** (put persistently, `MQPER_PERSISTENT`), **No / Not persistent** (put non-persistently, `MQPER_NOT_PERSISTENT`), **Automatic** (carry persistence from the incoming message's MQMD), **As Defined for Queue** (set `MQPER_PERSISTENCE_AS_Q_DEF`, so the queue's DEFPSIST provides the default at put time)",
+      "Setting **Yes** here is the easiest, most explicit way to ensure a flow produces persistent messages regardless of what the queue's DEFPSIST is",
+      "**Automatic** is handy for bridge / relay flows: the output inherits whatever the input message was, preserving sender intent",
+      "**As Defined for Queue** leaves persistence to the queue default: fine when your estate has disciplined DEFPSIST values, risky when teams change queue attributes without touching flows",
+      "Pair with the MQOutput node's Transaction setting + a transactional input for the full persistent-and-atomic behaviour",
+      "Same model applies to MQReply / MQPublication nodes"
+    ],
+    "answerExplanation": "In ACE you rarely touch `MQMD.Persistence` directly; you set it declaratively via the MQOutput node's Persistence mode. 'Yes' is the clearest choice when the flow owns the decision, 'Automatic' is right for pass-through / relay flows, 'As Defined for Queue' defers to DEFPSIST which is convenient but couples flow behaviour to queue config. Know all four and be explicit about which one you would pick for a given flow.",
+    "tags": ["persistence", "mqoutput", "mqmd", "defpsist"],
+    "difficulty": "easy",
+    "references": [
+      "https://www.ibm.com/support/pages/ibm-mq-message-persistence-faqs"
+    ]
+  },
+  {
+    "id": "ace-adm-040",
+    "product": "ACE",
+    "role": "Admin",
+    "topic": "Migration",
+    "question": "What is the Transformation Advisor tool (TAD) in the ACE / IIB context and what is it used for?",
+    "answerBullets": [
+      "**TAD** is a migration-assessment tool aimed at **pre-v13 estates (IIB 10, ACE 11, ACE 12)**. It inspects what is actually deployed on an integration node or server and reports on migration readiness, especially for container targets",
+      "**It does not migrate anything.** It inspects and reports: complexity and severity per finding, plus a recommendations report you use to plan the real migration",
+      "**Inputs**: deployment data from the source environment. Typical starting points are a backup ZIP produced by `mqsibackupbroker`, or a BAR file built with `mqsipackagebar`",
+      "**Command**: `TADataCollector`, with modes such as `collect`, `assess`, `report`, and `run` (which chains them together)",
+      "**Scoring output per item**: complexity of Simple / Moderate / Complex, plus a severity level of Green / Yellow / Red",
+      "Example finding: use of `.NETInput` / `.NETCompute` is flagged as Complex / Red when the target is a Linux container, because that .NET runtime support is not available there",
+      "**Artefacts produced**: logs, environment details, JSON descriptions of the deployed content, and an optional static HTML report such as `recommendations.html`",
+      "Typical use: pre-migration analysis when planning a lift-and-shift of ACE / IIB workloads into containers or CP4I. Pair it with a human pass to check things automated rules can't see (policies, shared libs, custom Java)",
+      "**Not to be confused** with the broader IBM Cloud Transformation Advisor product; in the ACE context, TAD is the ACE-specific tool built around `TADataCollector`"
+    ],
+    "answerExplanation": "TAD is the 'know-before-you-start' tool for ACE / IIB modernisation, specifically for pre-v13 estates (IIB 10, ACE 11, ACE 12). You run `TADataCollector` against a backed-up node or a packaged BAR and it tells you what is deployed, what may block the migration, and how hard each workload is likely to be (Simple / Moderate / Complex, with a Green / Yellow / Red severity per issue). Candidates sometimes confuse TAD with the broader IBM Cloud Transformation Advisor product; in the ACE context, TAD is the ACE-specific tool.",
+    "tags": ["tad", "tadatacollector", "migration", "iib", "ace-v11", "container", "modernization"],
+    "difficulty": "medium",
+    "references": [
+      "https://www.ibm.com/docs/en/app-connect/11.0.0?topic=tasks-running-transformation-advisor-tool"
+    ]
   },
   {
     "id": "cloud-001",
