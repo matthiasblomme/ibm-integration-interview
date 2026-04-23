@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import type { Choice } from '../types';
 
 const PROGRESS_KEY = 'ibm-interview-quiz-progress-v1';
@@ -5,13 +6,15 @@ const SESSION_KEY = 'ibm-interview-quiz-session-v1';
 
 export type RatingValue = 'got-it' | 'unsure' | 'missed';
 
-export interface QuizProgress {
-  // questionId -> last rating
-  ratings: Record<string, RatingValue>;
-  // questionId -> count of times seen
-  seen: Record<string, number>;
-  updatedAt: number;
-}
+const ratingValueSchema = z.enum(['got-it', 'unsure', 'missed']);
+
+const quizProgressSchema = z.object({
+  ratings: z.record(z.string(), ratingValueSchema),
+  seen: z.record(z.string(), z.number()),
+  updatedAt: z.number(),
+});
+
+export type QuizProgress = z.infer<typeof quizProgressSchema>;
 
 const empty: QuizProgress = { ratings: {}, seen: {}, updatedAt: Date.now() };
 
@@ -19,12 +22,9 @@ export function loadProgress(): QuizProgress {
   try {
     const raw = localStorage.getItem(PROGRESS_KEY);
     if (!raw) return { ...empty };
-    const parsed = JSON.parse(raw) as QuizProgress;
-    return {
-      ratings: parsed.ratings ?? {},
-      seen: parsed.seen ?? {},
-      updatedAt: parsed.updatedAt ?? Date.now(),
-    };
+    const result = quizProgressSchema.safeParse(JSON.parse(raw));
+    if (!result.success) return { ...empty };
+    return result.data;
   } catch {
     return { ...empty };
   }
@@ -60,28 +60,31 @@ export function resetProgress(): QuizProgress {
   return { ...empty };
 }
 
-export interface QuizSessionStats {
-  got: number;
-  unsure: number;
-  missed: number;
-  skipped: number;
-}
+const quizSessionStatsSchema = z.object({
+  got: z.number(),
+  unsure: z.number(),
+  missed: z.number(),
+  skipped: z.number(),
+});
 
-export interface QuizSession {
-  queueIds: string[];
-  index: number;
-  stats: QuizSessionStats;
-  savedAt: number;
-}
+const quizSessionSchema = z.object({
+  queueIds: z.array(z.string()).min(1),
+  index: z.number().int().nonnegative(),
+  stats: quizSessionStatsSchema,
+  savedAt: z.number(),
+});
+
+export type QuizSessionStats = z.infer<typeof quizSessionStatsSchema>;
+export type QuizSession = z.infer<typeof quizSessionSchema>;
 
 export function loadSession(): QuizSession | null {
   try {
     const raw = localStorage.getItem(SESSION_KEY);
     if (!raw) return null;
-    const parsed = JSON.parse(raw) as QuizSession;
-    if (!Array.isArray(parsed.queueIds) || parsed.queueIds.length === 0) return null;
-    if (parsed.index >= parsed.queueIds.length) return null;
-    return parsed;
+    const result = quizSessionSchema.safeParse(JSON.parse(raw));
+    if (!result.success) return null;
+    if (result.data.index >= result.data.queueIds.length) return null;
+    return result.data;
   } catch {
     return null;
   }
@@ -118,11 +121,9 @@ export function gradeChoiceAnswer(choices: Choice[], selectedIndices: Set<number
   });
   const pickedCorrect = [...selectedIndices].filter((i) => correctSet.has(i)).length;
   const pickedIncorrect = selectedIndices.size - pickedCorrect;
-  const missedCorrect = correctSet.size - pickedCorrect;
   if (pickedCorrect === correctSet.size && pickedIncorrect === 0) return 'correct';
   if (pickedCorrect === 0) return 'wrong';
-  if (pickedIncorrect > 0 || missedCorrect > 0) return 'partial';
-  return 'correct';
+  return 'partial';
 }
 
 /**

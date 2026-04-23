@@ -28,10 +28,10 @@ export function FlashCard({ q, index, total, onRate, onSkip }: Props) {
     setGrade(null);
   }, [q.id]);
 
-  const shortAvailable = !!q.answerBulletsShort && q.answerBulletsShort.length > 0;
-  const showShort = length === 'short' && shortAvailable;
-  const bullets = showShort ? q.answerBulletsShort! : q.answerBullets;
-  const showExplanation = !showShort;
+  const shortBullets = q.answerBulletsShort?.length ? q.answerBulletsShort : null;
+  const useShort = length === 'short' && shortBullets !== null;
+  const bullets = useShort ? shortBullets : q.answerBullets;
+  const showExplanation = !useShort;
 
   const canSubmit = isMcq && selected.size > 0 && !submitted;
 

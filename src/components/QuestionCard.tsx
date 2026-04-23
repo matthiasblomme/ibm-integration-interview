@@ -30,15 +30,13 @@ export function QuestionCard({ q, defaultOpen = false, rating }: QuestionCardPro
   const [length] = useAnswerLength();
   const toggle = () => setOpen((o) => !o);
 
-  const shortAvailable = !!q.answerBulletsShort && q.answerBulletsShort.length > 0;
-  const showShort = length === 'short' && shortAvailable;
-  const showShortMissing = length === 'short' && !shortAvailable;
-  const bullets = showShort ? q.answerBulletsShort! : q.answerBullets;
-  const showExplanation = !showShort;
-  const hasChoices =
-    (q.answerType === 'single' || q.answerType === 'multi') &&
-    Array.isArray(q.choices) &&
-    q.choices.length > 0;
+  const shortBullets = q.answerBulletsShort?.length ? q.answerBulletsShort : null;
+  const useShort = length === 'short' && shortBullets !== null;
+  const showShortMissing = length === 'short' && shortBullets === null;
+  const bullets = useShort ? shortBullets : q.answerBullets;
+  const showExplanation = !useShort;
+  const isMcq = q.answerType === 'single' || q.answerType === 'multi';
+  const choices = isMcq && q.choices?.length ? q.choices : null;
   return (
     <div className="card">
       <div
@@ -83,9 +81,9 @@ export function QuestionCard({ q, defaultOpen = false, rating }: QuestionCardPro
               Long answer only, no short version written yet.
             </p>
           )}
-          {hasChoices && (
+          {choices && (
             <ul className="choices">
-              {q.choices!.map((c, i) => (
+              {choices.map((c, i) => (
                 <li key={i} className={c.correct ? 'correct' : 'incorrect'}>
                   <span className="choice-marker" aria-hidden="true">
                     {c.correct ? '✓' : '·'}
