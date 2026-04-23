@@ -1,15 +1,15 @@
 # IBM ACE and MQ Interview Questions
 
-Generated from `src/data/questions.json` — edit the JSON and run `npm run gen:md`.
+Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 107
+**Total questions:** 115
 
 ## Table of contents
 - [General (3)](#general)
-- [MQ — Admin (30)](#mq-admin)
-- [MQ — Dev (14)](#mq-dev)
-- [ACE — Admin (29)](#ace-admin)
-- [ACE — Dev (26)](#ace-dev)
+- [MQ, Admin (30)](#mq-admin)
+- [MQ, Dev (14)](#mq-dev)
+- [ACE, Admin (37)](#ace-admin)
+- [ACE, Dev (26)](#ace-dev)
 - [Cloud (5)](#cloud)
 
 ## General
@@ -18,7 +18,7 @@ Generated from `src/data/questions.json` — edit the JSON and run `npm run gen:
 
 **Q: What are your experiences with ACE and MQ, and how do you rate your own knowledge?**
 
-- Self-assessment — honest level (beginner / practitioner / expert) per product and per discipline (Dev vs Admin)
+- Self-assessment, honest level (beginner / practitioner / expert) per product and per discipline (Dev vs Admin)
 - Years of hands-on time, sizes of environments, versions used (IIB, ACE v11/v12, MQ v8-v9.x)
 - Notable project examples: migrations, HA setup, production incidents solved
 - Gaps the candidate is openly aware of
@@ -31,25 +31,25 @@ Open-ended opener. The point is less the exact rating and more whether the perso
 
 - Describes the problem in concrete terms (symptoms, scope, impact)
 - Own troubleshooting steps: logs, traces, reproduction, isolation
-- When and how they escalated (IBM case, colleague, community) — comfortable asking for help at the right moment rather than grinding alone or punting too early
+- When and how they escalated (IBM case, colleague, community), comfortable asking for help at the right moment rather than grinding alone or punting too early
 - Documents the issue as they go (tickets, runbooks, internal wiki, PR descriptions) so the next person doesn't have to start from scratch
-- Captures what was learned afterwards and turns it into an improvement — updated docs, a tweaked runbook, a small script, a regression test
+- Captures what was learned afterwards and turns it into an improvement, updated docs, a tweaked runbook, a small script, a regression test
 
-Looking for three traits in one story: (1) structured troubleshooting rather than flailing, (2) comfort asking for help when needed, and (3) a post-mortem mindset that actually improves something afterwards — notes written, runbooks updated, tooling added. An answer that nails the debugging steps but leaves no trace for the team is only half the job.
+Looking for three traits in one story: (1) structured troubleshooting rather than flailing, (2) comfort asking for help when needed, and (3) a post-mortem mindset that actually improves something afterwards, notes written, runbooks updated, tooling added. An answer that nails the debugging steps but leaves no trace for the team is only half the job.
 
 ### Keeping up
 
 **Q: How do you keep up with new releases and features in ACE and MQ?**
 
-- IBM Community — dedicated subsections per technology (MQ, ACE, CP4I); official announcements, Q&A, 'What's new' posts
-- LinkedIn — following IBMers and integration specialists who post regularly (e.g. Ben Thompson on ACE) and reading blogs from fellow integration consultants
-- IBM Docs release notes and fix-list pages — the authoritative source for each release
-- GitHub repos (ibm-messaging, ot4i) — samples, operators, container images are often updated before the blog posts land
+- IBM Community, dedicated subsections per technology (MQ, ACE, CP4I); official announcements, Q&A, 'What's new' posts
+- LinkedIn, following IBMers and integration specialists who post regularly (e.g. Ben Thompson on ACE) and reading blogs from fellow integration consultants
+- IBM Docs release notes and fix-list pages, the authoritative source for each release
+- GitHub repos (ibm-messaging, ot4i), samples, operators, container images are often updated before the blog posts land
 - Running CD releases in a lab or container to actually try the features hands-on
 
-Shows curiosity and a personal learning loop. A good answer pairs authoritative sources (IBM Community, Docs) with people-driven sources (LinkedIn, peer blogs) and hands-on experimentation. Mentioning specific people or blogs they follow is a strong signal — it means they actually read this stuff.
+Shows curiosity and a personal learning loop. A good answer pairs authoritative sources (IBM Community, Docs) with people-driven sources (LinkedIn, peer blogs) and hands-on experimentation. Mentioning specific people or blogs they follow is a strong signal, it means they actually read this stuff.
 
-## MQ — Admin
+## MQ, Admin
 
 ### Connectivity
 
@@ -67,11 +67,11 @@ The core is the sender/receiver + remote/xmit quartet, but today the interesting
 
 **Q: What tools can you use to manage a queue manager, and when do you pick which?**
 
-- runmqsc — scriptable, universal, works on any platform including containers
-- MQ Console (web UI) — quick inspection, good for ops people without shell access
-- MQ Administrative REST API — automation from CI/CD, remote admin, dashboards
-- MQ Explorer — rich GUI, discontinued direction but still useful on desktop
-- PCF messages — programmatic admin from applications (same underlying API as REST)
+- runmqsc, scriptable, universal, works on any platform including containers
+- MQ Console (web UI), quick inspection, good for ops people without shell access
+- MQ Administrative REST API, automation from CI/CD, remote admin, dashboards
+- MQ Explorer, rich GUI, discontinued direction but still useful on desktop
+- PCF messages, programmatic admin from applications (same underlying API as REST)
 
 runmqsc is the common denominator and what scripts use; REST is the modern automation path. Mentioning both plus web console shows someone who works with modern MQ, not just the classic desktop.
 
@@ -93,21 +93,21 @@ runmqsc is the bread and butter. Beyond DEFINE/DIS, a strong admin reaches for W
 **Q: What is a key thing to get right when you first create a queue manager?**
 
 - Log configuration: LogPrimaryFiles, LogSecondaryFiles, LogFilePages
-- LogFilePages is FIXED at creation — only the number of log files can change later
+- LogFilePages is FIXED at creation, only the number of log files can change later
 - Choose linear vs circular logging up front (also locked in afterwards without recreate)
 - Filesystem layout: separate volumes for logs and data for IO and safety
 - QMGR default character set / CCSID if you are dealing with non-ASCII messages
 
-The log file size is a classic trap — people find out too late that they cannot grow individual log file size without rebuilding the qmgr. Linear vs circular is a similar one-way door.
+The log file size is a classic trap, people find out too late that they cannot grow individual log file size without rebuilding the qmgr. Linear vs circular is a similar one-way door.
 
 ### Logging
 
 **Q: Which of these are supported IBM MQ logging types? (select all that apply)**
 
-- [ ] Rectangular logging — Not a real IBM MQ logging type. A distractor.
-- [x] Circular logging — The default model. A ring of primary (plus optional secondary) log files that get reused. Supports restart recovery only.
-- [ ] Block logging — Not a real IBM MQ logging type. A distractor.
-- [x] Linear logging — Log records kept in a continuous sequence. Supports both restart recovery and media recovery (replay the log to rebuild a damaged object).
+- [ ] Rectangular logging, Not a real IBM MQ logging type. A distractor.
+- [x] Circular logging, The default model. A ring of primary (plus optional secondary) log files that get reused. Supports restart recovery only.
+- [ ] Block logging, Not a real IBM MQ logging type. A distractor.
+- [x] Linear logging, Log records kept in a continuous sequence. Supports both restart recovery and media recovery (replay the log to rebuild a damaged object).
 
 - **Circular logging** (default): ring of log files reused over time; supports restart recovery only; lowest admin overhead
 - **Linear logging**: continuous log sequence; supports restart recovery AND media recovery; needs `rcdmqimg` housekeeping to reap old logs
@@ -121,13 +121,13 @@ _References:_
 
 **Q: Explain the difference between linear and circular logging.**
 
-- Circular (the default) — a ring of primary (+ optional secondary) log files that are reused; supports restart recovery only; lowest admin overhead and best performance
-- Linear — log records kept in a continuous sequence; supports both restart recovery AND media recovery (replay the log to rebuild a damaged queue manager object)
+- Circular (the default), a ring of primary (+ optional secondary) log files that are reused; supports restart recovery only; lowest admin overhead and best performance
+- Linear, log records kept in a continuous sequence; supports both restart recovery AND media recovery (replay the log to rebuild a damaged queue manager object)
 - Linear needs `rcdmqimg` to take media images so older logs can be archived/reaped; without that housekeeping the filesystem fills up
 - Linear uses more disk space and carries a small performance cost, but is typically recommended for production where recovery requirements are stricter
-- Circular is simpler and lighter — fine when durability comes from replication/HA (RDQM, Native HA, backups) rather than log replay
+- Circular is simpler and lighter, fine when durability comes from replication/HA (RDQM, Native HA, backups) rather than log replay
 
-Both models handle restart recovery after a clean or crash restart — the key differentiator is media recovery, i.e. replaying the log to rebuild a damaged object. Linear enables it at the cost of extra admin work (rcdmqimg + archiving); circular trades that away for simplicity. Production installs usually pick linear for exactly that reason.
+Both models handle restart recovery after a clean or crash restart, the key differentiator is media recovery, i.e. replaying the log to rebuild a damaged object. Linear enables it at the cost of extra admin work (rcdmqimg + archiving); circular trades that away for simplicity. Production installs usually pick linear for exactly that reason.
 
 _References:_
 - <https://www.ibm.com/support/pages/ibm-mq-linear-and-circular-logging>
@@ -143,7 +143,7 @@ _References:_
 - Lock down who can use the channel via CHLAUTH: default BLOCKUSER for mqm/privileged ids, ADDRESSMAP for IP restrictions, SSLPEERMAP or USERMAP to bind a certificate DN to a chosen MCAUSER
 - REFRESH SECURITY TYPE(SSL) after key repository changes
 
-TLS encrypts and optionally authenticates; CHLAUTH decides which identities are allowed to use the channel and what OS user they act as (MCAUSER). Both are needed — one without the other is incomplete.
+TLS encrypts and optionally authenticates; CHLAUTH decides which identities are allowed to use the channel and what OS user they act as (MCAUSER). Both are needed, one without the other is incomplete.
 
 **Q: How do you configure MQ to authenticate admins against LDAP?**
 
@@ -155,12 +155,12 @@ TLS encrypts and optionally authenticates; CHLAUTH decides which identities are 
 
 CONNAUTH handles authentication (who are you) while SET AUTHREC / setmqaut handles authorization (what can you do). LDAP typically covers the first; groups and authority records cover the second.
 
-**Q: A developer cannot put messages on APP.IN — how do you give them access?**
+**Q: A developer cannot put messages on APP.IN, how do you give them access?**
 
 - Check AMQERR01.LOG for MQRC 2035 / 2059 and note the user id and resource
 - Grant authority: `SET AUTHREC PROFILE('APP.IN') OBJTYPE(QUEUE) PRINCIPAL('alice') AUTHADD(PUT,INQ,BROWSE)`
-- If going via a client channel: ensure CHLAUTH USERMAP gives that user a valid MCAUSER — e.g. `SET CHLAUTH('APP.SVRCONN') TYPE(USERMAP) CLNTUSER('alice') USERSRC(MAP) MCAUSER('appuser')`
-- REFRESH SECURITY TYPE(CONNAUTH) — changes take effect
+- If going via a client channel: ensure CHLAUTH USERMAP gives that user a valid MCAUSER, e.g. `SET CHLAUTH('APP.SVRCONN') TYPE(USERMAP) CLNTUSER('alice') USERSRC(MAP) MCAUSER('appuser')`
+- REFRESH SECURITY TYPE(CONNAUTH), changes take effect
 
 The symptom is usually 2035; the fix is a combination of queue-level AUTHREC plus channel-level CHLAUTH. Many people forget the channel side when the client connects remotely.
 
@@ -171,19 +171,19 @@ The symptom is usually 2035; the fix is a combination of queue-level AUTHREC plu
 - Publisher MQPUTs to a TOPIC object (or topic string); MQ routes to every matching subscription
 - Subscribers register (durable or non-durable) against a topic string, possibly with wildcards (# multi-level, + single-level)
 - Durable subscriptions survive application restart and typically use a named subscriber queue; non-durable are cleaned up on disconnect
-- No queue pre-allocation is required by publishers — they target topics, not queues
+- No queue pre-allocation is required by publishers, they target topics, not queues
 
 The key mental model is topic trees and subscriptions. Publishers don't know subscribers; subscriptions define the mapping to a delivery queue.
 
 **Q: How does distributed publish/subscribe work in MQ (clusters and hierarchies)?**
 
 - Two distribution models: **publish/subscribe cluster** (flat, built on a standard MQ cluster) and **publish/subscribe hierarchy** (parent/child relationships between qmgrs)
-- Clustered topics — set the CLUSTER property on a TOPIC object; two routing options: DIRECT and TOPICHOST
-- DIRECT routing — qmgrs connect peer-to-peer for pub/sub traffic; simplest, fine for small clusters but generates a lot of proxy-subscription traffic at scale
-- TOPICHOST routing — publications flow via the qmgr(s) hosting the topic definition; fewer inter-qmgr connections, scales better for larger/busier topologies
-- Pub/sub hierarchy — parent/child links between qmgrs; useful to tie separate clusters or qmgr groupings together in a controlled, structured way
-- PUBSCOPE and SUBSCOPE topic properties control how far publications and subscriptions propagate (QMGR-only vs ALL) — essential for containing traffic in mixed topologies
-- From the ACE side, pub/sub is just the messaging pattern — ACE flows publish/subscribe to the MQ topic space like any other application
+- Clustered topics, set the CLUSTER property on a TOPIC object; two routing options: DIRECT and TOPICHOST
+- DIRECT routing, qmgrs connect peer-to-peer for pub/sub traffic; simplest, fine for small clusters but generates a lot of proxy-subscription traffic at scale
+- TOPICHOST routing, publications flow via the qmgr(s) hosting the topic definition; fewer inter-qmgr connections, scales better for larger/busier topologies
+- Pub/sub hierarchy, parent/child links between qmgrs; useful to tie separate clusters or qmgr groupings together in a controlled, structured way
+- PUBSCOPE and SUBSCOPE topic properties control how far publications and subscriptions propagate (QMGR-only vs ALL), essential for containing traffic in mixed topologies
+- From the ACE side, pub/sub is just the messaging pattern, ACE flows publish/subscribe to the MQ topic space like any other application
 
 Cluster-based pub/sub is the right default when you want scale and auto-discovery across peer qmgrs; hierarchy is the answer when you need controlled, structured links (e.g. connecting otherwise-separate clusters). Knowing PUBSCOPE/SUBSCOPE exists to scope traffic is what separates 'I've used MQ pub/sub' from 'I've designed a pub/sub topology'.
 
@@ -198,16 +198,16 @@ _References:_
 
 **Q: How can you temporarily disable an MQ subscription without deleting it?**
 
-- There is no direct 'disable' flag on a subscription — `ALTER SUB` doesn't expose an ENABLED/DISABLED attribute, so the admin surface doesn't have a clean pause button
-- **Cleanest per-subscription pause:** switch the subscription's **REQONLY** attribute from NO to YES — `ALTER SUB('<name>') REQONLY(YES)` (or in MQ Explorer change 'Request update' from 'All' to 'Publish on request')
-- With REQONLY(YES) the qmgr stops pushing publications to the destination queue; the subscriber would now only receive messages when it explicitly issues `MQSUBREQ`. If no one calls MQSUBREQ, nothing accumulates — effectively a pause
+- There is no direct 'disable' flag on a subscription, `ALTER SUB` doesn't expose an ENABLED/DISABLED attribute, so the admin surface doesn't have a clean pause button
+- **Cleanest per-subscription pause:** switch the subscription's **REQONLY** attribute from NO to YES, `ALTER SUB('<name>') REQONLY(YES)` (or in MQ Explorer change 'Request update' from 'All' to 'Publish on request')
+- With REQONLY(YES) the qmgr stops pushing publications to the destination queue; the subscriber would now only receive messages when it explicitly issues `MQSUBREQ`. If no one calls MQSUBREQ, nothing accumulates, effectively a pause
 - To resume, flip it back: `ALTER SUB('<name>') REQONLY(NO)`
 - **Blunter alternatives with wider blast radius:**
-- — `ALTER TOPIC(<topic>) SUB(DISABLED)` disables subscriptions to the entire topic for everyone, not just the subscription you wanted to pause
-- — `ALTER QLOCAL(<dest>) PUT(DISABLED)` + the topic's `NPMSGDLV` / `PMSGDLV` set to tolerate delivery failures — but this also affects any OTHER subscribers whose destination happens to fail for an unrelated reason
-- Delete-and-recreate works too, but loses any state (durable subscription history, specific SubName) — prefer REQONLY for durable subs you plan to resume
+- , `ALTER TOPIC(<topic>) SUB(DISABLED)` disables subscriptions to the entire topic for everyone, not just the subscription you wanted to pause
+- , `ALTER QLOCAL(<dest>) PUT(DISABLED)` + the topic's `NPMSGDLV` / `PMSGDLV` set to tolerate delivery failures, but this also affects any OTHER subscribers whose destination happens to fail for an unrelated reason
+- Delete-and-recreate works too, but loses any state (durable subscription history, specific SubName), prefer REQONLY for durable subs you plan to resume
 
-Pausing one specific subscription is a genuine gap in the MQ admin surface — there's no ENABLED/DISABLED flag. The REQONLY(YES) trick (from the classic mqseries.net thread with Morag Hughson) is the least-damaging workaround: switch the sub from push mode ('Publish all') to pull mode ('Publish on request'), and because nothing calls MQSUBREQ in the meantime, no publications flow to the destination queue. Topic-level and queue-level disables exist but have broader side effects.
+Pausing one specific subscription is a genuine gap in the MQ admin surface, there's no ENABLED/DISABLED flag. The REQONLY(YES) trick (from the classic mqseries.net thread with Morag Hughson) is the least-damaging workaround: switch the sub from push mode ('Publish all') to pull mode ('Publish on request'), and because nothing calls MQSUBREQ in the meantime, no publications flow to the destination queue. Topic-level and queue-level disables exist but have broader side effects.
 
 _References:_
 - <https://mqseries.net/phpBB/viewtopic.php?t=69195>
@@ -232,31 +232,31 @@ Clustering solves naming and workload distribution; it is not in itself message 
 - Once BackoutCount >= BOTHRESH, the next well-behaved consumer moves the message to BOQNAME (or DLQ if none)
 - Prevents a poison message from looping forever and blocking a queue
 
-Backout handling is a cooperation between the queue settings and the consumer — the qmgr only increments the counter; moving the message is done by a consumer that inspects it (or by MQ built-in handlers in JMS/ACE).
+Backout handling is a cooperation between the queue settings and the consumer, the qmgr only increments the counter; moving the message is done by a consumer that inspects it (or by MQ built-in handlers in JMS/ACE).
 
 ### Message structure
 
 **Q: Describe the structure of an MQ message.**
 
-- MQMD — message descriptor: format, persistence, priority, expiry, reply-to, correl/msg ids, put dates
+- MQMD, message descriptor: format, persistence, priority, expiry, reply-to, correl/msg ids, put dates
 - Optional headers: MQRFH2 (properties, pub/sub), MQDLH (dead letter), MQXQH (transmission queue), MQCIH (CICS bridge), etc.
-- User payload — bytes, XML, JSON, binary — interpretation is up to the application
+- User payload, bytes, XML, JSON, binary, interpretation is up to the application
 - Message properties live in MQRFH2 or API-style properties depending on how the app uses them
 
-MQ carries structured metadata plus an opaque body. Headers compose — an MQMD may be followed by an MQRFH2 and then the payload. Knowing this matters when building bridges or parsing raw messages.
+MQ carries structured metadata plus an opaque body. Headers compose, an MQMD may be followed by an MQRFH2 and then the payload. Knowing this matters when building bridges or parsing raw messages.
 
 ### Transactions
 
 **Q: Describe MQ unit of work.**
 
-- A unit of work groups message operations into a single transaction — puts and gets within it commit or roll back together, preserving data integrity across related operations
+- A unit of work groups message operations into a single transaction, puts and gets within it commit or roll back together, preserving data integrity across related operations
 - Visibility rule: messages put inside a UOW aren't visible to other applications until commit; messages got inside a UOW aren't permanently removed until commit
 - Apps opt in via MQGMO_SYNCPOINT / MQPMO_SYNCPOINT on individual get/put calls; control verbs are MQCMIT (commit), MQBACK (roll back), MQBEGIN (start a qmgr-coordinated global UOW)
-- Local UOW — only MQ resources, usually one qmgr, coordinated by the qmgr itself with single-phase commit
-- Global UOW — MQ plus one or more external resource managers (e.g. a DB); coordinated with two-phase commit, typically by an external TM or by the qmgr when apps use MQBEGIN
-- On rollback, MQMD.BackoutCount is incremented on any messages that were got under syncpoint — this is the hook for poison-message handling (compare against BOTHRESH, reroute to BOQNAME)
+- Local UOW, only MQ resources, usually one qmgr, coordinated by the qmgr itself with single-phase commit
+- Global UOW, MQ plus one or more external resource managers (e.g. a DB); coordinated with two-phase commit, typically by an external TM or by the qmgr when apps use MQBEGIN
+- On rollback, MQMD.BackoutCount is incremented on any messages that were got under syncpoint, this is the hook for poison-message handling (compare against BOTHRESH, reroute to BOQNAME)
 
-A UOW is how MQ gives you atomicity across several message operations, and (via XA) across MQ plus other resources like a database. Local vs global is really 'single-phase vs two-phase commit' — mention MQCMIT/MQBACK/MQBEGIN by name and you signal you've actually written transactional MQ code rather than just heard about it.
+A UOW is how MQ gives you atomicity across several message operations, and (via XA) across MQ plus other resources like a database. Local vs global is really 'single-phase vs two-phase commit', mention MQCMIT/MQBACK/MQBEGIN by name and you signal you've actually written transactional MQ code rather than just heard about it.
 
 _References:_
 - <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q026790_.html>
@@ -269,15 +269,15 @@ _References:_
 
 **Q: How are persistent messages implemented and configured in MQ?**
 
-- Persistent — written to the qmgr recovery log so the message can be recovered after a failure or restart; for business data you cannot afford to lose
-- Non-persistent — lighter and faster, not intended to survive qmgr failure/restart; for traffic where speed matters more than guaranteed delivery
+- Persistent, written to the qmgr recovery log so the message can be recovered after a failure or restart; for business data you cannot afford to lose
+- Non-persistent, lighter and faster, not intended to survive qmgr failure/restart; for traffic where speed matters more than guaranteed delivery
 - Persistence is carried on the message itself in MQMD.Persistence: MQPER_PERSISTENT (1), MQPER_NOT_PERSISTENT (0), MQPER_PERSISTENCE_AS_Q_DEF (2)
-- The queue's DEFPSIST attribute is only used when the app puts with AS_Q_DEF — it is a suggestion, not an enforced rule, so persistent and non-persistent messages can coexist on the same queue
+- The queue's DEFPSIST attribute is only used when the app puts with AS_Q_DEF, it is a suggestion, not an enforced rule, so persistent and non-persistent messages can coexist on the same queue
 - Non-persistent messages normally don't survive qmgr restart; NPMCLASS(HIGH) on the queue tells the qmgr to try to retain them across a normal restart (not supported on z/OS)
 - Non-persistent messages sent over a fast channel can be lost if the channel fails, because they aren't logged
-- From ACE/IIB flows, persistence + syncpoint is the primary tool for avoiding message loss — IBM recommends deliberate use rather than leaving it to defaults
+- From ACE/IIB flows, persistence + syncpoint is the primary tool for avoiding message loss, IBM recommends deliberate use rather than leaving it to defaults
 
-Persistence trades throughput for durability, and it is ALWAYS set by the putting application in MQMD.Persistence — the queue's DEFPSIST is just a suggestion used when the app opts in with AS_Q_DEF. The two gotchas to mention: NPMCLASS(HIGH) can preserve non-persistent messages across a normal restart, and non-persistent + fast channel means message loss is possible even without a restart.
+Persistence trades throughput for durability, and it is ALWAYS set by the putting application in MQMD.Persistence, the queue's DEFPSIST is just a suggestion used when the app opts in with AS_Q_DEF. The two gotchas to mention: NPMCLASS(HIGH) can preserve non-persistent messages across a normal restart, and non-persistent + fast channel means message loss is possible even without a restart.
 
 _References:_
 - <https://www.ibm.com/docs/en/ibm-mq/9.3.x?topic=objects-persistence>
@@ -292,9 +292,9 @@ _References:_
 
 **Q: Can a non-persistent message be put on a queue with DEFPSIST(YES), and vice versa?**
 
-- Yes — to both directions. Persistence is set by the putting application in MQMD.Persistence and always wins
+- Yes, to both directions. Persistence is set by the putting application in MQMD.Persistence and always wins
 - DEFPSIST is the queue's 'default persistence' attribute and is ONLY consulted when the app uses MQPER_PERSISTENCE_AS_Q_DEF
-- Result: persistent and non-persistent messages can sit on the same queue at the same time — that is normal and expected
+- Result: persistent and non-persistent messages can sit on the same queue at the same time, that is normal and expected
 - To verify what is actually on a queue, browse with the amqsbcg sample and inspect MQMD.Persistence (0 = non-persistent, 1 = persistent)
 - AS_Q_DEF can surprise you in resolution chains: the value is taken from the FIRST queue definition in the resolution path at put time (alias, local, remote, qmgr alias, xmitq, cluster queue)
 
@@ -309,44 +309,44 @@ _References:_
 
 **Q: What HA options does IBM MQ offer?**
 
-- **Externally managed (traditional installs)** — OS/cluster-level HA (Pacemaker, VCS, MSCS) plus Multi-Instance QMGR on shared storage (active/standby)
-- **MQ-managed on Linux** — RDQM: HA RDQM (three-node, synchronous, single site) and DR RDQM (two-node, asynchronous, cross-site); no shared storage needed
-- **MQ Appliance** — paired physical appliances with built-in replication, maintained as a unit
-- **MQ Cluster** — horizontal workload distribution across many active qmgrs; not message HA by itself, but enables application continuity when combined with per-qmgr HA
-- **Containers / cloud (modern)** — Native HA (3-node quorum, no shared storage) for in-cluster resilience, and Uniform Clusters for elastic app-level rebalance; typically layered together (Uniform Cluster of Native HA qmgrs)
+- **Externally managed (traditional installs)**: OS/cluster-level HA (Pacemaker, VCS, MSCS) plus Multi-Instance QMGR on shared storage (active/standby)
+- **MQ-managed on Linux**: RDQM: HA RDQM (three-node, synchronous, single site) and DR RDQM (two-node, asynchronous, cross-site); no shared storage needed
+- **MQ Appliance**: paired physical appliances with built-in replication, maintained as a unit
+- **MQ Cluster**: horizontal workload distribution across many active qmgrs; not message HA by itself, but enables application continuity when combined with per-qmgr HA
+- **Containers / cloud (modern)**: Native HA (3-node quorum, no shared storage) for in-cluster resilience, and Uniform Clusters for elastic app-level rebalance; typically layered together (Uniform Cluster of Native HA qmgrs)
 - Typical selection heuristic: legacy on-prem → clusters + MI or HA RDQM; new container / cloud deployment → Native HA + Uniform Cluster; mission-critical hardware appliance → MQ Appliance
 
-Always split 'system HA' (qmgr stays up), 'message HA' (no message loss) and 'application HA' (clients keep working) — a full answer picks a mechanism per layer. The modern direction is clearly Native HA + Uniform Clusters in containers; on traditional installs, HA RDQM has largely replaced MI as the default HA choice on Linux.
+Always split 'system HA' (qmgr stays up), 'message HA' (no message loss) and 'application HA' (clients keep working), a full answer picks a mechanism per layer. The modern direction is clearly Native HA + Uniform Clusters in containers; on traditional installs, HA RDQM has largely replaced MI as the default HA choice on Linux.
 
 _References:_
 - <https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=configuring-high-availability>
 
 **Q: What is Multi-Instance QMGR and what is its biggest weakness?**
 
-- MI = Multi-Instance queue manager: IBM MQ's built-in active/standby model with the SAME queue manager configured on two servers — not two qmgrs kept in sync
+- MI = Multi-Instance queue manager: IBM MQ's built-in active/standby model with the SAME queue manager configured on two servers, not two qmgrs kept in sync
 - One qmgr, data + logs on shared storage (typically NFSv4 with proper locking). Both servers point at the same data; the first instance to acquire the required read/write locks becomes active, the other stays standby
-- Only ONE active + ONE standby at a time — you can't configure one active with two standbys
+- Only ONE active + ONE standby at a time, you can't configure one active with two standbys
 - Failover triggers: the active instance dies, loses storage, or is detected as unresponsive and shut down; the standby then acquires the locks and becomes active
-- Clients need to be reconnectable via CCDT / client reconnect to follow the failover — IBM MQ classes for Java don't support automatic reconnect, worth knowing
-- Operationally: stop all MI instances before doing maintenance on the shared storage, and keep backups — MI doesn't protect against storage corruption
-- **Biggest weakness:** the storage layer. If the shared filesystem / NFS server goes away or locking misbehaves, both instances are dead — MI protects qmgr availability but inherits storage availability as a single point of failure
+- Clients need to be reconnectable via CCDT / client reconnect to follow the failover, IBM MQ classes for Java don't support automatic reconnect, worth knowing
+- Operationally: stop all MI instances before doing maintenance on the shared storage, and keep backups, MI doesn't protect against storage corruption
+- **Biggest weakness:** the storage layer. If the shared filesystem / NFS server goes away or locking misbehaves, both instances are dead, MI protects qmgr availability but inherits storage availability as a single point of failure
 
-MI is an elegant, low-ceremony failover model — one qmgr, two servers, shared storage, automatic failover — but it hard-depends on the shared filesystem behaving correctly. Most real MI incidents come from NFS or locking issues, not from MQ itself, so the honest summary is that MI converts 'server availability' into 'storage availability + locking correctness'.
+MI is an elegant, low-ceremony failover model, one qmgr, two servers, shared storage, automatic failover, but it hard-depends on the shared filesystem behaving correctly. Most real MI incidents come from NFS or locking issues, not from MQ itself, so the honest summary is that MI converts 'server availability' into 'storage availability + locking correctness'.
 
 _References:_
 - <https://www.ibm.com/docs/en/ibm-mq/9.3.x?topic=configurations-multi-instance-queue>
 
 **Q: What is RDQM and how does HA RDQM differ from DR RDQM?**
 
-- RDQM = Replicated Data Queue Manager — an IBM MQ availability option on **Linux** (RHEL x86-64 in 9.4) where the qmgr's data is replicated between nodes so another node can take over if the original is lost
+- RDQM = Replicated Data Queue Manager, an IBM MQ availability option on **Linux** (RHEL x86-64 in 9.4) where the qmgr's data is replicated between nodes so another node can take over if the original is lost
 - Uses **DRBD** for block-level data replication and **Pacemaker** for cluster/failover behaviour; no shared filesystem required (unlike MI)
-- **HA RDQM** — three nodes in an HA group, each holding an instance of the same qmgr. Only one is primary at a time; it synchronously replicates to the two secondaries. Uses a **three-node quorum** to avoid split-brain, automatic failover, optional floating IP so clients see one address
-- **DR RDQM** — primary on one node/site, secondary on another. Replication can be **synchronous or asynchronous, async is the default** — meaning some recent updates may not have reached the DR copy at the moment of disaster. Failover is **manual**: you promote the secondary then start the qmgr
+- **HA RDQM**: three nodes in an HA group, each holding an instance of the same qmgr. Only one is primary at a time; it synchronously replicates to the two secondaries. Uses a **three-node quorum** to avoid split-brain, automatic failover, optional floating IP so clients see one address
+- **DR RDQM**: primary on one node/site, secondary on another. Replication can be **synchronous or asynchronous, async is the default**: meaning some recent updates may not have reached the DR copy at the moment of disaster. Failover is **manual**: you promote the secondary then start the qmgr
 - **HA RDQM** is about fast local failover after a node failure (3 nodes, quorum, sync replication, automatic). **DR RDQM** is about site recovery after a bigger outage (2 nodes across sites, sync/async replication, manual promotion)
-- The two can be combined — an HA RDQM group at the primary site with a DR RDQM copy at a second site — for both node-level HA and cross-site DR
+- The two can be combined, an HA RDQM group at the primary site with a DR RDQM copy at a second site, for both node-level HA and cross-site DR
 - Since **MQ 9.4.4** IBM recommends Native HA as the preferred Linux HA option for new deployments; RDQM remains fully supported but is no longer the default recommendation
 
-RDQM solves the 'HA without shared storage' problem that plagued MI on Linux — DRBD replicates the data, Pacemaker handles failover, and a three-node quorum keeps split-brain off the table. Know the two flavours cold: HA RDQM = 3 nodes, sync, automatic, fast local failover; DR RDQM = 2 nodes, sync-or-async (async default), manual promotion, cross-site recovery. Mention that since 9.4.4 Native HA is IBM's recommended direction on Linux — RDQM still works and is supported, but the story for new deployments is increasingly 'Native HA in containers'.
+RDQM solves the 'HA without shared storage' problem that plagued MI on Linux, DRBD replicates the data, Pacemaker handles failover, and a three-node quorum keeps split-brain off the table. Know the two flavours cold: HA RDQM = 3 nodes, sync, automatic, fast local failover; DR RDQM = 2 nodes, sync-or-async (async default), manual promotion, cross-site recovery. Mention that since 9.4.4 Native HA is IBM's recommended direction on Linux, RDQM still works and is supported, but the story for new deployments is increasingly 'Native HA in containers'.
 
 _References:_
 - <https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=configuring-high-availability>
@@ -355,11 +355,11 @@ _References:_
 
 **Q: What is Native HA and where does it fit?**
 
-- Native HA is IBM MQ's built-in HA model for containers (and Linux) — three instances of the same queue manager, one active, two replicas
+- Native HA is IBM MQ's built-in HA model for containers (and Linux), three instances of the same queue manager, one active, two replicas
 - Uses the **Raft consensus algorithm**: the active can only confirm a logged write once a majority (2 of 3) of nodes have ACKed; this is what keeps data consistent and prevents split-brain. If the active loses the ability to maintain the majority, it stops itself rather than continuing unsafely
-- Shared-nothing — each node keeps its own local copy of the recovery log and rebuilds state from the replicated log. Replication happens over the network, removing MI's shared-storage dependency; distinct from RDQM which uses DRBD/Pacemaker (Native HA uses MQ's own replication + consensus)
+- Shared-nothing, each node keeps its own local copy of the recovery log and rebuilds state from the replicated log. Replication happens over the network, removing MI's shared-storage dependency; distinct from RDQM which uses DRBD/Pacemaker (Native HA uses MQ's own replication + consensus)
 - Same qmgr name across all three instances; each instance has its own unique instance name. Nodes can be containers, VMs or bare-metal, but all three must be the same type and on Linux the same processor architecture and geographical region, with consistent install paths, data paths and access to referenced files (e.g. keystores)
-- Log is replicated by recovery-log extents — size the log the same way you would for a linear-logging qmgr. The extent size is fixed at qmgr creation and key log settings must be consistent across all three instances. MQ schedules media images automatically for recovery
+- Log is replicated by recovery-log extents, size the log the same way you would for a linear-logging qmgr. The extent size is fixed at qmgr creation and key log settings must be consistent across all three instances. MQ schedules media images automatically for recovery
 - On Linux (non-k8s) there are no built-in liveness probes, so you need your own supervision (systemd or equivalent) to restart instances that fall over. In Kubernetes / OpenShift the operator handles liveness and restart
 - Client connectivity: outside k8s/OpenShift, point clients at a comma-separated list of all three node addresses so the client can reconnect to whichever is currently active
 
@@ -370,47 +370,47 @@ _References:_
 
 **Q: What is a Uniform Cluster?**
 
-- A Uniform Cluster is a specific IBM MQ cluster pattern where you build a small set of near-identical queue managers and let applications treat them as one logical group — connect to any member, get the same service
-- **Operating-model rules (stricter than a normal cluster):** all members configured almost identically; usually serving one app or one related app set; keep the cluster small — IBM recommends no more than 10 qmgrs; number of application instances should be at least equal to (preferably higher than) the number of qmgrs
+- A Uniform Cluster is a specific IBM MQ cluster pattern where you build a small set of near-identical queue managers and let applications treat them as one logical group, connect to any member, get the same service
+- **Operating-model rules (stricter than a normal cluster):** all members configured almost identically; usually serving one app or one related app set; keep the cluster small, IBM recommends no more than 10 qmgrs; number of application instances should be at least equal to (preferably higher than) the number of qmgrs
 - **What sits on every member:** same local queues, same SVRCONN channels, similar security/auth. Whichever qmgr a client reaches, it gets the same messaging service
-- **Application balancing** is the key feature — MQ groups connections by application name, treats same-name instances as equivalent, and can automatically spread instances more evenly across members or move them when needed. This is what a plain MQ cluster does NOT do
-- **Limits:** non-reconnectable clients can't be moved to another qmgr, and locally bound (bindings-mode) applications don't fit the model because they're tied to one qmgr — Uniform Clusters are really a reconnectable-client pattern
-- Often combined with **Native HA** qmgrs underneath — the Uniform Cluster handles app-level rebalance, Native HA handles per-qmgr node failure — giving both node and cluster resilience
+- **Application balancing** is the key feature, MQ groups connections by application name, treats same-name instances as equivalent, and can automatically spread instances more evenly across members or move them when needed. This is what a plain MQ cluster does NOT do
+- **Limits:** non-reconnectable clients can't be moved to another qmgr, and locally bound (bindings-mode) applications don't fit the model because they're tied to one qmgr, Uniform Clusters are really a reconnectable-client pattern
+- Often combined with **Native HA** qmgrs underneath, the Uniform Cluster handles app-level rebalance, Native HA handles per-qmgr node failure, giving both node and cluster resilience
 
-A plain MQ cluster is about clustered resources and message routing; a Uniform Cluster adds a stricter operating model that turns a handful of near-identical qmgrs into one horizontally scaled service. The thing that makes it 'uniform' rather than 'just a small cluster' is automatic application balancing — MQ itself decides which member each reconnectable client instance should land on, based on actual activity. Mention the main caveat: it only works for reconnectable clients, and locally bound apps are a poor fit.
+A plain MQ cluster is about clustered resources and message routing; a Uniform Cluster adds a stricter operating model that turns a handful of near-identical qmgrs into one horizontally scaled service. The thing that makes it 'uniform' rather than 'just a small cluster' is automatic application balancing, MQ itself decides which member each reconnectable client instance should land on, based on actual activity. Mention the main caveat: it only works for reconnectable clients, and locally bound apps are a poor fit.
 
 _References:_
 - <https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=cluster-about-uniform-clusters>
 
 **Q: How does Multi-Instance differ from true HA?**
 
-- MI is active/standby with a single live qmgr at any moment — traffic flows through one instance, the other just waits
+- MI is active/standby with a single live qmgr at any moment, traffic flows through one instance, the other just waits
 - A true HA pool has multiple live instances sharing the workload; loss of one instance is absorbed by the others with minimal or no perceived outage
-- MI failover takes time — lock release, storage handoff, channel restart, clients reconnect — so there's a brief outage even on a clean switch
+- MI failover takes time, lock release, storage handoff, channel restart, clients reconnect, so there's a brief outage even on a clean switch
 - Because only one instance is live, MI protects against losing the **active server**, not against higher rates of incoming traffic or against storage failure
-- In practice this positions MI closer to **DR** (minimise downtime when something breaks) than HA (be continuously available) — a genuine HA story adds something else: MQ Cluster, HA RDQM, Native HA, or Uniform Cluster
+- In practice this positions MI closer to **DR** (minimise downtime when something breaks) than HA (be continuously available), a genuine HA story adds something else: MQ Cluster, HA RDQM, Native HA, or Uniform Cluster
 - Common real-world pattern: MI (or HA RDQM) for per-qmgr resilience, combined with an MQ Cluster or Uniform Cluster in front so traffic always has a live qmgr to land on
 
-The clearest way to frame this: MI guarantees you'll still HAVE a qmgr after a failure, but not that you'll still be PROCESSING during the failover. True HA (clusters, Native HA, Uniform Cluster) keeps processing. A mature architecture usually combines both — MI/HA RDQM/Native HA to protect each qmgr individually, and clustering in front to keep the overall service live.
+The clearest way to frame this: MI guarantees you'll still HAVE a qmgr after a failure, but not that you'll still be PROCESSING during the failover. True HA (clusters, Native HA, Uniform Cluster) keeps processing. A mature architecture usually combines both, MI/HA RDQM/Native HA to protect each qmgr individually, and clustering in front to keep the overall service live.
 
 _References:_
 - <https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=configuring-high-availability>
 
 ### Monitoring
 
-**Q: How do you troubleshoot MQ issues — what's your default workflow?**
+**Q: How do you troubleshoot MQ issues, what's your default workflow?**
 
-- **Don't guess first** — capture the exact symptom, time, qmgr name, and category (startup? channels? apps? missing messages? performance? security/TLS?). IBM's own flow is: record symptoms → reproduce if possible → eliminate causes
+- **Don't guess first**: capture the exact symptom, time, qmgr name, and category (startup? channels? apps? missing messages? performance? security/TLS?). IBM's own flow is: record symptoms → reproduce if possible → eliminate causes
 - **1. Read the MQ error logs.** `AMQERR0*.LOG` in the errors directories (qmgr-level and top-level). Modern MQ tags messages with severity (I/W/E/S/T) and UTC ISO-8601 timestamps so you can line events up with OS and app logs. Look for recent AMQxxxx codes, repeated errors around the incident time, and whether it's qmgr, channel, command server, logging or app-connection flavoured
-- **2. Confirm the qmgr is actually healthy.** `dspmq` for state (Running / Ended normally / Ended unexpectedly). Then inside runmqsc: `DISPLAY QMSTATUS ALL`, `DISPLAY CHSTATUS(*) ALL`, `DISPLAY LSSTATUS(*) ALL` — fastest way to separate 'MQ is down' from 'MQ is up but connectivity is broken'
+- **2. Confirm the qmgr is actually healthy.** `dspmq` for state (Running / Ended normally / Ended unexpectedly). Then inside runmqsc: `DISPLAY QMSTATUS ALL`, `DISPLAY CHSTATUS(*) ALL`, `DISPLAY LSSTATUS(*) ALL`, fastest way to separate 'MQ is down' from 'MQ is up but connectivity is broken'
 - **3. Scope the problem.** Is it one qmgr or several? One app or all clients? Local puts/gets or only remote channels/queues? Did it start after a config change, maintenance, cert rotation, or server restart?
-- **4. 'Messages not arriving' — inspect queues + channels.** `DISPLAY QLOCAL(*) CURDEPTH IPPROCS OPPROCS`, `DISPLAY QSTATUS(<queue>) TYPE(QUEUE) CURDEPTH IPPROCS OPPROCS UNCOM`, `DISPLAY CHSTATUS(*) STATUS XQMSGS MSGS`. Clues: queue depth growing, UNCOM growing (syncpoint / backout issues), transmission queue backing up, channels in RETRYING/STOPPED
+- **4. 'Messages not arriving', inspect queues + channels.** `DISPLAY QLOCAL(*) CURDEPTH IPPROCS OPPROCS`, `DISPLAY QSTATUS(<queue>) TYPE(QUEUE) CURDEPTH IPPROCS OPPROCS UNCOM`, `DISPLAY CHSTATUS(*) STATUS XQMSGS MSGS`. Clues: queue depth growing, UNCOM growing (syncpoint / backout issues), transmission queue backing up, channels in RETRYING/STOPPED
 - **5. Trust MQRC / JMS exception codes from the app side** over vague 'MQ is broken' statements. You want: exact MQRC, whether it fails on connect / open / put / get / commit, and whether it's one instance or all
-- **6. FFST / FDC files only if logs suggest an internal MQ problem.** FFST is IBM-Support-level diagnostic data — not the first stop for normal operational incidents
+- **6. FFST / FDC files only if logs suggest an internal MQ problem.** FFST is IBM-Support-level diagnostic data, not the first stop for normal operational incidents
 - **7. Don't skip the boring checks early.** Disk space, memory, recent OS patching, network reachability, recent edits to `qm.ini`, channels, listeners, TLS config. IBM's 'initial checks' pages are deliberately basic because these checks often resolve the incident faster than deep tracing
 - **Default order:** (1) AMQERR logs → (2) `dspmq` → (3) QMSTATUS / CHSTATUS / LSSTATUS → (4) queue + UNCOM inspection → (5) app MQRCs → (6) FFST / trace only if still unclear
 
-The best answer is structured, not a grab-bag of commands. Lead with 'don't guess, capture symptoms', then walk through the layers: logs → qmgr health → scope → queues/channels → app reason codes → FFST/trace as a last resort. Mentioning UNCOM and CHSTATUS values (RETRYING / STOPPED) signals you've actually diagnosed a flow-not-moving incident, not just read the docs. FFST/FDC is a genuine MQ-internals red flag — if it's in the answer as 'step 1', that's a sign the candidate jumps to vendor-support mode before doing basic triage.
+The best answer is structured, not a grab-bag of commands. Lead with 'don't guess, capture symptoms', then walk through the layers: logs → qmgr health → scope → queues/channels → app reason codes → FFST/trace as a last resort. Mentioning UNCOM and CHSTATUS values (RETRYING / STOPPED) signals you've actually diagnosed a flow-not-moving incident, not just read the docs. FFST/FDC is a genuine MQ-internals red flag, if it's in the answer as 'step 1', that's a sign the candidate jumps to vendor-support mode before doing basic triage.
 
 _References:_
 - <https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=mq-troubleshooting-support>
@@ -422,11 +422,11 @@ _References:_
 
 **Q: What is the difference between LTS and CD MQ releases, and how do fix packs and CSUs fit in?**
 
-- **Two release streams:** LTS (Long Term Support) — slower, steadier, change introduced more conservatively; CD (Continuous Delivery) — new MQ function sooner, on a faster cadence
-- The streams are distinguished in the version number by the Modification digit (LTS = M0, CD = M>0) — see the versioning question for the full V.R.M.F breakdown
-- **Support model:** LTS is supported for the duration of that release (typically years); CD is supported for 12 months OR while it's one of the two most recent CD releases, whichever is longer — so CD forces you to stay current
-- **Fix packs vs CSUs:** fix packs deliver functional + security fixes; CSUs deliver security fixes only. Fix packs apply to LTS; CSUs apply to both LTS and CD. Both are cumulative — jump straight to a later one without installing every earlier one
-- **Migration impact:** moving between CD releases is a real upgrade, not just a patch — the modification level changes, qmgr objects migrate on first start, back up first. A fix pack / CSU that only bumps F doesn't change the command level
+- **Two release streams:** LTS (Long Term Support), slower, steadier, change introduced more conservatively; CD (Continuous Delivery), new MQ function sooner, on a faster cadence
+- The streams are distinguished in the version number by the Modification digit (LTS = M0, CD = M>0), see the versioning question for the full V.R.M.F breakdown
+- **Support model:** LTS is supported for the duration of that release (typically years); CD is supported for 12 months OR while it's one of the two most recent CD releases, whichever is longer, so CD forces you to stay current
+- **Fix packs vs CSUs:** fix packs deliver functional + security fixes; CSUs deliver security fixes only. Fix packs apply to LTS; CSUs apply to both LTS and CD. Both are cumulative, jump straight to a later one without installing every earlier one
+- **Migration impact:** moving between CD releases is a real upgrade, not just a patch, the modification level changes, qmgr objects migrate on first start, back up first. A fix pack / CSU that only bumps F doesn't change the command level
 - **Picking a stream:** LTS for slower-moving production estates; CD when you want early access to features and are prepared to move forward regularly. Many shops run LTS in prod and CD in dev/labs to preview what's coming
 
 LTS is steady, CD is fast. The two details that separate 'read the docs' from 'done the upgrade': (1) CD support forces you to stay within the last two CD releases or 12 months, and (2) CD-to-CD is an upgrade (command level migrates, needs a backup), not a patch. For the underlying V.R.M.F / F-digit mechanics, see the MQ versioning question.
@@ -440,15 +440,15 @@ _References:_
 
 **Q: Explain the IBM MQ versioning scheme (V.R.M.F) and what each digit means.**
 
-- IBM MQ uses a four-digit version scheme: **V.R.M.F** — Version . Release . Modification . Fix
-- **V (Version)** — major; a new V starts a whole new product lifecycle and support clock (e.g. MQ 8 → 9)
-- **R (Release)** — within a major; major new features that also start a new support clock. V and R together identify a supported release line (e.g. 9.3 vs 9.4)
-- **M (Modification)** — the LTS vs CD tell. **M = 0 → LTS baseline** (e.g. 9.4.0); **M > 0 → CD release** (9.4.1, 9.4.2…). CD modifications add features without creating a new R
-- **F (Fix / maintenance level)** — maintenance digit; does NOT change the qmgr command level. On LTS: F divisible by 5 = fix pack (functional + security), F non-divisible-by-5 = CSU (security-only). On CD: F is 0 or a CSU level
-- The initial .0 of a new version serves as BOTH the new LTS baseline AND the first CD release — identical bits, different support clocks from there
-- **Command level is tied to V.R.M, not F** — so a fix pack / CSU is a safe patch (no object migration), but moving V, R or M is an upgrade (qmgr objects migrate on first start, back up first)
+- IBM MQ uses a four-digit version scheme: **V.R.M.F**: Version . Release . Modification . Fix
+- **V (Version)**: major; a new V starts a whole new product lifecycle and support clock (e.g. MQ 8 → 9)
+- **R (Release)**: within a major; major new features that also start a new support clock. V and R together identify a supported release line (e.g. 9.3 vs 9.4)
+- **M (Modification)**: the LTS vs CD tell. **M = 0 → LTS baseline** (e.g. 9.4.0); **M > 0 → CD release** (9.4.1, 9.4.2…). CD modifications add features without creating a new R
+- **F (Fix / maintenance level)**: maintenance digit; does NOT change the qmgr command level. On LTS: F divisible by 5 = fix pack (functional + security), F non-divisible-by-5 = CSU (security-only). On CD: F is 0 or a CSU level
+- The initial .0 of a new version serves as BOTH the new LTS baseline AND the first CD release, identical bits, different support clocks from there
+- **Command level is tied to V.R.M, not F**: so a fix pack / CSU is a safe patch (no object migration), but moving V, R or M is an upgrade (qmgr objects migrate on first start, back up first)
 
-Once V.R.M.F is internalised, most release-and-support questions answer themselves: V and R set the support clock, M tells you LTS vs CD, F tells you fix pack vs CSU, and the command level only moves when V.R.M does. That last point is the one that trips people up — a CSU looks like a version bump but doesn't actually migrate the qmgr; a CD modification bump does.
+Once V.R.M.F is internalised, most release-and-support questions answer themselves: V and R set the support clock, M tells you LTS vs CD, F tells you fix pack vs CSU, and the command level only moves when V.R.M does. That last point is the one that trips people up, a CSU looks like a version bump but doesn't actually migrate the qmgr; a CD modification bump does.
 
 _References:_
 - <https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=mq-release-types-versioning>
@@ -457,17 +457,17 @@ _References:_
 
 **Q: A queue in a cluster is receiving no messages even though producers are active. How do you diagnose?**
 
-- Verify the queue is actually cluster-defined: `DIS QL(*) CLUSTER WHERE(QUEUE EQ 'APP.IN')` — check CLWLUSEQ, CLWLPRTY
-- Check cluster channel state on full repositories: `DIS CLUSQMGR(*)` — is the host qmgr known, not suspended?
+- Verify the queue is actually cluster-defined: `DIS QL(*) CLUSTER WHERE(QUEUE EQ 'APP.IN')`, check CLWLUSEQ, CLWLPRTY
+- Check cluster channel state on full repositories: `DIS CLUSQMGR(*)`, is the host qmgr known, not suspended?
 - Check on the consumer qmgr that the cluster queue is open locally and not suspended: `DIS CLUSQMGR` on the producer
-- Look at SYSTEM.CLUSTER.TRANSMIT.QUEUE depth — if deep, channel issue; if empty, routing decision issue
+- Look at SYSTEM.CLUSTER.TRANSMIT.QUEUE depth, if deep, channel issue; if empty, routing decision issue
 - REFRESH CLUSTER on full repos as a last resort to re-sync directory
 
 Cluster issues nearly always boil down to either a channel problem (messages are queued on the xmit queue) or a routing decision (messages never picked the queue). Checking both sides narrows it down quickly.
 
 **Q: A queue manager runs out of log space. What do you do?**
 
-- Identify the oldest in-flight transaction: `DIS CONN(*) WHERE(UOWSTATE EQ ACTIVE) ALL` — find long-running / stuck UOWs
+- Identify the oldest in-flight transaction: `DIS CONN(*) WHERE(UOWSTATE EQ ACTIVE) ALL`, find long-running / stuck UOWs
 - If linear logging, check `rcdmqimg` is running; missing media images prevent log reuse
 - Resolve or rollback hung XA transactions: `DIS CONN` + `RESOLVE CHANNEL` / `RSLVINDB`
 - Increase LogPrimary/Secondary Files as an emergency measure if disk allows
@@ -475,12 +475,12 @@ Cluster issues nearly always boil down to either a channel problem (messages are
 
 Log-full is usually a symptom of a stuck transaction or missing media-image housekeeping, not genuinely too many messages. Root-cause the holder before just expanding logs.
 
-**Q: A user says 'my messages disappeared after a qmgr restart' — walk me through the diagnosis.**
+**Q: A user says 'my messages disappeared after a qmgr restart', walk me through the diagnosis.**
 
 - First: were they persistent? Non-persistent messages are expected to be discarded on restart unless the queue has NPMCLASS(HIGH)
 - Verify persistence by browsing the queue with amqsbcg and checking MQMD.Persistence (0 non-persistent, 1 persistent); if they were NOT_PERSISTENT the 'loss' is by design
-- If the app used AS_Q_DEF, resolve where DEFPSIST actually came from — the FIRST queue in the resolution path (alias/remote/qmgr alias/xmitq/cluster), not necessarily the target local queue
-- Check whether the path used a fast channel (NONPERSISTENTMSGSPEED(FAST)) — non-persistent messages on a fast channel can be lost if the channel fails, without any restart
+- If the app used AS_Q_DEF, resolve where DEFPSIST actually came from, the FIRST queue in the resolution path (alias/remote/qmgr alias/xmitq/cluster), not necessarily the target local queue
+- Check whether the path used a fast channel (NONPERSISTENTMSGSPEED(FAST)), non-persistent messages on a fast channel can be lost if the channel fails, without any restart
 - Enable an MQ application trace to confirm what MQMD the put is actually setting, rather than assuming the app puts persistent
 - If everything should have been persistent but messages are still gone, use the 'Where's my message?' recovery-log approach to track what the qmgr actually did
 
@@ -491,20 +491,20 @@ _References:_
 - <https://www.ibm.com/support/pages/node/507119>
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=queues-browsing-sample-program>
 
-## MQ — Dev
+## MQ, Dev
 
 ### Connectivity
 
 **Q: What's the difference between a client (MQI) connection and a bindings (local) connection?**
 
-- **Bindings (local)** — app is on the same host as the qmgr and connects directly through the local MQ installation; no TCP/IP, lowest latency, no channel/listener needed
-- **Client (MQI)** — app connects over a network via an MQ client channel; needs host, port, SVRCONN channel name and qmgr name; requires a listener and channel definition on the MQ side
+- **Bindings (local)**: app is on the same host as the qmgr and connects directly through the local MQ installation; no TCP/IP, lowest latency, no channel/listener needed
+- **Client (MQI)**: app connects over a network via an MQ client channel; needs host, port, SVRCONN channel name and qmgr name; requires a listener and channel definition on the MQ side
 - Bindings can't cross hosts; client is mandatory for containers, microservices, or any app not co-located with the qmgr
 - `MQCONNX` + `MQCNO` options let an app pick the mode explicitly (local / client / reconnectable) rather than relying on env vars
-- **Dependency model:** bindings needs a local MQ installation on the app host; client needs only the MQ client libraries and the remote connection details — that's why client is the default for distributed architectures
+- **Dependency model:** bindings needs a local MQ installation on the app host; client needs only the MQ client libraries and the remote connection details, that's why client is the default for distributed architectures
 - In **ACE** the two paths are configured separately: a client connection needs a SVRCONN channel + listener on the remote qmgr, a local connection just names the co-located qmgr
 
-The essence: client = network access via a channel, bindings = same-host direct access through the local MQ runtime. Bindings is simpler and faster when app and qmgr live on the same server; client is more flexible and is the normal choice when they're separate. In ACE this shows up as two distinct configuration paths — client needs a channel + listener on the MQ side, local just needs the co-located qmgr name. Modern deployments (containers, separate app/qmgr pods) almost always use client mode with reconnection enabled.
+The essence: client = network access via a channel, bindings = same-host direct access through the local MQ runtime. Bindings is simpler and faster when app and qmgr live on the same server; client is more flexible and is the normal choice when they're separate. In ACE this shows up as two distinct configuration paths, client needs a channel + listener on the MQ side, local just needs the co-located qmgr name. Modern deployments (containers, separate app/qmgr pods) almost always use client mode with reconnection enabled.
 
 _References:_
 - <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q030760_.html>
@@ -513,15 +513,15 @@ _References:_
 
 **Q: What is a CCDT and how do you use it?**
 
-- **Client Channel Definition Table** — a file that carries the client-connection channel definitions and auth-related connection info an MQ client needs, so apps don't hardcode host/port/channel details
+- **Client Channel Definition Table**: a file that carries the client-connection channel definitions and auth-related connection info an MQ client needs, so apps don't hardcode host/port/channel details
 - Two formats: **binary** (classic, default name `AMQCLCHL.TAB`, edited with `runmqsc`) and **JSON** (newer, human-editable, IBM recommends for new setups); a typical entry has channel name, qmgr name, host, port, TLS settings
-- **Auto-created on Multiplatforms** — when you create a queue manager, MQ creates a default binary CCDT in the qmgr's `@ipcc` directory and keeps it in sync as you `DEFINE` / `ALTER` / `DELETE` client channels
+- **Auto-created on Multiplatforms**: when you create a queue manager, MQ creates a default binary CCDT in the qmgr's `@ipcc` directory and keeps it in sync as you `DEFINE` / `ALTER` / `DELETE` client channels
 - **Four ways to point a client at a CCDT:** `MQCHLLIB` + `MQCHLTAB` env vars (local file), `MQCCDTURL` env var (remote URL), or the MQ client config file via `ChannelDefinitionDirectory` + `ChannelDefinitionFile`. JMS apps use equivalent JMS properties
 - Supports multiple channels per connection name for failover and load balancing via `CLNTWGHT` / `AFFINITY`
-- You can create a CCDT directly on a client with `runmqsc -n` — writes to the location named by `MQCHLLIB` / `MQCHLTAB`, no qmgr required on the client
+- You can create a CCDT directly on a client with `runmqsc -n`, writes to the location named by `MQCHLLIB` / `MQCHLTAB`, no qmgr required on the client
 - **In ACE** the same idea ships as the `mqccdt` configuration type: an `mqccdt.json` file imported/pasted into the config, then referenced (e.g. from an MQ Endpoint policy) by integrations to resolve connection details
 
-A CCDT is the central connection-definition file for MQ clients — you put channels, hosts, ports and TLS details in one place and point clients at it, instead of embedding that knowledge in every app. Modern JSON format is human-editable (big win over the old binary `AMQCLCHL.TAB`), and multiple entries per connection name unlock failover and load balancing. ACE plugs into the same mechanism via the `mqccdt` config type.
+A CCDT is the central connection-definition file for MQ clients, you put channels, hosts, ports and TLS details in one place and point clients at it, instead of embedding that knowledge in every app. Modern JSON format is human-editable (big win over the old binary `AMQCLCHL.TAB`), and multiple entries per connection name unlock failover and load balancing. ACE plugs into the same mechanism via the `mqccdt` config type.
 
 _References:_
 - <https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=tables-configuring-binary-format-ccdt>
@@ -534,9 +534,9 @@ _References:_
 - **Automatic client reconnect (MQI):** set `MQCNO_RECONNECT` (reconnect to any eligible qmgr in the group) or `MQCNO_RECONNECT_Q_MGR` (same qmgr only, correct choice for MI-style HA). Or set `DefRecon=YES|QMGR` in `mqclient.ini` to enable it without code changes
 - **Automatic client reconnect (JMS):** enable via connection-factory properties `CLIENTRECONNECTOPTIONS` + `CONNECTIONNAMELIST` (or `CCDTURL`). Caveats: not supported in most Java EE scenarios, and NOT supported by IBM MQ classes for Java
 - **Requirements for auto-reconnect to work:** a supported client level, a threaded app, and a channel with `SHARECNV > 0`
-- **Multiple endpoints:** a CCDT or connection-name list with all candidate qmgrs — for MI include both active and standby addresses; for RDQM / MQ Appliance a floating IP is often simpler
-- **Failure detection — Heartbeat (HBINT):** MQ-layer liveness check on the channel; catches stuck MQ conversations that look fine to TCP. Set deliberately rather than leaving at the default when you want fast failure detection
-- **Failure detection — TCP KeepAlive:** OS-layer liveness; catches dead network paths and firewall idle-timeout drops. Enable on both the channel AND the OS (kernel defaults are often 2 hours — far too long). See the heartbeat and keepalive questions for details
+- **Multiple endpoints:** a CCDT or connection-name list with all candidate qmgrs, for MI include both active and standby addresses; for RDQM / MQ Appliance a floating IP is often simpler
+- **Failure detection, Heartbeat (HBINT):** MQ-layer liveness check on the channel; catches stuck MQ conversations that look fine to TCP. Set deliberately rather than leaving at the default when you want fast failure detection
+- **Failure detection, TCP KeepAlive:** OS-layer liveness; catches dead network paths and firewall idle-timeout drops. Enable on both the channel AND the OS (kernel defaults are often 2 hours, far too long). See the heartbeat and keepalive questions for details
 - **Application still has to cooperate:** reconnect doesn't make every app safe for free. Handle syncpoint / UOW correctly, be idempotent where it matters, resubmit backed-out transactions, restore state after reconnect
 - **Observability:** handle `MQRC_RECONNECTING` / `MQRC_RECONNECTED` (MQI) or the JMS reconnect callbacks so you know when it's happening and can log / alert
 
@@ -552,40 +552,40 @@ _References:_
 
 - **HBINT** = Heartbeat Interval, configured on a channel (both SVRCONN and sender/receiver channels). It's an **MQ-layer** liveness check
 - When a channel is idle for longer than HBINT, MQ sends a small heartbeat flow to verify the other side is still alive and responsive
-- The two ends negotiate HBINT at channel start — the **lower** of the two configured values wins
+- The two ends negotiate HBINT at channel start, the **lower** of the two configured values wins
 - Default is 300 seconds (5 minutes). Lower it when you need faster failure detection (at the cost of a bit more chatter)
-- Crucially, heartbeat works **even on an idle channel** — e.g. when a client is sitting inside a long-running MQGET with WAIT; without HBINT a dead-but-not-torn-down conversation looks fine
+- Crucially, heartbeat works **even on an idle channel**: e.g. when a client is sitting inside a long-running MQGET with WAIT; without HBINT a dead-but-not-torn-down conversation looks fine
 - Because it's an MQ conversation, HBINT can catch situations where the MQ agent is stuck even though the underlying TCP socket still appears connected
 
-HBINT is MQ's own liveness ping between a client and the qmgr (or between two qmgrs over a message channel). It operates above TCP, so it can notice problems with the MQ conversation that TCP itself doesn't see. Negotiated between peers — the lower value wins — so both sides should be set deliberately, not left at whatever was defined on one end.
+HBINT is MQ's own liveness ping between a client and the qmgr (or between two qmgrs over a message channel). It operates above TCP, so it can notice problems with the MQ conversation that TCP itself doesn't see. Negotiated between peers, the lower value wins, so both sides should be set deliberately, not left at whatever was defined on one end.
 
 _References:_
 - <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.con.doc/q081890_.html>
 
 **Q: What is the MQ TCP KeepAlive?**
 
-- **TCP KeepAlive** is an OS/network-layer mechanism — not MQ-specific. It asks the kernel to periodically probe idle TCP sockets to detect dead peers or broken network paths
-- Enabling it for MQ needs **two steps**: `KEEPALIVE(YES)` on the channel (or `TCP:KeepAlive=YES` in `qm.ini`), AND OS-level KeepAlive tuning — because kernel defaults are typically **2 hours** before the first probe, which is useless for most production scenarios
+- **TCP KeepAlive** is an OS/network-layer mechanism, not MQ-specific. It asks the kernel to periodically probe idle TCP sockets to detect dead peers or broken network paths
+- Enabling it for MQ needs **two steps**: `KEEPALIVE(YES)` on the channel (or `TCP:KeepAlive=YES` in `qm.ini`), AND OS-level KeepAlive tuning, because kernel defaults are typically **2 hours** before the first probe, which is useless for most production scenarios
 - **Linux sysctls:** `net.ipv4.tcp_keepalive_time` (idle before first probe), `tcp_keepalive_intvl` (probe gap), `tcp_keepalive_probes` (how many failed probes before declaring dead)
 - **Windows:** equivalent registry values under `HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters`
 - Main failures it catches: firewalls silently dropping idle connections, NAT entries timing out, dead network paths where the remote host disappeared without a proper close
 - Tune the idle time to beat your firewall's idle-drop window (often 15–30 minutes) rather than leaving it at the OS default
 
-TCP KeepAlive is the network layer's 'is this socket actually alive?' probe. It's a standard socket option — MQ just asks the OS to turn it on for its sockets. The subtlety is that enabling `KEEPALIVE(YES)` on the channel is only half the job; without tuning the OS-level interval the kernel default is so long that firewalls will silently drop connections long before a probe fires. IBM has a dedicated support note about this exact two-step setup.
+TCP KeepAlive is the network layer's 'is this socket actually alive?' probe. It's a standard socket option, MQ just asks the OS to turn it on for its sockets. The subtlety is that enabling `KEEPALIVE(YES)` on the channel is only half the job; without tuning the OS-level interval the kernel default is so long that firewalls will silently drop connections long before a probe fires. IBM has a dedicated support note about this exact two-step setup.
 
 _References:_
 - <https://www.ibm.com/support/pages/two-steps-are-needed-setting-tcpip-keepalive-ibm-mq>
 
 **Q: What's the difference between MQ Heartbeat (HBINT) and TCP KeepAlive, and how do they work together?**
 
-- **Different layers, different blind spots.** HBINT runs at the **MQ / MQI layer**; KeepAlive runs at the **TCP / OS layer** — neither sees what the other sees
+- **Different layers, different blind spots.** HBINT runs at the **MQ / MQI layer**; KeepAlive runs at the **TCP / OS layer**: neither sees what the other sees
 - **HBINT catches:** MQ conversation stuck while TCP looks fine (hung agent, long idle MQGET WAIT with a broken peer, mis-behaving client that no longer processes flows)
-- **KeepAlive catches:** network paths gone away, firewall silently dropping idle sockets, NAT entry timing out, peer host disappearing without a proper close — none of which HBINT notices because no MQ flow attempts are being made
+- **KeepAlive catches:** network paths gone away, firewall silently dropping idle sockets, NAT entry timing out, peer host disappearing without a proper close, none of which HBINT notices because no MQ flow attempts are being made
 - **Use both.** They're complementary, not alternatives. HBINT defends the MQ conversation; KeepAlive defends the underlying socket. Disabling one leaves the other's blind spot exposed
 - **Rough tuning:** HBINT somewhere between 60 s and the default 300 s (shorter = faster failure detection, a little more chatter). KeepAlive idle tuned to fire sooner than your network's firewall idle timeout (often 15 minutes or less)
-- On the channel config that means `HBINT(300)` (or lower) plus `KEEPALIVE(YES)` — and don't forget the OS-level keepalive knobs, otherwise KeepAlive is only nominally enabled
+- On the channel config that means `HBINT(300)` (or lower) plus `KEEPALIVE(YES)`, and don't forget the OS-level keepalive knobs, otherwise KeepAlive is only nominally enabled
 
-The cleanest way to frame it is by what each protocol sees: HBINT knows about MQ conversations but not about sockets, KeepAlive knows about sockets but not about MQ. Each blind spot is the other's strength, which is why production MQ setups enable both. The common mistake is turning on `KEEPALIVE(YES)` on the channel and assuming that's sufficient — kernel defaults of 2 hours before the first probe mean you'll still hit firewall idle drops, so OS-level tuning is mandatory for KeepAlive to actually do its job.
+The cleanest way to frame it is by what each protocol sees: HBINT knows about MQ conversations but not about sockets, KeepAlive knows about sockets but not about MQ. Each blind spot is the other's strength, which is why production MQ setups enable both. The common mistake is turning on `KEEPALIVE(YES)` on the channel and assuming that's sufficient, kernel defaults of 2 hours before the first probe mean you'll still hit firewall idle drops, so OS-level tuning is mandatory for KeepAlive to actually do its job.
 
 _References:_
 - <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.con.doc/q081890_.html>
@@ -595,14 +595,14 @@ _References:_
 
 **Q: How do you set a message as persistent from an MQ application?**
 
-- Persistence is carried on the message itself in `MQMD.Persistence` — set it before the put and your choice wins
+- Persistence is carried on the message itself in `MQMD.Persistence`, set it before the put and your choice wins
 - Three values: `MQPER_PERSISTENT` (1), `MQPER_NOT_PERSISTENT` (0), `MQPER_PERSISTENCE_AS_Q_DEF` (2, defer to the queue's DEFPSIST)
-- **Important:** the queue's `DEFPSIST` is only a default used when the app chooses `AS_Q_DEF` — it does NOT override an app that sets persistence explicitly, so persistent and non-persistent messages can coexist on the same queue
-- In JMS: `message.setJMSDeliveryMode(DeliveryMode.PERSISTENT)` (or `NON_PERSISTENT`) — mapped to the equivalent MQPER_* under the hood
-- Pair with syncpoint (`MQPMO_SYNCPOINT` or JMS transacted session) when you need the all-or-nothing guarantee — persistence without transactional puts still leaves gaps
+- **Important:** the queue's `DEFPSIST` is only a default used when the app chooses `AS_Q_DEF`, it does NOT override an app that sets persistence explicitly, so persistent and non-persistent messages can coexist on the same queue
+- In JMS: `message.setJMSDeliveryMode(DeliveryMode.PERSISTENT)` (or `NON_PERSISTENT`), mapped to the equivalent MQPER_* under the hood
+- Pair with syncpoint (`MQPMO_SYNCPOINT` or JMS transacted session) when you need the all-or-nothing guarantee, persistence without transactional puts still leaves gaps
 - For ACE flows, setting persistence on the MQOutput node is covered in the ACE-specific question
 
-Set persistence explicitly if the message matters — don't rely on queue defaults unless you deliberately want AS_Q_DEF behaviour. DEFPSIST is a suggestion, not an override, and persistent + non-persistent messages can sit on the same queue. Persistence alone doesn't give you atomicity — pair it with syncpoint when the message represents business state you can't afford to partially process.
+Set persistence explicitly if the message matters, don't rely on queue defaults unless you deliberately want AS_Q_DEF behaviour. DEFPSIST is a suggestion, not an override, and persistent + non-persistent messages can sit on the same queue. Persistence alone doesn't give you atomicity, pair it with syncpoint when the message represents business state you can't afford to partially process.
 
 _References:_
 - <https://www.ibm.com/support/pages/ibm-mq-message-persistence-faqs>
@@ -610,14 +610,14 @@ _References:_
 
 **Q: What are MQ message properties and how do they relate to MQRFH2?**
 
-- **Message properties are the logical / API concept** — typed name/value pairs attached to a message, set with `MQSETMP` or JMS `setStringProperty`. They're how an app attaches metadata for routing, filtering (selectors) or correlation without touching the body
-- **MQRFH2 is a wire-format header**, not the definition of what a property is. It's one possible physical carrier for some property data — not all properties live in an MQRFH2, and applications can access properties via MQI calls without ever parsing an MQRFH2
+- **Message properties are the logical / API concept**: typed name/value pairs attached to a message, set with `MQSETMP` or JMS `setStringProperty`. They're how an app attaches metadata for routing, filtering (selectors) or correlation without touching the body
+- **MQRFH2 is a wire-format header**, not the definition of what a property is. It's one possible physical carrier for some property data, not all properties live in an MQRFH2, and applications can access properties via MQI calls without ever parsing an MQRFH2
 - **MQRFH2 structure:** fixed part + variable `NameValueData` section containing XML-like folders; well-known folders include `mcd`, `jms`, `usr`, `mqext`, `mqps`. User-defined properties typically live in the `usr` folder (e.g. `usr.myproperty`)
 - **JMS interop is where MQRFH2 really matters:** JMS headers and properties that don't fit in the MQMD get carried in an MQRFH2. A property set as `usr.myproperty` in an MQI app is visible to a JMS app as a user property, and vice versa
-- **`PROPCTL`** (queue attribute) controls how properties are surfaced to older apps: `ALL`, `COMPAT`, `NONE`, `RFH2`, `V6COMPAT` — chooses whether downstream sees an actual MQRFH2, properties only via the API, or both
+- **`PROPCTL`** (queue attribute) controls how properties are surfaced to older apps: `ALL`, `COMPAT`, `NONE`, `RFH2`, `V6COMPAT`, chooses whether downstream sees an actual MQRFH2, properties only via the API, or both
 - Modern code almost always works with the properties API directly; manual MQRFH2 parsing is only needed for bridges, raw inspection, or interop with legacy systems that expect the header shape
 
-The clean framing is: **properties = API abstraction, MQRFH2 = on-the-wire header format that sometimes carries them**. Not everything is always stored in an MQRFH2, and you don't need to parse an MQRFH2 to read or set a property — the MQI exposes them directly. Candidates who conflate the two ('properties live in MQRFH2') give themselves away; the `PROPCTL` values and the usr/jms/mcd folder names are the precision tells.
+The clean framing is: **properties = API abstraction, MQRFH2 = on-the-wire header format that sometimes carries them**. Not everything is always stored in an MQRFH2, and you don't need to parse an MQRFH2 to read or set a property, the MQI exposes them directly. Candidates who conflate the two ('properties live in MQRFH2') give themselves away; the `PROPCTL` values and the usr/jms/mcd folder names are the precision tells.
 
 _References:_
 - <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q032000_.htm>
@@ -629,10 +629,10 @@ _References:_
 
 **Q: What are the three MQPER_* persistence values and what does AS_Q_DEF actually resolve to?**
 
-- MQPER_NOT_PERSISTENT (0) — message won't be logged; won't survive a qmgr restart (unless NPMCLASS(HIGH) is set on the queue for a normal restart)
-- MQPER_PERSISTENT (1) — message is logged and survives qmgr failure/restart
-- MQPER_PERSISTENCE_AS_Q_DEF (2) — take the default from the queue's DEFPSIST attribute (this is the MQMD default if the app doesn't set anything)
-- Resolution gotcha: when AS_Q_DEF is used, the default is taken from the FIRST queue definition in the resolution path at MQPUT/MQPUT1 time — alias, local, remote, qmgr alias, xmitq or cluster queue
+- MQPER_NOT_PERSISTENT (0), message won't be logged; won't survive a qmgr restart (unless NPMCLASS(HIGH) is set on the queue for a normal restart)
+- MQPER_PERSISTENT (1), message is logged and survives qmgr failure/restart
+- MQPER_PERSISTENCE_AS_Q_DEF (2), take the default from the queue's DEFPSIST attribute (this is the MQMD default if the app doesn't set anything)
+- Resolution gotcha: when AS_Q_DEF is used, the default is taken from the FIRST queue definition in the resolution path at MQPUT/MQPUT1 time, alias, local, remote, qmgr alias, xmitq or cluster queue
 - So the DEFPSIST you think you set (e.g. on the target local queue) may not be the one that gets applied if an alias or remote definition sits in front of it
 
 Every MQ developer has to know the three persistence values, but AS_Q_DEF is where the questions come from. Answering that the default is taken from the first queue in the resolution path (not the physical destination) is the signal you've debugged this at least once.
@@ -646,17 +646,17 @@ _References:_
 
 **Q: How does an application subscribe to a topic, and how do durable subscriptions differ?**
 
-- A subscription is a definition that tells the qmgr which topic string to listen on and **where to deliver matching publications** — it always resolves to a queue (the subscriber queue)
+- A subscription is a definition that tells the qmgr which topic string to listen on and **where to deliver matching publications**: it always resolves to a queue (the subscriber queue)
 - **Two ways to create one:** `MQSUB` from the application (API subscription) or `DEFINE SUB` administratively. In both cases you bind the subscription to a destination
 - **Destination options:** a **managed queue** that MQ creates and owns for the subscription, or a **provided queue** supplied by the application (e.g. an existing local queue)
 - Subscription properties include: topic string, destination, selector, scope, durability, and how pub/sub metadata is delivered (as message properties, as an RFH2 header, or not at all)
 - Wildcards `+` (single level) and `#` (multi-level) in the topic string let a subscriber pick a slice of the topic tree
-- **Non-durable** — lives only while the subscribing app is connected; the qmgr removes it on disconnect. Use for transient event streams where missing messages while offline is acceptable
-- **Durable** — survives disconnect; needs a unique `SubName`. The app can resume it later with `MQSUB` + `MQSO_RESUME`. Use when the subscriber must not miss publications during outages
-- **Warning for durable:** while the subscriber is offline, publications pile up on the subscriber queue — IBM flags this explicitly. Prefer non-durable unless you genuinely need offline retention
-- **ACE specifically does not subscribe natively** — an ACE flow doesn't issue `MQSUB`. Instead you create an MQ subscription (admin-side) that routes publications to a queue, then the ACE flow reads from that queue with an MQInput node. Subscription lifecycle is managed in MQ, flow logic stays queue-shaped
+- **Non-durable**: lives only while the subscribing app is connected; the qmgr removes it on disconnect. Use for transient event streams where missing messages while offline is acceptable
+- **Durable**: survives disconnect; needs a unique `SubName`. The app can resume it later with `MQSUB` + `MQSO_RESUME`. Use when the subscriber must not miss publications during outages
+- **Warning for durable:** while the subscriber is offline, publications pile up on the subscriber queue, IBM flags this explicitly. Prefer non-durable unless you genuinely need offline retention
+- **ACE specifically does not subscribe natively**: an ACE flow doesn't issue `MQSUB`. Instead you create an MQ subscription (admin-side) that routes publications to a queue, then the ACE flow reads from that queue with an MQInput node. Subscription lifecycle is managed in MQ, flow logic stays queue-shaped
 
-Subscribing is really about two choices: a topic string to listen on and a destination queue to receive matches. Non-durable sub = subscription disappears with the client; durable sub = subscription persists, messages keep arriving, app resumes by name. The key ACE nuance: ACE flows don't subscribe directly — you wire up an MQ subscription that feeds an ordinary queue, and the flow reads that queue. That's a common gotcha in interviews when someone expects a 'subscribe to a topic' flow primitive and the answer is 'no, you set up the subscription in MQ and read the resulting queue'.
+Subscribing is really about two choices: a topic string to listen on and a destination queue to receive matches. Non-durable sub = subscription disappears with the client; durable sub = subscription persists, messages keep arriving, app resumes by name. The key ACE nuance: ACE flows don't subscribe directly, you wire up an MQ subscription that feeds an ordinary queue, and the flow reads that queue. That's a common gotcha in interviews when someone expects a 'subscribe to a topic' flow primitive and the answer is 'no, you set up the subscription in MQ and read the resulting queue'.
 
 _References:_
 - <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=properties-mq-subscription>
@@ -670,10 +670,10 @@ _References:_
 
 **Q: When would you use an XA transaction with MQ?**
 
-- **Use XA when a single transaction must cover MQ + at least one other resource manager (typically a database) atomically.** A plain MQ client can do a MQ-only UOW, but not an MQ + another RM UOW — that's exactly the gap the extended transactional client / XA model fills
+- **Use XA when a single transaction must cover MQ + at least one other resource manager (typically a database) atomically.** A plain MQ client can do a MQ-only UOW, but not an MQ + another RM UOW, that's exactly the gap the extended transactional client / XA model fills
 - **Classic use case:** read a message → update a DB → commit both under one transaction. Either both land or neither does; no duplicate processing on failure
-- **Role shift:** with XA, the **queue manager is a resource manager, NOT the transaction manager** — an external TM (app server, Narayana, Tuxedo, WebSphere Liberty, …) coordinates the 2PC prepare/commit
-- Because the TM is in charge, the app does NOT use `MQBEGIN` / `MQCMIT` / `MQBACK` for that transaction — commit and rollback happen through the TM's API (`UserTransaction`, `TransactionManager.commit()`, JTA, etc.)
+- **Role shift:** with XA, the **queue manager is a resource manager, NOT the transaction manager**: an external TM (app server, Narayana, Tuxedo, WebSphere Liberty, …) coordinates the 2PC prepare/commit
+- Because the TM is in charge, the app does NOT use `MQBEGIN` / `MQCMIT` / `MQBACK` for that transaction, commit and rollback happen through the TM's API (`UserTransaction`, `TransactionManager.commit()`, JTA, etc.)
 - Each participant RM provides an **XA switch structure**; IBM MQ ships these, and IBM recommends the dynamic XA resource management interface where the TM supports it
 - **Only one qmgr at a time** can participate in a transaction coordinated by one instance of an external sync-point coordinator
 - **Extended transactional client constraint:** the external TM must run on the same system as the client application
@@ -691,16 +691,16 @@ _References:_
 
 **Q: How does an application handle poison messages?**
 
-- **Definition:** a poison message is a message that repeatedly fails processing and is rolled back every time — without a threshold or app-level handling, it just loops forever on the input queue, blocking the consumer and spinning downstream connections
-- On each rollback the qmgr increments `MQMD.BackoutCount` on the message — that's the hook, but only a hook: the qmgr itself does NOT move the message anywhere
+- **Definition:** a poison message is a message that repeatedly fails processing and is rolled back every time, without a threshold or app-level handling, it just loops forever on the input queue, blocking the consumer and spinning downstream connections
+- On each rollback the qmgr increments `MQMD.BackoutCount` on the message, that's the hook, but only a hook: the qmgr itself does NOT move the message anywhere
 - **Who actually moves it:** the consumer (or a framework wrapping it) compares `BackoutCount` to the queue's `BOTHRESH`; if the count reaches the threshold, it puts the message to `BOQNAME` (backout queue) or the qmgr DLQ if `BOQNAME` is not set
-- **Crucial trap:** `BOTHRESH` defaults to 0 on a queue, which means 'no threshold' — so unless you set `BOTHRESH` (and ideally `BOQNAME`) explicitly, or handle the limit in code, the message loops indefinitely. That infinite-loop state IS the poison-message problem
-- Frameworks (JMS listener containers, ACE, Spring JMS, IIB backout handlers) do this automatically, but they still depend on `BOTHRESH` being configured — if you deploy a framework handler onto a queue with `BOTHRESH(0)`, you still get an infinite loop
-- **Fallback when the backout put fails:** if the message hits the threshold but can't be put to the configured `BOQNAME` (queue full, doesn't exist, permissions wrong), it goes to the qmgr DLQ. For XMS non-persistent messages the docs specifically say it may be discarded — always monitor BOQNAME health and DLQ depth
-- **Backout count durability:** by default `BackoutCount` survives most restarts, but if you need it to be accurate across every qmgr restart scenario, MQ has a 'hardened backout count' option — turn it on only if you need it, it has a performance cost
+- **Crucial trap:** `BOTHRESH` defaults to 0 on a queue, which means 'no threshold', so unless you set `BOTHRESH` (and ideally `BOQNAME`) explicitly, or handle the limit in code, the message loops indefinitely. That infinite-loop state IS the poison-message problem
+- Frameworks (JMS listener containers, ACE, Spring JMS, IIB backout handlers) do this automatically, but they still depend on `BOTHRESH` being configured, if you deploy a framework handler onto a queue with `BOTHRESH(0)`, you still get an infinite loop
+- **Fallback when the backout put fails:** if the message hits the threshold but can't be put to the configured `BOQNAME` (queue full, doesn't exist, permissions wrong), it goes to the qmgr DLQ. For XMS non-persistent messages the docs specifically say it may be discarded, always monitor BOQNAME health and DLQ depth
+- **Backout count durability:** by default `BackoutCount` survives most restarts, but if you need it to be accurate across every qmgr restart scenario, MQ has a 'hardened backout count' option, turn it on only if you need it, it has a performance cost
 - Sensible defaults: set `BOTHRESH` (e.g. 3 or 5) and `BOQNAME` on every input queue as a standard, alert when a message is moved to the backout queue, and monitor both BOQNAME depth and DLQ depth so poison events are caught early
 
-Two things to nail in an answer: (1) the actual definition — a poison message is one that loops forever because nothing stops it — and (2) the collaboration model between MQ and the consumer. MQ provides the bookkeeping (BackoutCount) and the policy hooks (BOTHRESH, BOQNAME), but the consumer (or its framework) is what actually reroutes the message. With `BOTHRESH(0)` there IS no threshold, and 'I have a backout handler' doesn't help because it never fires — the number one operational mistake is assuming framework-level handling compensates for queue defaults that don't enable it. Know the fallback (DLQ if BOQNAME put fails) and the hardened-backout-count option for the precision tells.
+Two things to nail in an answer: (1) the actual definition, a poison message is one that loops forever because nothing stops it, and (2) the collaboration model between MQ and the consumer. MQ provides the bookkeeping (BackoutCount) and the policy hooks (BOTHRESH, BOQNAME), but the consumer (or its framework) is what actually reroutes the message. With `BOTHRESH(0)` there IS no threshold, and 'I have a backout handler' doesn't help because it never fires, the number one operational mistake is assuming framework-level handling compensates for queue defaults that don't enable it. Know the fallback (DLQ if BOQNAME put fails) and the hardened-backout-count option for the precision tells.
 
 _References:_
 - <https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=consumers-poison-messages-in-xms>
@@ -709,16 +709,16 @@ _References:_
 
 ### APIs
 
-**Q: MQI vs JMS — when do you pick which?**
+**Q: MQI vs JMS, when do you pick which?**
 
-- **MQI** — IBM MQ's **native** API (C, Java, .NET, Go). Full feature set, best control, MQ-specific semantics. Classic client/server apps link the MQ client library and connect with `MQCONN` / `MQCONNX`
-- **JMS** — the **standard Java messaging API**, which IBM MQ also supports. Portable across brokers, higher-level, fits Java EE / Spring / application-server style development. JMS send/receive maps onto MQI put/get
-- **MQI gives you** direct access to MQMD fields, custom headers, PCF / admin calls, and every MQ-specific feature as it's released — no abstraction in the way
+- **MQI**: IBM MQ's **native** API (C, Java, .NET, Go). Full feature set, best control, MQ-specific semantics. Classic client/server apps link the MQ client library and connect with `MQCONN` / `MQCONNX`
+- **JMS**: the **standard Java messaging API**, which IBM MQ also supports. Portable across brokers, higher-level, fits Java EE / Spring / application-server style development. JMS send/receive maps onto MQI put/get
+- **MQI gives you** direct access to MQMD fields, custom headers, PCF / admin calls, and every MQ-specific feature as it's released, no abstraction in the way
 - **JMS gives you** the portable Java programming model, familiar JMS patterns (connection factories, sessions, listeners), and clean integration with Java EE / Spring / MDBs
 - **Trade-off framing:** MQI = MQ-native and product-specific; JMS = Java-standard and abstraction-oriented
 - **Practical rule:** Java app in a Java stack, especially in a WebSphere / Spring / app-server environment → **JMS**. Bridge, non-Java language, custom broker code, or MQ features JMS doesn't expose → **MQI**
 
-JMS is the ergonomic, portable choice for Java apps — especially anything that lives inside an app server or Spring — and it maps onto the same MQI put/get model under the hood. MQI is the escape hatch when you need something JMS doesn't surface, when you're outside Java altogether, or when the app is genuinely MQ-native rather than 'a Java app that happens to use messaging'. The framing that separates a good answer from a great one: MQ-native vs Java-standard.
+JMS is the ergonomic, portable choice for Java apps, especially anything that lives inside an app server or Spring, and it maps onto the same MQI put/get model under the hood. MQI is the escape hatch when you need something JMS doesn't surface, when you're outside Java altogether, or when the app is genuinely MQ-native rather than 'a Java app that happens to use messaging'. The framing that separates a good answer from a great one: MQ-native vs Java-standard.
 
 _References:_
 - <https://www.ibm.com/docs/en/was/9.0.5?topic=network-differences-between-service-integration-mq>
@@ -729,16 +729,16 @@ _References:_
 
 **Q: What are the important MQGET options you use in practice?**
 
-- **`MQGMO_WAIT` + `WaitInterval`** — block until a message arrives (or the interval expires). The standard consumer pattern; default without it is to return immediately if the queue is empty
-- **`MQGMO_FAIL_IF_QUIESCING`** — a must-have in practice. If the qmgr is quiescing, the call fails cleanly instead of hanging. IBM best-practice explicitly says don't use `MQOPEN` / `MQGET` / `MQPUT` without the corresponding FAIL_IF_QUIESCING; combined with an unbounded WAIT, its absence is how apps block qmgr shutdowns
-- **`MQGMO_SYNCPOINT`** — get the message under the current unit of work so a rollback returns it to the queue. Essential for reliable processing; paired with backout-count handling for poison-message defence. Without syncpoint, the message is gone the moment MQGET returns
-- **`MQGMO_BROWSE_FIRST` / `MQGMO_BROWSE_NEXT` / `MQGMO_BROWSE_MSG_UNDER_CURSOR`** — inspect messages without removing them, walk a queue, or re-read the current browsed message. Useful for admin tools, diagnostics, selectors, and peek-then-destructive-get patterns
+- **`MQGMO_WAIT` + `WaitInterval`**: block until a message arrives (or the interval expires). The standard consumer pattern; default without it is to return immediately if the queue is empty
+- **`MQGMO_FAIL_IF_QUIESCING`**: a must-have in practice. If the qmgr is quiescing, the call fails cleanly instead of hanging. IBM best-practice explicitly says don't use `MQOPEN` / `MQGET` / `MQPUT` without the corresponding FAIL_IF_QUIESCING; combined with an unbounded WAIT, its absence is how apps block qmgr shutdowns
+- **`MQGMO_SYNCPOINT`**: get the message under the current unit of work so a rollback returns it to the queue. Essential for reliable processing; paired with backout-count handling for poison-message defence. Without syncpoint, the message is gone the moment MQGET returns
+- **`MQGMO_BROWSE_FIRST` / `MQGMO_BROWSE_NEXT` / `MQGMO_BROWSE_MSG_UNDER_CURSOR`**: inspect messages without removing them, walk a queue, or re-read the current browsed message. Useful for admin tools, diagnostics, selectors, and peek-then-destructive-get patterns
 - **Get by correlation (request/reply, grouping, targeted retrieval):** set `MQMD.MsgId` / `MQMD.CorrelId` / `MQMD.GroupId` on the MQMD you pass in, and set `MQGMO.MatchOptions` to the corresponding `MQMO_MATCH_MSG_ID` / `MQMO_MATCH_CORREL_ID` / `MQMO_MATCH_GROUP_ID` so only a matching message is returned. Canonical request/reply: requester sends with `MsgId=A`, replier sets `CorrelId=A` on the reply, requester gets with `MatchOptions=MQMO_MATCH_CORREL_ID` + `MQMD.CorrelId=A`
-- **`MQGMO_CONVERT`** — asks MQ to convert the message body to the receiving app's CCSID and encoding where supported. Use it when consumers sit on different platforms and you want MQ to do the conversion for you
-- **`MQGMO_ACCEPT_TRUNCATED_MSG`** — return whatever fits in the supplied buffer with a truncated reason code instead of failing outright when the message is larger than the buffer. Useful when you deliberately want partial data rather than an error
+- **`MQGMO_CONVERT`**: asks MQ to convert the message body to the receiving app's CCSID and encoding where supported. Use it when consumers sit on different platforms and you want MQ to do the conversion for you
+- **`MQGMO_ACCEPT_TRUNCATED_MSG`**: return whatever fits in the supplied buffer with a truncated reason code instead of failing outright when the message is larger than the buffer. Useful when you deliberately want partial data rather than an error
 - **Other flags to know:** `MQGMO_NO_SYNCPOINT` (explicit opt-out), the `MQGMO_PROPERTIES_*` variants (control whether properties come back inline, as MQRFH2, or via the API only)
 
-MQGET's behaviour is split across two inputs: the `MQGMO` flags (wait, fail-if-quiescing, syncpoint, browse, convert…) and the `MQMD` fields you pass in for matching (MsgId, CorrelId, GroupId, plus `MQGMO.MatchOptions` saying which of those to match on). Mixing those up — e.g. saying 'CorrelId is an MQGMO flag' — is a small giveaway. In practice the default loop is **WAIT + FAIL_IF_QUIESCING + often SYNCPOINT**; add match options for targeted retrieval, browse flags for inspection, and CONVERT / ACCEPT_TRUNCATED_MSG only when the app really needs them. The FAIL_IF_QUIESCING habit is the one people forget most often, and it's the one that'll bite you during an orderly qmgr shutdown.
+MQGET's behaviour is split across two inputs: the `MQGMO` flags (wait, fail-if-quiescing, syncpoint, browse, convert…) and the `MQMD` fields you pass in for matching (MsgId, CorrelId, GroupId, plus `MQGMO.MatchOptions` saying which of those to match on). Mixing those up, e.g. saying 'CorrelId is an MQGMO flag', is a small giveaway. In practice the default loop is **WAIT + FAIL_IF_QUIESCING + often SYNCPOINT**; add match options for targeted retrieval, browse flags for inspection, and CONVERT / ACCEPT_TRUNCATED_MSG only when the app really needs them. The FAIL_IF_QUIESCING habit is the one people forget most often, and it's the one that'll bite you during an orderly qmgr shutdown.
 
 _References:_
 - <https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=reference-mqgmo-get-message-options>
@@ -747,59 +747,59 @@ _References:_
 - <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.dev.doc/q101830_.html>
 - <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q026320_.html>
 
-## ACE — Admin
+## ACE, Admin
 
 ### Versions
 
 **Q: What versions of WMB/IIB/ACE have you used and how do they relate?**
 
-- Pre-history — **MQSI** v1/v2 (1999-2000) → **WBIMQI** v2.1 (2002) → **WBIMB** v5.0/5.1 (2003); same product line, repeated rebrands
-- **WebSphere Message Broker (WMB)** — v6/v6.1 (2006), v7 (2009), v8 (2011); mostly out of support now
-- **IBM Integration Bus (IIB)** — v9 (2013), v10 (2015); rebrand of WMB, architecturally close to what became ACE v11
-- **App Connect Enterprise (ACE) v11** (2018) — first 'ACE' release; introduced the Standalone Integration Server as a first-class model alongside the Integration Node
-- **ACE v12** (2021) — the widely-deployed family; shift to ibmint-based tooling and strong container / CP4I story
-- **ACE v13** (GA 27 Sep 2024) — current major; continues the CD cadence, deepens the container-native / ibmint direction, new 5+1+3 support policy
+- Pre-history, **MQSI** v1/v2 (1999-2000) → **WBIMQI** v2.1 (2002) → **WBIMB** v5.0/5.1 (2003); same product line, repeated rebrands
+- **WebSphere Message Broker (WMB)**: v6/v6.1 (2006), v7 (2009), v8 (2011); mostly out of support now
+- **IBM Integration Bus (IIB)**: v9 (2013), v10 (2015); rebrand of WMB, architecturally close to what became ACE v11
+- **App Connect Enterprise (ACE) v11** (2018), first 'ACE' release; introduced the Standalone Integration Server as a first-class model alongside the Integration Node
+- **ACE v12** (2021), the widely-deployed family; shift to ibmint-based tooling and strong container / CP4I story
+- **ACE v13** (GA 27 Sep 2024), current major; continues the CD cadence, deepens the container-native / ibmint direction, new 5+1+3 support policy
 - Concepts (flows, ESQL, BAR files, parsers) stay largely consistent across all of them; tooling, deployment model and cloud integration are what change
 
-The product has been around since 1999 under five different names. Most flow and ESQL knowledge carries forward from WMB through ACE v13 — that's why experienced developers rarely need to relearn the fundamentals. The real differences version-to-version are tooling (toolkit → ibmint), Integration Node vs Standalone Integration Server, and the cloud / container story.
+The product has been around since 1999 under five different names. Most flow and ESQL knowledge carries forward from WMB through ACE v13, that's why experienced developers rarely need to relearn the fundamentals. The real differences version-to-version are tooling (toolkit → ibmint), Integration Node vs Standalone Integration Server, and the cloud / container story.
 
 **Q: What is the current ACE release cadence, support policy, and product editions?**
 
-- Current major family is ACE v13 — GA 27 September 2024; v12 is still widely deployed and supported
+- Current major family is ACE v13, GA 27 September 2024; v12 is still widely deployed and supported
 - Support policy is **5 + 1 + 3** (new from v13): 5 years standard support, then 1 year extended support for new defects, then 3 years extended support for usage / known defects only
 - For v13 that means end of standard support 2029, end of extended support 2033
 - Older cycles for reference: v12 = 5+3, v11 = 5+3 later extended to 6+2, IIB v10 = 5+3 extended to 7+3
-- Continuous Delivery stream — frequent mod-releases (12.0.x, 13.0.x) add new features inside the same lifecycle dates (see the ACE versioning question for how V.R.M.F maps to this)
+- Continuous Delivery stream, frequent mod-releases (12.0.x, 13.0.x) add new features inside the same lifecycle dates (see the ACE versioning question for how V.R.M.F maps to this)
 - Product editions were renamed in v13: Developer → **Evaluation**, Non-Production-Free → **Development**, Non-Production stays, Advanced → **Production-Advanced**, Standard → **Production-Standard**
 - Evaluation is unsupported and capped at 1 msg/sec; Development/Non-Production/Production-* are all Unlimited performance; Production-Standard has production rights but not in containers and is limited to 1 integration server per integration node
 
-The headlines to remember: v13 is current, support is 5+1+3 (new from v13), and editions were renamed to make permitted usage explicit. For how V.R.M.F maps to lifecycle vs mod-releases, see the ACE versioning question. Note: all of the above is the ON-PREM release model — the ACE Operator (CP4I / OpenShift) has its own release model, channels and lifecycle, covered separately.
+The headlines to remember: v13 is current, support is 5+1+3 (new from v13), and editions were renamed to make permitted usage explicit. For how V.R.M.F maps to lifecycle vs mod-releases, see the ACE versioning question. Note: all of the above is the ON-PREM release model, the ACE Operator (CP4I / OpenShift) has its own release model, channels and lifecycle, covered separately.
 
 _References:_
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=new-whats-app-connect-enterprise>
 
 **Q: What are the major changes between WMB/IIB/ACE versions, and how easy is it to migrate between them?**
 
-- WMB v8 → IIB v10 — primarily a rebrand plus refinements; projects usually migrate with a toolkit import and a rebuild, few code changes
-- IIB v10 → ACE v11 — the big architectural shift: Standalone Integration Server introduced as a first-class model next to Integration Node; moderate effort as you decide whether to stay on nodes or move to standalone servers
-- ACE v11 → v12 — relatively smooth at the flow level; main work is adopting the new ibmint-based tooling (ibmint package, ibmint deploy, ibmint optimize) and updating CI pipelines that relied on toolkit/mqsi commands
-- ACE v12 → v13 — CD-style upgrade; continues the container-native and ibmint direction, some deprecations to review, typically the lightest jump if you're already on modern tooling
-- Flow/ESQL code, BAR structure and most node properties tend to survive migration intact — the effort sits in tooling, deployment and policies rather than business logic
+- WMB v8 → IIB v10, primarily a rebrand plus refinements; projects usually migrate with a toolkit import and a rebuild, few code changes
+- IIB v10 → ACE v11, the big architectural shift: Standalone Integration Server introduced as a first-class model next to Integration Node; moderate effort as you decide whether to stay on nodes or move to standalone servers
+- ACE v11 → v12, relatively smooth at the flow level; main work is adopting the new ibmint-based tooling (ibmint package, ibmint deploy, ibmint optimize) and updating CI pipelines that relied on toolkit/mqsi commands
+- ACE v12 → v13, CD-style upgrade; continues the container-native and ibmint direction, some deprecations to review, typically the lightest jump if you're already on modern tooling
+- Flow/ESQL code, BAR structure and most node properties tend to survive migration intact, the effort sits in tooling, deployment and policies rather than business logic
 - Standard migration checklist: read the 'What's new' / deprecations page, rebuild BARs with the new toolkit or ibmint, run regression tests against a parallel environment, refresh CI and container images
 
 Each jump has a different flavour: WMB→IIB is cosmetic, IIB→ACE v11 is architectural, v11→v12 is tooling-driven, v12→v13 is incremental CD evolution. Most customers don't skip two majors in one go because each step has its own 'What's new' / deprecations page that has to be worked through; the biggest migrations are usually the old IIB→ACE v11 jumps, not the newer ones.
 
 **Q: How does the release model of the ACE Operator (CP4I / OpenShift) differ from on-prem ACE?**
 
-- The ACE Operator packages the ACE certified container and is delivered through IBM's operator channels on OpenShift — separate artefact and lifecycle from the on-prem installer
-- Two release streams for the operator: **Continuous Delivery (CD)** channel and an **LTS / Cycle-2** channel — you pick the channel that matches your risk/feature appetite
+- The ACE Operator packages the ACE certified container and is delivered through IBM's operator channels on OpenShift, separate artefact and lifecycle from the on-prem installer
+- Two release streams for the operator: **Continuous Delivery (CD)** channel and an **LTS / Cycle-2** channel, you pick the channel that matches your risk/feature appetite
 - **Operator version ≠ operand version.** The operator software has its own version; the integration server image it deploys (the 'operand') has its own ACE version (e.g. 13.0.2.x). The IBM docs publish the supported operand-version-per-channel matrix
 - Upgrades are driven by the OpenShift OLM subscription to a channel; switching channel = switching lifecycle, not just updating the operator
 - On CP4I, IBM supports the whole stack: operator + container images + Red Hat OpenShift + Common Services, rather than the on-prem 'just the ACE bits' scope
-- Extended Update Support (EUS) is available but only for specific combinations — an EUS operator supports only certain operand versions / channels
-- In interview terms: describe it as 'two products sharing a runtime' — the operator handles packaging, lifecycle and k8s integration; the operand is the ACE runtime itself
+- Extended Update Support (EUS) is available but only for specific combinations, an EUS operator supports only certain operand versions / channels
+- In interview terms: describe it as 'two products sharing a runtime', the operator handles packaging, lifecycle and k8s integration; the operand is the ACE runtime itself
 
-The operator world is stream- and channel-based rather than version-and-fix-pack based. The important mental shift is that you subscribe to a channel in OLM and IBM publishes which operand (ACE container) versions flow through that channel — you don't pin a specific ACE fix-pack the way you would on-prem. Know the words 'operator', 'operand', 'channel', 'CD vs LTS/Cycle-2', and 'EUS' and you're fluent.
+The operator world is stream- and channel-based rather than version-and-fix-pack based. The important mental shift is that you subscribe to a channel in OLM and IBM publishes which operand (ACE container) versions flow through that channel, you don't pin a specific ACE fix-pack the way you would on-prem. Know the words 'operator', 'operand', 'channel', 'CD vs LTS/Cycle-2', and 'EUS' and you're fluent.
 
 _References:_
 - <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=release-models-packaging-versions-app-connect-operator>
@@ -808,52 +808,52 @@ _References:_
 
 **Q: Explain the ACE versioning scheme (V.R.M.F) and what each digit means.**
 
-- ACE uses the standard IBM **V.R.M.F** scheme — Version . Release . Modification . Fix
-- **V (Version)** and **R (Release)** — major changes that start a new support lifecycle (e.g. ACE 12 → 13). V/R is what the 5+1+3 support clock is tied to
-- **M (Modification)** — adds new features within the existing V.R lifecycle without restarting the support clock; this is where the Continuous Delivery cadence sits (13.0.1, 13.0.2, …)
-- **F (Fix-pack / maintenance)** — fixes only, doesn't change the command level; applied on top of a given V.R.M
-- Unlike MQ, ACE doesn't split its numbering into distinct LTS vs CD streams — it's the same V.R.M.F where M is where new features land and F is maintenance
+- ACE uses the standard IBM **V.R.M.F** scheme, Version . Release . Modification . Fix
+- **V (Version)** and **R (Release)**: major changes that start a new support lifecycle (e.g. ACE 12 → 13). V/R is what the 5+1+3 support clock is tied to
+- **M (Modification)**: adds new features within the existing V.R lifecycle without restarting the support clock; this is where the Continuous Delivery cadence sits (13.0.1, 13.0.2, …)
+- **F (Fix-pack / maintenance)**: fixes only, doesn't change the command level; applied on top of a given V.R.M
+- Unlike MQ, ACE doesn't split its numbering into distinct LTS vs CD streams, it's the same V.R.M.F where M is where new features land and F is maintenance
 - Practical rule: a V or R change is a real upgrade (new support window, plan it); M is a mod-release with new features but same window; F is a patch
 
-V.R.M.F is the same four-digit scheme IBM uses across its products, but ACE applies it without MQ's LTS/CD split — new features arrive as modifications inside the current V.R lifecycle, and the support clock only resets on V or R changes. Being crisp about which digit moves tells you exactly what kind of change you're planning: V/R = new lifecycle, M = features inside the same lifecycle, F = fixes only.
+V.R.M.F is the same four-digit scheme IBM uses across its products, but ACE applies it without MQ's LTS/CD split, new features arrive as modifications inside the current V.R lifecycle, and the support clock only resets on V or R changes. Being crisp about which digit moves tells you exactly what kind of change you're planning: V/R = new lifecycle, M = features inside the same lifecycle, F = fixes only.
 
 _References:_
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=new-whats-app-connect-enterprise>
 
 ### Topology
 
-**Q: Integration Node vs Standalone Integration Server — what's the difference?**
+**Q: Integration Node vs Standalone Integration Server, what's the difference?**
 
-- **Integration Node** — the classic model: a node process manages one or more Integration Servers; centralised admin, shared queue for commands, single place to deploy and start/stop servers
-- **Standalone Integration Server** — a single Integration Server process with no managing node; simpler lifecycle, one process = one deployable artefact
+- **Integration Node**: the classic model: a node process manages one or more Integration Servers; centralised admin, shared queue for commands, single place to deploy and start/stop servers
+- **Standalone Integration Server**: a single Integration Server process with no managing node; simpler lifecycle, one process = one deployable artefact
 - Historically an Integration Node needed a local MQ install to handle admin; since ACE v12 you can run a node without that hard MQ dependency, though a local MQ still makes day-to-day admin easier
-- Standalone does NOT require MQ either — but you can still configure MQ for a standalone server if your flows use MQ nodes, or to back admin/monitoring
-- Admin surface is similar for both — Web UI, REST API, ibmint/mqsi commands — just scoped differently (node vs single server)
+- Standalone does NOT require MQ either, but you can still configure MQ for a standalone server if your flows use MQ nodes, or to back admin/monitoring
+- Admin surface is similar for both, Web UI, REST API, ibmint/mqsi commands, just scoped differently (node vs single server)
 - Pick **Node** when you want to manage several servers together on the same host and like the classic admin experience; pick **Standalone** for microservice-style deployments, containers, CP4I, or CI-driven pipelines
 - IBM's direction of travel is clearly standalone + containers; new deployments (especially k8s / CP4I) should default to standalone
 
-Both models run the same flow engine — the difference is lifecycle and management. Integration Node gives you a 'mini control plane' that can manage multiple servers on a host; standalone gives you one process you can containerise and orchestrate elsewhere. Clarify the MQ question carefully: since v12, neither model has a hard MQ requirement, but MQ remains useful (mandatory for MQ nodes in flows, and historically the admin transport on a node). Most of the shops you'll walk into today either already run standalone or are migrating to it.
+Both models run the same flow engine, the difference is lifecycle and management. Integration Node gives you a 'mini control plane' that can manage multiple servers on a host; standalone gives you one process you can containerise and orchestrate elsewhere. Clarify the MQ question carefully: since v12, neither model has a hard MQ requirement, but MQ remains useful (mandatory for MQ nodes in flows, and historically the admin transport on a node). Most of the shops you'll walk into today either already run standalone or are migrating to it.
 
 ### CLI
 
-**Q: How familiar are you with the ACE command line — what tools do you reach for?**
+**Q: How familiar are you with the ACE command line, what tools do you reach for?**
 
-- **Standalone Integration Server** — manage the lifecycle with `mqsicreateworkdir` and the `IntegrationServer` command; `mqsistart` / `mqsistop` do NOT apply here (they're for nodes)
-- **Integration Node** — `mqsicreatebroker` / `mqsideletebroker`, `mqsistart NODE` / `mqsistop NODE` to run the node, then `mqsideploy`, `mqsilist`, `mqsichangeproperties -n NODE -e EG` to manage its servers
-- **`ibmint` family** — the modern build/deploy tooling: `ibmint package`, `ibmint deploy`, `ibmint optimize server`; works cleanly in CI and with both models
-- **Credentials** — `mqsisetdbparms` (pass `-w <workdir>` for standalone, `-n NODE` for node), `mqsivault` for the encrypted vault
-- **Server config** — `mqsichangefileauth`, `mqsichangeproperties`, `mqsireportproperties` (with the right `-w` or `-n` target)
-- **Diagnostics** — `mqsilist`, `mqsireportbroker`, `mqsireadlog`, `mqsiexplain BIPxxxx`, `mqsichangetrace` for user/service trace
-- The full set is far larger — the point is knowing **which tools exist**, **which model each applies to**, and reaching for the docs for the exact flags
+- **Standalone Integration Server**: manage the lifecycle with `mqsicreateworkdir` and the `IntegrationServer` command; `mqsistart` / `mqsistop` do NOT apply here (they're for nodes)
+- **Integration Node**: `mqsicreatebroker` / `mqsideletebroker`, `mqsistart NODE` / `mqsistop NODE` to run the node, then `mqsideploy`, `mqsilist`, `mqsichangeproperties -n NODE -e EG` to manage its servers
+- **`ibmint` family**: the modern build/deploy tooling: `ibmint package`, `ibmint deploy`, `ibmint optimize server`; works cleanly in CI and with both models
+- **Credentials**: `mqsisetdbparms` (pass `-w <workdir>` for standalone, `-n NODE` for node), `mqsivault` for the encrypted vault
+- **Server config**: `mqsichangefileauth`, `mqsichangeproperties`, `mqsireportproperties` (with the right `-w` or `-n` target)
+- **Diagnostics**: `mqsilist`, `mqsireportbroker`, `mqsireadlog`, `mqsiexplain BIPxxxx`, `mqsichangetrace` for user/service trace
+- The full set is far larger, the point is knowing **which tools exist**, **which model each applies to**, and reaching for the docs for the exact flags
 
 The biggest trap is mixing up standalone-only and node-only commands. Most of the historical `mqsi*` surface is geared towards Integration Node; standalone uses `mqsicreateworkdir` plus the `IntegrationServer` command to run the server, and leans on `ibmint` for build/package/deploy. A strong candidate will explicitly call out this split rather than list commands flat.
 
 **Q: How do you create and start a local standalone Integration Server?**
 
-- [x] `mqsicreateworkdir` + `IntegrationServer` — Correct. `mqsicreateworkdir <dir>` lays out the work directory, then `IntegrationServer --work-dir <dir>` runs the server. This is the supported standalone flow.
-- [ ] `mqsicreateworkdir` + `IntegrationServer` + `mqsistart` — `mqsistart` is for starting an Integration Node, not a standalone server. Running it on a standalone setup does nothing useful and is not part of the standalone lifecycle.
-- [ ] `ibmint create server` — There is no `ibmint create server` command for creating a runtime server. `ibmint` covers build / package / deploy / optimize, not runtime lifecycle.
-- [ ] `ibmint create server` + `mqsistartmsgflow` — Both parts are wrong. There is no `ibmint create server`, and `mqsistartmsgflow` starts a specific flow inside a running server, not the server itself.
+- [x] `mqsicreateworkdir` + `IntegrationServer`, Correct. `mqsicreateworkdir <dir>` lays out the work directory, then `IntegrationServer --work-dir <dir>` runs the server. This is the supported standalone flow.
+- [ ] `mqsicreateworkdir` + `IntegrationServer` + `mqsistart`, `mqsistart` is for starting an Integration Node, not a standalone server. Running it on a standalone setup does nothing useful and is not part of the standalone lifecycle.
+- [ ] `ibmint create server`, There is no `ibmint create server` command for creating a runtime server. `ibmint` covers build / package / deploy / optimize, not runtime lifecycle.
+- [ ] `ibmint create server` + `mqsistartmsgflow`, Both parts are wrong. There is no `ibmint create server`, and `mqsistartmsgflow` starts a specific flow inside a running server, not the server itself.
 
 - **Create the work directory**: `mqsicreateworkdir <dir>` lays out the standard directory structure (config, run, server, etc.)
 - **Start the server**: run the `IntegrationServer` command pointing at that work directory, typically `IntegrationServer --work-dir <dir>`
@@ -865,12 +865,12 @@ Standalone Integration Server lifecycle is just two commands: `mqsicreateworkdir
 
 **Q: Which ACE commands are for a standalone Integration Server versus an Integration Node?**
 
-- **Standalone only** — `mqsicreateworkdir <dir>` to lay out the work directory, and the `IntegrationServer` command (often wrapped by `ace_server_start` / `IntegrationServer --work-dir <dir>`) to run the server in foreground or as a service
-- **Node only** — `mqsicreatebroker` / `mqsideletebroker`, `mqsistart NODE` / `mqsistop NODE`, `mqsicreateexecutiongroup`, `mqsideleteexecutiongroup`, `mqsilist NODE`, `mqsideploy -n NODE`, `mqsichangebroker`
-- **Shared but target-dependent** — `mqsisetdbparms`, `mqsichangeproperties`, `mqsireportproperties`, `mqsichangefileauth`, `mqsivault`, `mqsichangetrace` — all of these take either `-w <workdir>` for a standalone server or `-n NODE [-e EG]` for a node/integration server
-- **Model-agnostic** — `ibmint` (package/deploy/optimize), `mqsiexplain BIPxxxx`, `mqsireadlog`, `mqsireadbar`
+- **Standalone only**: `mqsicreateworkdir <dir>` to lay out the work directory, and the `IntegrationServer` command (often wrapped by `ace_server_start` / `IntegrationServer --work-dir <dir>`) to run the server in foreground or as a service
+- **Node only**: `mqsicreatebroker` / `mqsideletebroker`, `mqsistart NODE` / `mqsistop NODE`, `mqsicreateexecutiongroup`, `mqsideleteexecutiongroup`, `mqsilist NODE`, `mqsideploy -n NODE`, `mqsichangebroker`
+- **Shared but target-dependent**: `mqsisetdbparms`, `mqsichangeproperties`, `mqsireportproperties`, `mqsichangefileauth`, `mqsivault`, `mqsichangetrace`, all of these take either `-w <workdir>` for a standalone server or `-n NODE [-e EG]` for a node/integration server
+- **Model-agnostic**: `ibmint` (package/deploy/optimize), `mqsiexplain BIPxxxx`, `mqsireadlog`, `mqsireadbar`
 - Rule of thumb: if the command name starts with something that implies a node (`mqsistart`, `mqsicreatebroker`, `mqsicreateexecutiongroup`), it only applies to node-managed deployments
-- In containers you almost never call `mqsistart` — the container entrypoint invokes `IntegrationServer` directly, which is another reminder that the node/standalone split matters
+- In containers you almost never call `mqsistart`, the container entrypoint invokes `IntegrationServer` directly, which is another reminder that the node/standalone split matters
 
 The command surface is a history layer cake: early commands assumed a broker/node process managed by MQ, later ones (`ibmint`, `IntegrationServer`, `mqsicreateworkdir`) were added for standalone and containers. Someone who can instantly say 'that command only works on a node' or 'use -w for standalone' has almost certainly managed both flavours in production.
 
@@ -887,12 +887,55 @@ Authentication decides 'who', authorization decides 'what can they do'. ACE spli
 
 **Q: What are the two main ways to securely store credentials in ACE?**
 
-- `mqsisetdbparms` — credentials stored in the server configuration, referenced from nodes/flows by alias
-- ACE Vault (`mqsivault`) — encrypted vault file per server, unlocked with a master key at start
+- `mqsisetdbparms`, credentials stored in the server configuration, referenced from nodes/flows by alias
+- ACE Vault (`mqsivault`), encrypted vault file per server, unlocked with a master key at start
 - Vault integrates cleanly with containers (key from env/secret) and replaces manual `mqsisetdbparms`
 - Both avoid putting credentials in BAR files or flows
 
 The vault is the direction of travel, especially for containerized deployments where the master key comes from a Kubernetes secret. `mqsisetdbparms` is still valid for traditional installs.
+
+**Q: What command verifies that weak TLS ciphers are disabled on ACE (Windows)?**
+
+- The canonical check is `openssl s_client` from a machine that can reach the ACE HTTPS listener, forcing a specific cipher to see whether the server accepts or refuses it: `openssl s_client -connect <host>:<port> -tls1_2 -cipher DES-CBC3-SHA -servername <host>`
+- Replace the cipher with the weak suites you want to prove are blocked (e.g. `DES-CBC3-SHA`, `RC4-MD5`, `AES128-SHA`, anything SSLv3 / TLS 1.0 / TLS 1.1). Correct hardening shows a clean handshake failure, not a successful connection
+- `-servername` sends the SNI extension so ACE can route to the right listener; without it the test can fail for unrelated reasons on a shared host
+- Run the same command with a strong cipher (e.g. `TLS_AES_256_GCM_SHA384` under `-tls1_3`) to confirm the listener is still reachable on the suites you actually want to accept; establish the baseline before you change anything, then compare after
+- On Windows, ship OpenSSL via Git for Windows, Chocolatey, or a portable build. Windows' built-in `curl` does not expose the `-cipher` control you need
+- Keep the session transcript so the before / after is auditable; security reviews usually want the evidence, not just a 'we configured it' statement
+
+`openssl s_client -cipher` is the standard way to prove cipher policy from the outside, regardless of platform. The Windows-specific note is only that you need a real OpenSSL binary on PATH. Running the test with both a weak cipher (expect failure) and a strong cipher (expect success) gives you the matched pair an auditor will ask for.
+
+**Q: How does PGP in ACE differ from XML-based encryption, and what components do you need to set up a PGP flow?**
+
+- **Different scope**: XML-based encryption (WS-Security, XML Encryption) protects specific elements inside an XML message; PGP encrypts the whole payload as a single opaque blob regardless of format. PGP is the right choice for file-based and partner-exchange scenarios (CSV, EDI, archive files); XML encryption is right when only a subset of a SOAP / XML document needs protection
+- **Different trust model**: XML encryption relies on X.509 certificates issued by a PKI and typically validated at runtime; PGP uses a web-of-trust with asymmetric keypairs the partner has shared with you directly
+- **Different algorithms / libraries**: XML encryption uses built-in JDK / JCE support plus the ACE security policy framework; PGP needs the **PGP SupportPac** plus **Bouncy Castle** JARs on the classpath, because the JDK does not ship PGP
+- **Components you need for a PGP flow in ACE**: (1) PGP SupportPac installed, providing the PGP node(s) and the `pgpkeytool` utility. (2) Bouncy Castle provider JARs in `shared-classes` on the integration server, at the right version for your ACE level. (3) A keystore / keyring with the partner's public key (for encrypt) and your private key (for decrypt), plus its passphrase. (4) The private-key passphrase stored in the ACE vault, not in the flow. (5) A PGP policy or node configuration pointing at the keyring and naming the recipient / signing key. (6) The PGPEncrypt / PGPDecrypt nodes wired into the flow
+- **Operational bits**: `pgpkeytool` needs the Bouncy Castle classpath set correctly or it fails with `NoClassDefFoundError`. Key rotation is manual: swap the keys in the keyring, update the recipient id in the config
+
+XML-based encryption is element-granular and PKI-anchored; PGP is whole-payload and keypair-anchored. They solve different jobs. Setting up PGP in ACE is more of a scavenger hunt than XML encryption: SupportPac, Bouncy Castle JARs in the right place, a working keyring, the passphrase in the vault, and the nodes wired up. Missing any one of those produces a different, equally frustrating failure.
+
+**Q: Which ACE configuration file controls weak cipher suites when ACE acts as an HTTPS client (outbound)?**
+
+- **Outbound** (ACE calling a remote HTTPS endpoint, e.g. via an HTTPRequest or RESTRequest node): cipher and protocol policy is driven by the JVM's **`java.security`** configuration, notably the `jdk.tls.disabledAlgorithms` property, plus any `https.protocols` / `https.cipherSuites` system properties passed to the JVM
+- **Inbound** (ACE hosting an HTTPS listener for a flow): cipher and protocol policy lives in **`server.conf.yaml`** under the HTTPS listener / connector configuration (allowed protocols, allowed cipher suites, keystore, truststore)
+- Hardening needs **both** to be configured. Locking the inbound listener but leaving the JVM-level defaults untouched means ACE will still happily negotiate weak suites when it calls out, and vice versa
+- Changes to `java.security` apply at JVM start, so an integration server restart is required. `server.conf.yaml` changes are usually picked up at the next restart / reload too; check the reload semantics for the specific property
+- For a clean audit, test both directions: use `openssl s_client` to verify the inbound listener refuses weak suites, and capture a TLS handshake from ACE to a known-good server to verify the outbound side is negotiating the suites you expect (Wireshark / `tshark -Y tls.handshake`, or a tool like `testssl.sh` against the target)
+- On CP4I the JVM-level properties are typically injected via the Operator's IntegrationServer CRD or a mounted ConfigMap, rather than edited in place
+
+Two distinct layers: JVM config (`java.security`) governs what ACE will accept when calling out; ACE listener config (`server.conf.yaml`) governs what ACE will accept when being called. Hardening one without the other is the classic partial fix. Candidates who mention both files, and explicitly test outbound as well as inbound, know this has two sides.
+
+**Q: What command verifies that weak TLS ciphers are disabled on ACE (Linux)?**
+
+- Same canonical command as on Windows: `openssl s_client -connect <host>:<port> -tls1_2 -cipher DES-CBC3-SHA -servername <host>`. A correctly hardened listener shows a clean handshake failure, a weak one negotiates the suite
+- Cycle through the cipher suites you want to prove are blocked (`DES-CBC3-SHA`, `RC4-MD5`, `AES128-SHA`, SSLv3 / TLS 1.0 / TLS 1.1 protocols). Then repeat with a strong suite (e.g. `-tls1_3 -ciphersuites TLS_AES_256_GCM_SHA384`) to prove the listener still accepts what you want
+- Always pass `-servername <host>` so ACE can route on SNI; omitting it can produce false failures on a listener that shares an IP with others
+- On Linux, `openssl` is almost always already installed; if not, install from the distro (`apt install openssl`, `dnf install openssl`, etc.)
+- Two useful Linux-native shortcuts for bulk auditing: `nmap --script ssl-enum-ciphers -p <port> <host>` enumerates every supported suite the server will negotiate in one pass, and `testssl.sh` (a popular shell-script wrapper) produces a structured report including weak-cipher / forward-secrecy / protocol-support checks
+- Keep the raw output from the run as audit evidence; security reviews want 'this suite failed, that suite succeeded', not a summary
+
+Same `openssl s_client -cipher` pattern as Windows, but Linux comes with openssl out of the box and adds two stronger bulk-audit tools (`nmap ssl-enum-ciphers` and `testssl.sh`) that are usually worth running alongside the per-cipher manual check. Knowing at least one of those bulk tools is a tell that the candidate has actually audited a listener rather than only disabled ciphers and hoped.
 
 ### Monitoring
 
@@ -903,14 +946,14 @@ The vault is the direction of travel, especially for containerized deployments w
 - Events are published to a topic on MQ or emitted via Kafka/HTTP in newer versions
 - Used by APM/SIEM tooling, transaction tracking and business-level audit
 
-Monitoring events are non-intrusive — they don't change the flow — and give you structured insight at key points. Beware of volume: enabling them on every node in production will flood the consumer.
+Monitoring events are non-intrusive, they don't change the flow, and give you structured insight at key points. Beware of volume: enabling them on every node in production will flood the consumer.
 
 ### Policies
 
 **Q: What types of policies exist in ACE and what is the dynamic vs non-dynamic difference?**
 
-- Dynamic policies — changes are picked up by a running flow without restart (e.g. MQ endpoint policies with reloadable properties, monitoring policy, activity log policy)
-- Non-dynamic policies — changes require the flow to be re-initialised (some security / specific connection policies)
+- Dynamic policies, changes are picked up by a running flow without restart (e.g. MQ endpoint policies with reloadable properties, monitoring policy, activity log policy)
+- Non-dynamic policies, changes require the flow to be re-initialised (some security / specific connection policies)
 - Workaround for non-dynamic: restart the flow/server, or redeploy with `--restart-all-applications`, or manually drag the policy into the `overrides` directory and restart
 - Always check the policy type in the IBM docs before relying on dynamic reload in production
 
@@ -920,21 +963,21 @@ Most day-to-day policies are dynamic. The few that aren't can trip you up when y
 
 **Q: What are the ways to build a BAR file, and when do you pick which?**
 
-- **Toolkit** — right-click on the project and build BAR via the UI. Compiles everything on the fly (XMLNSC/DFDL/Data Maps/Java/message sets); fine for devs, not for CI
-- **`mqsicreatebar`** — headless Toolkit-based build from projects on disk. Still needs an Eclipse-style workspace; legacy-friendly
-- **`mqsipackagebar`** — CLI packager that bundles already-built artefacts into a BAR. It is a **packager, not a full compiler** — message sets and Java must be built first. In CI this usually means the developer has done a **'Build for mqsipackagebar'** step in the Toolkit (or a Maven/Gradle equivalent) to generate the binaries the pipeline then packages. `-c` compiles XMLNSC / DFDL / Data Maps; `-i` includes unsupported elements
-- **`ibmint package`** — modern, no-Toolkit, no-Eclipse build; compiles at build time; used in CI by default
-- Maven / Gradle plugins — wrap any of the above so the build plugs into a standard pipeline
+- **Toolkit**: right-click on the project and build BAR via the UI. Compiles everything on the fly (XMLNSC/DFDL/Data Maps/Java/message sets); fine for devs, not for CI
+- **`mqsicreatebar`**: headless Toolkit-based build from projects on disk. Still needs an Eclipse-style workspace; legacy-friendly
+- **`mqsipackagebar`**: CLI packager that bundles already-built artefacts into a BAR. It is a **packager, not a full compiler**: message sets and Java must be built first. In CI this usually means the developer has done a **'Build for mqsipackagebar'** step in the Toolkit (or a Maven/Gradle equivalent) to generate the binaries the pipeline then packages. `-c` compiles XMLNSC / DFDL / Data Maps; `-i` includes unsupported elements
+- **`ibmint package`**: modern, no-Toolkit, no-Eclipse build; compiles at build time; used in CI by default
+- Maven / Gradle plugins, wrap any of the above so the build plugs into a standard pipeline
 - Rule of thumb: new CI pipelines → `ibmint package`. Legacy project types that `ibmint` doesn't yet cover → `mqsicreatebar` or `mqsipackagebar` with an explicit 'Build for' prep. Toolkit build only for interactive developer loops
 
-The four ways are usually listed as Toolkit / `mqsicreatebar` / `mqsipackagebar` / `ibmint package`. The practical nuance most candidates miss is that `mqsipackagebar` is a **packager**, not a compiler — Java and message sets must have been built beforehand, which is what the Toolkit's 'Build for mqsipackagebar' step (or a Maven/Gradle equivalent) produces. For new work, `ibmint package` compiles everything at build time and needs no Eclipse — this is the CI-friendly default. `mqsipackagebar` + `-c` remains useful when you want to bundle already-built XMLNSC / DFDL / Data Maps.
+The four ways are usually listed as Toolkit / `mqsicreatebar` / `mqsipackagebar` / `ibmint package`. The practical nuance most candidates miss is that `mqsipackagebar` is a **packager**, not a compiler, Java and message sets must have been built beforehand, which is what the Toolkit's 'Build for mqsipackagebar' step (or a Maven/Gradle equivalent) produces. For new work, `ibmint package` compiles everything at build time and needs no Eclipse, this is the CI-friendly default. `mqsipackagebar` + `-c` remains useful when you want to bundle already-built XMLNSC / DFDL / Data Maps.
 
 **Q: Explain `mqsiapplybaroverride`, `mqsireload` and `ibmint optimize`.**
 
-- `mqsiapplybaroverride` — takes an existing BAR and applies a properties file that overrides node properties per environment
-- `mqsireload` — reloads deployed applications on an integration server (broadly equivalent to a soft restart of the apps)
-- `ibmint optimize server` — strips unused components from the server runtime, producing a minimal image (especially useful in containers)
-- `ibmint package` vs `ibmint deploy` — package produces a work directory / artefact; deploy applies it to a running server
+- `mqsiapplybaroverride`, takes an existing BAR and applies a properties file that overrides node properties per environment
+- `mqsireload`, reloads deployed applications on an integration server (broadly equivalent to a soft restart of the apps)
+- `ibmint optimize server`, strips unused components from the server runtime, producing a minimal image (especially useful in containers)
+- `ibmint package` vs `ibmint deploy`, package produces a work directory / artefact; deploy applies it to a running server
 
 These three are the bread and butter of environment-aware deployment: override properties at promote time, optimize away unused components for lean images, and reload without a full restart.
 
@@ -942,40 +985,40 @@ These three are the bread and butter of environment-aware deployment: override p
 
 **Q: How do you achieve HA for ACE?**
 
-- Start with the flows: if message order is mandatory for a use case, you can't just scale horizontally — that constrains which HA pattern is viable for which flow
-- **Load balancer in front of multiple integration servers** (standalone) or **multiple Integration Nodes** — round-robin, failover or weighted; the workhorse HA pattern for request/response or order-agnostic flows
-- **Multi-Instance (MI)** — classic active/standby using a shared filesystem; only one instance runs at a time and failover is triggered when the active dies. Strictly speaking this is closer to **DR** than true HA (failover takes time, there's a brief outage, only one instance serves at a time)
-- **Combined MI + LB** — two nodes each with an MI standby on the other host, load-balanced in front; the LB gives true HA, MI gives each node's state a safety net
-- **Kubernetes / CP4I** — conceptually the same pattern as a classic LB + multiple servers, just with kube-native mechanics (Service as LB, Deployment with N replicas, rolling updates); the modern default for new deployments
-- For stateful work (aggregation, collectors, schedulers) be deliberate about where state lives — MQ queue, database, Redis — not in the memory of one integration server, otherwise no HA pattern will save you
-- Licensing caveat: scaling out (extra nodes, replicas, containers) may consume additional entitlements — always check the production edition limits and VPC/container licensing terms before sizing an HA topology
+- Start with the flows: if message order is mandatory for a use case, you can't just scale horizontally, that constrains which HA pattern is viable for which flow
+- **Load balancer in front of multiple integration servers** (standalone) or **multiple Integration Nodes**: round-robin, failover or weighted; the workhorse HA pattern for request/response or order-agnostic flows
+- **Multi-Instance (MI)**: classic active/standby using a shared filesystem; only one instance runs at a time and failover is triggered when the active dies. Strictly speaking this is closer to **DR** than true HA (failover takes time, there's a brief outage, only one instance serves at a time)
+- **Combined MI + LB**: two nodes each with an MI standby on the other host, load-balanced in front; the LB gives true HA, MI gives each node's state a safety net
+- **Kubernetes / CP4I**: conceptually the same pattern as a classic LB + multiple servers, just with kube-native mechanics (Service as LB, Deployment with N replicas, rolling updates); the modern default for new deployments
+- For stateful work (aggregation, collectors, schedulers) be deliberate about where state lives, MQ queue, database, Redis, not in the memory of one integration server, otherwise no HA pattern will save you
+- Licensing caveat: scaling out (extra nodes, replicas, containers) may consume additional entitlements, always check the production edition limits and VPC/container licensing terms before sizing an HA topology
 
-Call out upfront that HA in ACE is a conversation about flow design as much as topology — anything requiring ordered processing or session affinity limits your options. After that, the technology answer is almost always 'LB + multiple instances', whether those instances are standalone servers, Integration Nodes or containers. MI is worth naming specifically as 'more DR than HA' — it protects you against losing a host, but the failover gap means it doesn't give the same 'always available' guarantee as a proper LB-fronted pool.
+Call out upfront that HA in ACE is a conversation about flow design as much as topology, anything requiring ordered processing or session affinity limits your options. After that, the technology answer is almost always 'LB + multiple instances', whether those instances are standalone servers, Integration Nodes or containers. MI is worth naming specifically as 'more DR than HA', it protects you against losing a host, but the failover gap means it doesn't give the same 'always available' guarantee as a proper LB-fronted pool.
 
 ### Logging
 
 **Q: What ACE logs do you know, and what is a BIP message?**
 
-- **Console log** — integration server stdout/stderr; the main place you see BIP messages at runtime and any custom output from Log/Trace nodes
-- **syslog (Linux) / Event Viewer (Windows)** — OS-level logs, particularly important for Integration Node-managed setups
-- **User trace** — detailed per-flow tracing at the message level, enabled with `mqsichangetrace`; expensive, turn on only when diagnosing
-- **Service trace** — low-level internal trace, normally only enabled under IBM support guidance
-- **Activity log** — higher-level, business-friendly log of what a flow did (which backend it called, which file it processed); configurable per flow/node
-- **BIP messages** are ACE's structured message codes (e.g. BIP2087, BIP4040). Every BIP has a message, cause and action — look it up with `mqsiexplain <code>` or in the IBM Docs BIP reference
+- **Console log**: integration server stdout/stderr; the main place you see BIP messages at runtime and any custom output from Log/Trace nodes
+- **syslog (Linux) / Event Viewer (Windows)**: OS-level logs, particularly important for Integration Node-managed setups
+- **User trace**: detailed per-flow tracing at the message level, enabled with `mqsichangetrace`; expensive, turn on only when diagnosing
+- **Service trace**: low-level internal trace, normally only enabled under IBM support guidance
+- **Activity log**: higher-level, business-friendly log of what a flow did (which backend it called, which file it processed); configurable per flow/node
+- **BIP messages** are ACE's structured message codes (e.g. BIP2087, BIP4040). Every BIP has a message, cause and action, look it up with `mqsiexplain <code>` or in the IBM Docs BIP reference
 - Never ignore BIP codes in the output; they almost always point at the real underlying problem
 
-ACE exposes several log/trace sources at different granularities: console for day-to-day, user/service trace for deep diagnostics, activity log for business-level visibility, and OS logs for node-scope events. BIP messages are the structured codes that tie it all together — `mqsiexplain BIPxxxx` (or the docs) gives the cause and the action, which is almost always worth reading before you form a theory.
+ACE exposes several log/trace sources at different granularities: console for day-to-day, user/service trace for deep diagnostics, activity log for business-level visibility, and OS logs for node-scope events. BIP messages are the structured codes that tie it all together, `mqsiexplain BIPxxxx` (or the docs) gives the cause and the action, which is almost always worth reading before you form a theory.
 
 **Q: How do you actually read ACE logs in practice?**
 
-- Most ACE logs are plain text — console output, user trace, service trace, activity log — so `tail -f`, `grep`, any log shipper (Splunk, ELK, Loki) all work fine
-- Centralise logs when you run multiple servers / containers — shipping stdout to a central platform is the standard k8s / CP4I pattern
+- Most ACE logs are plain text, console output, user trace, service trace, activity log, so `tail -f`, `grep`, any log shipper (Splunk, ELK, Loki) all work fine
+- Centralise logs when you run multiple servers / containers, shipping stdout to a central platform is the standard k8s / CP4I pattern
 - For user trace files, use `mqsireadtrace` / `mqsiformatlog` to convert the raw trace into readable text
 - Use `mqsiexplain BIPxxxx` on the host to expand a BIP code into cause + action without leaving the shell
-- **ACE v13 introduces the Log Analyzer** — a built-in tool that parses and structures server/user trace logs, making patterns and errors far easier to spot than eyeballing flat text
+- **ACE v13 introduces the Log Analyzer**: a built-in tool that parses and structures server/user trace logs, making patterns and errors far easier to spot than eyeballing flat text
 - Good hygiene: set sensible log rotation, strip trace/activity-log verbosity in production, and keep BIP codes searchable in whatever central platform you ship to
 
-Reading ACE logs has always been 'it's text, use your usual tools' plus the occasional `mqsireadtrace` for binary user-trace files. The v13 Log Analyzer is a real quality-of-life upgrade for anyone who has spent hours greping user-trace output — mention it if you're talking about a v13 environment.
+Reading ACE logs has always been 'it's text, use your usual tools' plus the occasional `mqsireadtrace` for binary user-trace files. The v13 Log Analyzer is a real quality-of-life upgrade for anyone who has spent hours greping user-trace output, mention it if you're talking about a v13 environment.
 
 _References:_
 - <https://matthiasblomme.github.io/blogs/posts/ace-v13-new-features-overview/v13-new-features/#log-analyzer>
@@ -984,17 +1027,62 @@ _References:_
 
 **Q: How can you deploy ACE in containers, and what options do you have for the image, the artefacts and the deployment mechanism?**
 
-- **Three image flavours, from fry to bake:** (1) **Operator-managed** — the ACE Operator on OpenShift/CP4I provides the base image; you only inject your apps, libs, credentials and config. (2) **ACE Certified Containers (ACECC)** — you pick which ACE version/image you want and inject your stuff on top. (3) **Fully custom image** — you build your own Dockerfile and bake everything in (runtime, BARs, config)
-- **Artefact injection is a spectrum** — BAR files, `server.conf.yaml`, policies and other config can be baked into the image, injected at deploy time (ConfigMap/Secret, volume mount), or pulled in at startup (from an artifact repo like Nexus/Artifactory, the ACE Dashboard, an NFS share, S3, etc.)
-- **Credentials** — usually from Kubernetes Secrets, unlocked via the ACE vault at startup so they never sit in the image
-- **Deployment mechanism is orthogonal** — the ACE Operator is one route (declarative IntegrationServer CRD), but you can just as well deploy with a GitOps pipeline (Argo CD, Flux), a CI/CD pipeline (Tekton, Jenkins, GitLab CI), Ansible, Helm charts, or plain `kubectl apply`
+- **Three image flavours, from fry to bake:** (1) **Operator-managed**: the ACE Operator on OpenShift/CP4I provides the base image; you only inject your apps, libs, credentials and config. (2) **ACE Certified Containers (ACECC)**: you pick which ACE version/image you want and inject your stuff on top. (3) **Fully custom image**: you build your own Dockerfile and bake everything in (runtime, BARs, config)
+- **Artefact injection is a spectrum**: BAR files, `server.conf.yaml`, policies and other config can be baked into the image, injected at deploy time (ConfigMap/Secret, volume mount), or pulled in at startup (from an artifact repo like Nexus/Artifactory, the ACE Dashboard, an NFS share, S3, etc.)
+- **Credentials**: usually from Kubernetes Secrets, unlocked via the ACE vault at startup so they never sit in the image
+- **Deployment mechanism is orthogonal**: the ACE Operator is one route (declarative IntegrationServer CRD), but you can just as well deploy with a GitOps pipeline (Argo CD, Flux), a CI/CD pipeline (Tekton, Jenkins, GitLab CI), Ansible, Helm charts, or plain `kubectl apply`
 - The choice across those three axes (image flavour × artefact injection × deploy mechanism) is driven by your org's standards, how much control you need over the image, and whether you're on CP4I or vanilla Kubernetes/OpenShift
-- (Replicas, HA and scaling belong under the HA question — here the focus is the *deployment model* itself)
+- (Replicas, HA and scaling belong under the HA question, here the focus is the *deployment model* itself)
 
-Three independent choices to reason about: which image you start from (operator-provided, ACECC, or fully custom), how artefacts get into the running container (baked, deploy-time mount, runtime pull), and how the deployment is driven (operator, GitOps, CI, Ansible, …). Candidates who can articulate these three axes separately — and place a real deployment on each — have clearly done this in anger rather than just read a diagram.
+Three independent choices to reason about: which image you start from (operator-provided, ACECC, or fully custom), how artefacts get into the running container (baked, deploy-time mount, runtime pull), and how the deployment is driven (operator, GitOps, CI, Ansible, …). Candidates who can articulate these three axes separately, and place a real deployment on each, have clearly done this in anger rather than just read a diagram.
 
 _References:_
 - <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=release-models-packaging-versions-app-connect-operator>
+
+**Q: What approaches reduce ACE container startup time, and which ones are Kubernetes-specific?**
+
+- **Base image only**: ship a minimal ACE runtime image; load BARs and config at server start time from a ConfigMap, mounted volume, or artefact repository. Smallest image, but the full deploy-and-optimise work happens at every Pod start, so cold-start is slowest
+- **Prebaked image**: bake the BARs and config into the image at build time and run `ibmint optimize server` to strip unused ACE components. Image is larger and content is pinned to the tag, but startup is fast because the work is already done. Matches the 'baked' pattern in the bake-vs-fry question
+- **Init container approach** (k8s-specific): a dedicated init container prepares the work directory (downloads BARs, unpacks shared libs, patches config) while the main ACE container stays on a stable base image. Startup for the ACE container itself becomes fast because the prep is done before it starts, and you still get the 'one base image, many apps' benefit
+- **Dynamic resource scaling at startup** (k8s / CP4I): give the Pod a temporary CPU (and optionally memory) burst for the startup phase, then scale resources back down to steady-state once the server reports ready. On CP4I the Operator exposes this via the IntegrationServer CRD; on vanilla k8s you can use in-place resource resize (newer k8s) or simply pessimistic `requests` that match peak startup. This does not reduce the raw work, it just stops starvation when many Pods start together on a constrained node
+- Init containers run to completion before the main container starts, so k8s serialises the prep. The main container sees a pre-populated work directory and jumps straight to `IntegrationServer`
+- Readiness probes should target the ACE health endpoint in all patterns so the Service only routes traffic once the server has actually finished deploying flows
+- The overall choice is about **where the work happens** (build time vs Pod-start time vs init-phase time) and **how resources are sized around the work** (flat steady-state limits vs burst-at-startup)
+
+Four useful levers: prebake to shift work to build time, init containers to serialise prep outside the main container, base-image-only to keep images reusable at the cost of slower cold-start, and dynamic resource scaling at startup to stop the CPU starvation that otherwise makes cold-start worse on a busy node. Init containers and dynamic resource scaling are both Kubernetes-specific. Candidates who name the resource-scaling lever show they have dealt with 'my Pod takes forever to start' on a constrained cluster, not only the bake-vs-fry debate.
+
+**Q: Why is container startup the most resource-intensive part of the ACE lifecycle?**
+
+- ACE startup is not just 'start a process': the server parses and deploys every BAR in the work directory, compiles and optimises flows, opens DB / MQ / HTTP connections, resolves credentials from the vault, and registers with any operator or dashboard that is watching
+- Under the hood that means a lot of class-loading and JIT warm-up (just-in-time JVM compilation of hot code into native machine code) in the JVM, heavy tree-parsing activity for the parsers used by deployed flows, and file I/O that is usually the main cost on containers with slow ephemeral storage
+- Steady-state a message flow is cheap; the one-off cost of getting to steady state is where the CPU and memory spikes live. Containers measure this as 'cold-start time', and it is often tens of seconds to minutes for non-trivial deployments
+- Consequence for scaling: horizontal autoscalers that assume a Pod is ready in a few seconds will be disappointed, and an HPA that scales in response to a burst will see the burst pass before the new Pods finish starting
+- Consequence for resource sizing: CPU / memory requests and limits must account for cold-start peaks, not only steady-state. Requests that are fine at run time can cause OOMKills or throttling during the first few seconds
+- Mitigations: optimise the image so less work is done at startup (baked BARs, `ibmint optimize server` to strip unused components), use readiness probes wired to the actual ACE health endpoint, and keep warm pools if latency budgets are tight
+
+Startup is where ACE does all the work a long-lived server normally amortises: parse, compile, connect, register. Treating startup as 'just another resource cost' is the mistake; it is the largest single resource cost in the lifecycle and must be measured, sized for, and ideally reduced. Candidates who mention readiness-probe wiring, image optimisation and the autoscaler implications have run this in production.
+
+**Q: How much of a version gap between the ACE Operator and the Dashboard is tolerated before things start breaking?**
+
+- Operator and Dashboard are independent artefacts but coupled: the Dashboard expects certain ConfigMaps, CRD fields and APIs that the Operator has to provide. When the Operator is too old, those expectations are no longer met
+- In practice, a few modification packs of gap between Operator and Dashboard is usually fine. One example: **Operator `v12.14.0` + Dashboard `v13.0` works**, because the Operator is recent enough to still know about the Dashboard's expected shape
+- Past a larger gap things break. One example: **Operator `v12.0` + Dashboard `v13.0` fails**, because the older Operator does not know to create the ConfigMaps the newer Dashboard requires. You get a Dashboard pod that starts but never becomes ready, with missing-ConfigMap errors in the logs
+- Rule of thumb: if you are more than one major family behind (Operator on v12.0-level, Dashboard on v13), do not rely on compatibility. Upgrade the Operator alongside (or ahead of) the Dashboard
+- No single published 'N mod-packs' number covers every combination; always check the release notes for the Operator modification pack you are installing, or stage the upgrade in a non-prod cluster first
+- The rate of churn lives at the OLM channel level: IBM publishes which operand (Dashboard, IntegrationServer, etc.) versions each Operator channel supports
+
+Operator and Dashboard versions drift, but they are not fully independent. A few modification packs of skew are tolerable, whole-version skew is not. The concrete failure mode is 'Dashboard pod starts but stays unready because a ConfigMap the Operator did not know to create is missing'. The real-world discipline is to read the supported-operand matrix IBM publishes per Operator channel, rather than assuming any Operator will happily run any Dashboard.
+
+**Q: Why does the ACE Dashboard need RWX (Read Write Many) storage, and what fails if you only have RWO?**
+
+- The Dashboard stores content (BARs, policies, configurations) on a persistent volume so multiple dashboard pods can serve the same data to users and to the integration servers that fetch from it
+- RWX lets several pods mount the same volume simultaneously with read-write access, which is what the default multi-replica dashboard deployment expects
+- With only RWO (Read Write Once), a volume can be bound to one pod at a time, so multiple replicas cannot share it. Two things break: the dashboard cannot scale out, and rolling updates hit contention because the new pod cannot bind the volume while the old pod still holds it
+- Workaround if you are stuck on RWO: scale the dashboard Deployment down to `replicas: 1`, patch `fsGroup` / `runAsUser` manually so the single pod can read-write the volume, and accept that you lose HA for the dashboard UI
+- In practice RWX is a hard requirement for any production dashboard deployment on Kubernetes; on Minikube or local clusters RWX usually means an NFS provisioner or a CSI driver that supports shared access
+- The integration servers themselves do not need RWX; they read dashboard content over the network at deploy or restart. The RWX constraint is specific to the dashboard's shared storage model
+
+The Dashboard is multi-pod and shares content across replicas, which is an RWX-shaped workload. RWO forces you into single-pod mode with manual permission patches, which is acceptable for dev and demo clusters but not for production. 'Scale to 1 plus patch fsGroup' is the Minikube workaround every ACE engineer has written at least once.
 
 **Q: In the 'bake vs fry' pattern for ACE container images, what is the trade-off between rebuild frequency and artefact size?**
 
@@ -1067,21 +1155,21 @@ The headline is that Java 8 WS-Security and Java 17 WS-Security are different ma
 
 **Q: Name a couple of Java 17 compatibility blockers that will fail on ACE v13 unless updated.**
 
-- **JAXB removal from the JDK** — `javax.xml.bind.*` is no longer on the classpath in Java 11+. Custom code that imports JAXB needs to pull in an explicit dependency (`jakarta.xml.bind` / Glassfish JAXB) or the flow fails at runtime with `ClassNotFoundException`
-- **`javax.xml.bind.DatatypeConverter` gone** — a surprisingly common helper (especially for base64 encode/decode). Replace with `java.util.Base64.getEncoder()` / `getDecoder()` or an explicit JAXB dep
-- **JNA version bumps** — older JNA versions bundled with v12-era projects are incompatible with the Java 17 runtime in v13. Update to a current JNA that supports Java 17; stale JNA shows up as native-load failures at startup
-- **`com.sun.*` / `sun.*` internal APIs** — Java 17 tightened encapsulation; code that reached into `sun.misc.BASE64Encoder`, `com.sun.xml.*`, reflection against JDK internals, etc., breaks with `IllegalAccessError` or just won't resolve
-- **Javadoc / build-plugin bumps** — any build or test plugins pinned to Java 8-era versions need an upgrade alongside the code itself
+- **JAXB removal from the JDK**: `javax.xml.bind.*` is no longer on the classpath in Java 11+. Custom code that imports JAXB needs to pull in an explicit dependency (`jakarta.xml.bind` / Glassfish JAXB) or the flow fails at runtime with `ClassNotFoundException`
+- **`javax.xml.bind.DatatypeConverter` gone**: a surprisingly common helper (especially for base64 encode/decode). Replace with `java.util.Base64.getEncoder()` / `getDecoder()` or an explicit JAXB dep
+- **JNA version bumps**: older JNA versions bundled with v12-era projects are incompatible with the Java 17 runtime in v13. Update to a current JNA that supports Java 17; stale JNA shows up as native-load failures at startup
+- **`com.sun.*` / `sun.*` internal APIs**, Java 17 tightened encapsulation; code that reached into `sun.misc.BASE64Encoder`, `com.sun.xml.*`, reflection against JDK internals, etc., breaks with `IllegalAccessError` or just won't resolve
+- **Javadoc / build-plugin bumps**: any build or test plugins pinned to Java 8-era versions need an upgrade alongside the code itself
 
-The most common blockers the author sees are JAXB absence (and the `DatatypeConverter` shortcut) and stale JNA versions. There's a broader class of 'used internal APIs' problems around `com.sun.*` / `sun.*` that candidates should mention as a category — the specific examples matter less than showing awareness that Java 17 dropped or re-encapsulated a lot of what Java 8 code reached for. TAD will flag most of these automatically, but only if you scanned against the right fix-pack target.
+The most common blockers the author sees are JAXB absence (and the `DatatypeConverter` shortcut) and stale JNA versions. There's a broader class of 'used internal APIs' problems around `com.sun.*` / `sun.*` that candidates should mention as a category, the specific examples matter less than showing awareness that Java 17 dropped or re-encapsulated a lot of what Java 8 code reached for. TAD will flag most of these automatically, but only if you scanned against the right fix-pack target.
 
 **Q: What does Transformation Advisor (TAD) check, and why scan against the highest fix pack you're willing to target?**
 
 - TAD analyses ACE / IIB workspaces against a target version + fix-pack profile and flags each artefact with a **complexity** (simple / moderate / complex) and **severity** (green / yellow / red)
 - Output is a compatibility report per application / flow / artefact, plus effort estimates to modernise
-- **Fix-pack scan level is not a cosmetic detail** — TAD's rules evolve between fix packs. The same workspace scanned against two different FPs can produce different verdicts: rules appear, rules change, rules get retired
+- **Fix-pack scan level is not a cosmetic detail**: TAD's rules evolve between fix packs. The same workspace scanned against two different FPs can produce different verdicts: rules appear, rules change, rules get retired
 - **Always scan against the highest fix pack you're realistically willing to land on** (usually the latest stable FP of your target major). Scanning against an older FP means planning migration work against rules that have already been superseded, and missing issues that matter on the FP you'll actually install
-- TAD output is an 80% starting point, not a verdict — combine with a manual pass over shared libs, policies, custom Java, and anything environment-specific
+- TAD output is an 80% starting point, not a verdict, combine with a manual pass over shared libs, policies, custom Java, and anything environment-specific
 - The output feeds your migration-style decision (in-place / parallel / extract) and your effort/risk estimate
 
 TAD tells you *what's in scope* and *where the hard bits are*, not *what to do*. The fix-pack scan-target trap is easy to miss: if you scan against 12.0.12 but plan to land on 13.0.7, you'll plan work against old rules and miss new ones. Calibrate the scan target to your actual landing version.
@@ -1104,34 +1192,34 @@ The mode you want depends on whether 'someone stopped it' is information you wan
 
 - Check if the drop correlates with a recent deploy, config change or fix pack
 - Enable flow/node statistics briefly to find the slow node
-- Check backend systems (DB, HTTP target) — most 'ACE is slow' problems are a slow backend
-- Check memory / GC logs on the integration server — full GCs every few seconds = undersized heap
+- Check backend systems (DB, HTTP target), most 'ACE is slow' problems are a slow backend
+- Check memory / GC logs on the integration server, full GCs every few seconds = undersized heap
 - Check the OS: CPU saturation, IO wait, network retransmits
 
 Sudden changes usually have a cause you can pin to a timeline: a change, an external dependency, a resource exhaustion. Stats + backend + OS covers those three lanes.
 
-## ACE — Dev
+## ACE, Dev
 
 ### Tuning
 
 **Q: How do you tune an ACE flow that is slow?**
 
-- Measure first — turn on flow/node statistics (`mqsichangeflowstats`) and identify the node(s) burning the most elapsed time before changing anything
-- **Watch consecutive ESQL / Java / Mapping nodes** — each one parses the logical message tree again; chains of them multiply parsing cost. Merge adjacent ESQL Computes (and adjacent JavaCompute nodes) where the logic allows
-- Additional instances on the input node for parallelism — careful with order-sensitive flows where ordering must be preserved
-- Pick the cheapest parser you can get away with — BLOB when no parsing is needed, XMLNSC over legacy parsers, avoid re-parsing the same payload repeatedly
+- Measure first, turn on flow/node statistics (`mqsichangeflowstats`) and identify the node(s) burning the most elapsed time before changing anything
+- **Watch consecutive ESQL / Java / Mapping nodes**: each one parses the logical message tree again; chains of them multiply parsing cost. Merge adjacent ESQL Computes (and adjacent JavaCompute nodes) where the logic allows
+- Additional instances on the input node for parallelism, careful with order-sensitive flows where ordering must be preserved
+- Pick the cheapest parser you can get away with, BLOB when no parsing is needed, XMLNSC over legacy parsers, avoid re-parsing the same payload repeatedly
 - Reduce downstream overhead: batch DB calls, reuse connections, minimise logging and trace in production
-- If a single server is saturated, scale horizontally (more servers / replicas) — but only once the per-instance work is tight, otherwise you just multiply the same inefficiency
+- If a single server is saturated, scale horizontally (more servers / replicas), but only once the per-instance work is tight, otherwise you just multiply the same inefficiency
 
-Flow tuning is mostly a developer concern — the runtime can only do so much if the flow itself is wasteful. The three things that move the needle most are: (1) collapsing consecutive ESQL/Java/Mapping nodes so the message tree isn't re-parsed each time, (2) picking the cheapest parser, and (3) carefully using additional instances where ordering allows. Always measure with stats before and after so you can prove the change worked — optimising blind often makes things worse.
+Flow tuning is mostly a developer concern, the runtime can only do so much if the flow itself is wasteful. The three things that move the needle most are: (1) collapsing consecutive ESQL/Java/Mapping nodes so the message tree isn't re-parsed each time, (2) picking the cheapest parser, and (3) carefully using additional instances where ordering allows. Always measure with stats before and after so you can prove the change worked, optimising blind often makes things worse.
 
 ### Node properties
 
 **Q: How can you override node properties at runtime?**
 
-- Use the LocalEnvironment — set `LocalEnvironment.Destination.*` to dynamically set output destinations
+- Use the LocalEnvironment, set `LocalEnvironment.Destination.*` to dynamically set output destinations
 - Use BAR overrides at deploy time (`mqsiapplybaroverride` or `ibmint` overrides) to swap static config per environment
-- Use policies (MQEndpoint, HTTP, etc.) and reference them from nodes — swap the policy instead of the node property
+- Use policies (MQEndpoint, HTTP, etc.) and reference them from nodes, swap the policy instead of the node property
 - Env var references in server.conf.yaml and config-references in modern ACE
 
 For per-message dynamic values use LocalEnvironment; for per-environment static values use BAR overrides or policies. Mixing them up makes flows hard to read and deploy.
@@ -1140,21 +1228,21 @@ For per-message dynamic values use LocalEnvironment; for per-environment static 
 
 **Q: How do you dynamically choose which MQ destination to write to from an ACE flow?**
 
-- **Dynamic queue** — set `OutputLocalEnvironment.Destination.MQ.DestinationData[1].queueName` (optionally `queueManagerName`) in a Compute node before MQOutput, and leave the MQOutput's Queue Name blank so it reads the destination list at runtime
-- **Dynamic topic (publish)** — same destination-list pattern, but set the topic string (e.g. `OutputLocalEnvironment.Destination.MQ.DestinationData[1].topicName`) and configure MQOutput (or MQPublication) to publish; the topic string can be fully built from message content at runtime
-- Topic publication only actually delivers somewhere useful if a matching subscription exists on MQ — the flow happily publishes to topic strings that nobody is listening to
-- Multiple entries in DestinationData fan out — one Compute node can drive sends to several queues or topics in one pass
+- **Dynamic queue**: set `OutputLocalEnvironment.Destination.MQ.DestinationData[1].queueName` (optionally `queueManagerName`) in a Compute node before MQOutput, and leave the MQOutput's Queue Name blank so it reads the destination list at runtime
+- **Dynamic topic (publish)**: same destination-list pattern, but set the topic string (e.g. `OutputLocalEnvironment.Destination.MQ.DestinationData[1].topicName`) and configure MQOutput (or MQPublication) to publish; the topic string can be fully built from message content at runtime
+- Topic publication only actually delivers somewhere useful if a matching subscription exists on MQ, the flow happily publishes to topic strings that nobody is listening to
+- Multiple entries in DestinationData fan out, one Compute node can drive sends to several queues or topics in one pass
 - Use this when the routing target depends on message content or a lookup, rather than hard-coded per flow
 
-The destination-list pattern is the idiomatic ACE way to drive MQOutput/MQPublication from data: the node reads its target(s) from the LocalEnvironment at runtime, so one flow can send to any queue or topic. Worth flagging explicitly that dynamic topic publishing is valid but only useful if subscriptions exist — nothing in ACE warns you if the topic has no listeners.
+The destination-list pattern is the idiomatic ACE way to drive MQOutput/MQPublication from data: the node reads its target(s) from the LocalEnvironment at runtime, so one flow can send to any queue or topic. Worth flagging explicitly that dynamic topic publishing is valid but only useful if subscriptions exist, nothing in ACE warns you if the topic has no listeners.
 
 ### Java
 
 **Q: How do you use Java in ACE, and what is the difference with the CMP?**
 
-- JavaCompute node — Java code executed in the flow; access the logical message tree via the IBM JavaCompute APIs
+- JavaCompute node, Java code executed in the flow; access the logical message tree via the IBM JavaCompute APIs
 - Plain Java projects referenced from ESQL or JavaCompute for utilities / business logic
-- CMP (Configuration Manager Proxy / IntegrationAPI) — Java API to manage the runtime (deploy, start/stop, query); not for in-flow logic
+- CMP (Configuration Manager Proxy / IntegrationAPI), Java API to manage the runtime (deploy, start/stop, query); not for in-flow logic
 - Rule of thumb: JavaCompute = flow, IntegrationAPI/CMP = admin
 
 JavaCompute is in-flight message processing; the IntegrationAPI / CMP is for automating administration. People new to ACE sometimes confuse them.
@@ -1163,35 +1251,35 @@ JavaCompute is in-flight message processing; the IntegrationAPI / CMP is for aut
 
 **Q: A flow handles XML messages but does not need to transform or read the content. Which parser do you use, and why?**
 
-- BLOB — treats the payload as opaque bytes
+- BLOB, treats the payload as opaque bytes
 - No parsing cost, best performance
-- No impact when the schema changes — you don't parse it, you just pass it through
+- No impact when the schema changes, you don't parse it, you just pass it through
 - Ideal for pass-through routing, file staging, or encrypted payloads
 
 Parsing is expensive in CPU and memory; if you don't need to read the body, don't parse it. BLOB keeps the original bytes intact and maximizes throughput.
 
 **Q: Give a quick overview of ACE parsers and when to pick each.**
 
-- **XML** — original XML parser, no namespace support, builds a full message tree; **deprecated**, don't use for new flows
-- **XMLNS** — older namespace-aware XML parser; superseded by XMLNSC, avoid for new work
-- **XMLNSC** — Compact namespace-aware XML parser and the modern default; lower memory footprint, on-demand (partial) parsing, handles namespaces properly. The 'C' stands for Compact
-- **JSON** — JSON parser; on-demand, similar compact model to XMLNSC
-- **DFDL** — Data Format Description Language for fixed/variable-length records, CSV, COBOL copybooks, custom binary; replacement for MRM on new work
-- **MRM** — legacy message sets, still supported for older projects but functionally replaced by DFDL
-- **BLOB** — no parsing, raw bytes; best performance when the flow just routes/passes the payload
-- **MIME** — multipart / attachments (email-style bodies)
+- **XML**: original XML parser, no namespace support, builds a full message tree; **deprecated**, don't use for new flows
+- **XMLNS**: older namespace-aware XML parser; superseded by XMLNSC, avoid for new work
+- **XMLNSC**: Compact namespace-aware XML parser and the modern default; lower memory footprint, on-demand (partial) parsing, handles namespaces properly. The 'C' stands for Compact
+- **JSON**: JSON parser; on-demand, similar compact model to XMLNSC
+- **DFDL**: Data Format Description Language for fixed/variable-length records, CSV, COBOL copybooks, custom binary; replacement for MRM on new work
+- **MRM**: legacy message sets, still supported for older projects but functionally replaced by DFDL
+- **BLOB**: no parsing, raw bytes; best performance when the flow just routes/passes the payload
+- **MIME**: multipart / attachments (email-style bodies)
 
-Match the parser to the payload. The key XML distinction: XML and XMLNS are both deprecated, XMLNSC is the modern default — namespace-aware AND compact, meaning it uses less memory and only parses the bits you actually navigate into. For anything tabular, positional or COBOL-shaped, DFDL is the right modern answer; new projects should avoid MRM unless legacy artefacts force it. And if you don't need to read the body, BLOB always wins on performance.
+Match the parser to the payload. The key XML distinction: XML and XMLNS are both deprecated, XMLNSC is the modern default, namespace-aware AND compact, meaning it uses less memory and only parses the bits you actually navigate into. For anything tabular, positional or COBOL-shaped, DFDL is the right modern answer; new projects should avoid MRM unless legacy artefacts force it. And if you don't need to read the body, BLOB always wins on performance.
 
 ### Implementation choice
 
 **Q: When do you choose ESQL vs Java vs Mapping node vs XSLT?**
 
-- **ESQL** — native, optimized for message tree work, concise for transforms; best default for most data-shape logic and anything iterative with lookups
-- **Mapping node** — graphical, great for sequential schema-to-schema transformations with reusable submaps. Big caveat: it is designed for sequential work, NOT for iterative loops with per-element lookups — those are clumsy and often slow in Mapping; reach for ESQL or Java instead
-- **JavaCompute** — when you need Java libraries, existing JAR logic, or standard SDK features (crypto, complex date/time, advanced collections)
-- **XSLT** — best for heavy XML-to-XML transformations where you already have XSLT artefacts or strong XSLT skills on the team
-- Mix is fine — pick per node, not per flow; a flow can legitimately have an ESQL Compute, a Mapping node and a JavaCompute side by side
+- **ESQL**: native, optimized for message tree work, concise for transforms; best default for most data-shape logic and anything iterative with lookups
+- **Mapping node**: graphical, great for sequential schema-to-schema transformations with reusable submaps. Big caveat: it is designed for sequential work, NOT for iterative loops with per-element lookups, those are clumsy and often slow in Mapping; reach for ESQL or Java instead
+- **JavaCompute**: when you need Java libraries, existing JAR logic, or standard SDK features (crypto, complex date/time, advanced collections)
+- **XSLT**: best for heavy XML-to-XML transformations where you already have XSLT artefacts or strong XSLT skills on the team
+- Mix is fine, pick per node, not per flow; a flow can legitimately have an ESQL Compute, a Mapping node and a JavaCompute side by side
 
 There is no single 'right' choice; pick the tool that matches the problem. Teams that default to 'everything in Java' lose ESQL's tree performance; teams that default to 'everything in ESQL' sometimes reinvent the JDK; teams that default to Mapping hit the sequential-only wall the moment they need per-row lookups inside a loop. Knowing each tool's sweet spot (and the Mapping caveat in particular) is the mark of someone who has actually shipped non-trivial flows.
 
@@ -1199,21 +1287,21 @@ There is no single 'right' choice; pick the tool that matches the problem. Teams
 
 **Q: Describe the concept of unit of work (Transactionality) inside a message flow.**
 
-- In ACE this concept is better known as **Transactionality** — same idea as MQ's unit of work, scoped to one run of a flow
-- **ACE uses MQ as its transaction manager** — the queue manager coordinates commits and rollbacks across the resources touched by the flow (MQ queues, XA-capable DBs, JMS, etc.)
-- A UOW brackets all transactional resources touched during that flow run: MQ (under syncpoint), database, JMS — they commit or roll back together
+- In ACE this concept is better known as **Transactionality**: same idea as MQ's unit of work, scoped to one run of a flow
+- **ACE uses MQ as its transaction manager**: the queue manager coordinates commits and rollbacks across the resources touched by the flow (MQ queues, XA-capable DBs, JMS, etc.)
+- A UOW brackets all transactional resources touched during that flow run: MQ (under syncpoint), database, JMS, they commit or roll back together
 - On successful end-of-flow the UOW commits; on an unhandled exception it rolls back
 - Catch / Failure terminals let you decide whether to contain an error inside the UOW or propagate it
 - **Escape hatch:** each transactional node (MQOutput, DB nodes, etc.) has a Transaction / Transactionality property. Setting it to **No** makes that operation run OUTSIDE the flow's UOW, so the action is kept even if the flow rolls back
-- Legitimate use: writing audit/log messages to MQ or a log queue that must survive a rollback. Don't use it for business data — you lose the all-or-nothing guarantee
+- Legitimate use: writing audit/log messages to MQ or a log queue that must survive a rollback. Don't use it for business data, you lose the all-or-nothing guarantee
 
-In ACE terminology this is Transactionality, but the mental model is the same MQ unit of work: one flow run = one transaction that commits or rolls back everything. The key architectural detail is that ACE leans on MQ as the transaction manager to coordinate commits/rollbacks across resources — which is one of the historical reasons MQ was such a tight dependency. The important nuance most people miss is that individual nodes can opt out via the Transaction property — useful for things like logging to MQ that must survive a rollback, but a footgun if you use it for business writes, because you've quietly broken atomicity.
+In ACE terminology this is Transactionality, but the mental model is the same MQ unit of work: one flow run = one transaction that commits or rolls back everything. The key architectural detail is that ACE leans on MQ as the transaction manager to coordinate commits/rollbacks across resources, which is one of the historical reasons MQ was such a tight dependency. The important nuance most people miss is that individual nodes can opt out via the Transaction property, useful for things like logging to MQ that must survive a rollback, but a footgun if you use it for business writes, because you've quietly broken atomicity.
 
 **Q: How do you make a flow transactional, and what does that actually mean?**
 
 - Set the MQInput node property `Transaction Mode` to `Yes` (or `Automatic` to inherit message persistence)
 - For output nodes, `Transaction Mode = Yes` so the put is under syncpoint
-- Database nodes — set their Transaction to `Automatic` so they join the UOW
+- Database nodes, set their Transaction to `Automatic` so they join the UOW
 - Result: success commits MQ + DB together; failure rolls both back
 
 Transactionality is a per-node setting that has to be consistent across the flow. One non-transactional node breaks the atomicity guarantee for the whole path.
@@ -1222,13 +1310,13 @@ Transactionality is a per-node setting that has to be consistent across the flow
 
 **Q: For a simple MQ-in / MQ-out flow with no catch or failure terminals attached, what happens when an error occurs toward the end of the flow?**
 
-- The UOW rolls back — the message goes back on the input queue, and no output is written (the MQ put was part of the same rolled-back UOW)
+- The UOW rolls back, the message goes back on the input queue, and no output is written (the MQ put was part of the same rolled-back UOW)
 - MQMD.BackoutCount on the rolled-back message is incremented
 - If BOTHRESH is configured on the input queue and BackoutCount >= BOTHRESH, the backout handler moves the message to BOQNAME (or to the qmgr's DLQ if no BOQNAME is set)
-- **If no backout threshold is configured (BOTHRESH = 0, the default)** — there's no threshold to cross, so the message is rolled back and re-delivered indefinitely. Classic poison-message loop: the flow keeps spinning on the same bad message, never making progress, often flapping downstream connections
+- **If no backout threshold is configured (BOTHRESH = 0, the default)**: there's no threshold to cross, so the message is rolled back and re-delivered indefinitely. Classic poison-message loop: the flow keeps spinning on the same bad message, never making progress, often flapping downstream connections
 - Mitigation for the no-threshold case: configure BOTHRESH + BOQNAME on every input queue as a standard (even BOTHRESH=3 with a named backout queue prevents the infinite loop), or add a Failure terminal that handles the error explicitly
 
-With no error handling attached, the flow relies entirely on the MQ backout mechanism — which is valid only if BOTHRESH is actually configured. The often-missed trap is that BOTHRESH defaults to 0, which means 'no threshold' → the poison message loops forever. A senior answer will call out both the normal case and the no-threshold case, and recommend setting BOTHRESH + BOQNAME as queue standards regardless of flow-level error handling.
+With no error handling attached, the flow relies entirely on the MQ backout mechanism, which is valid only if BOTHRESH is actually configured. The often-missed trap is that BOTHRESH defaults to 0, which means 'no threshold' → the poison message loops forever. A senior answer will call out both the normal case and the no-threshold case, and recommend setting BOTHRESH + BOQNAME as queue standards regardless of flow-level error handling.
 
 ### HTTPS
 
@@ -1239,15 +1327,15 @@ With no error handling attached, the flow relies entirely on the MQ backout mech
 - Populate the stores with the right certificates (server cert + chain for inbound, trusted CAs for outbound)
 - Decide on mutual TLS (client cert required) and add the client CA to the truststore if so
 
-HTTPS in ACE is configured at the server level (keystores/truststores) and referenced via policies — flows don't carry cert files themselves. Mutual TLS is a separate toggle you often forget to enable until security pushes back.
+HTTPS in ACE is configured at the server level (keystores/truststores) and referenced via policies, flows don't carry cert files themselves. Mutual TLS is a separate toggle you often forget to enable until security pushes back.
 
 ### Callable flows
 
 **Q: What are callable flows, how do they work, and what is the key security point?**
 
-- Callable Flow Invoke + Callable Input pair — a synchronous call between two flows that can be in different integration servers, on-prem and cloud
+- Callable Flow Invoke + Callable Input pair, a synchronous call between two flows that can be in different integration servers, on-prem and cloud
 - Uses the Switch Server (a cloud-hosted IBM service) to relay the call; endpoints open an outbound connection to the switch
-- Security: the connection is always initiated from the internal side outwards — no inbound firewall rule on the on-prem side
+- Security: the connection is always initiated from the internal side outwards, no inbound firewall rule on the on-prem side
 - Auth is handled by registering endpoints with credentials against the Switch Server
 
 Callable flows solve the classic hybrid problem of calling on-prem from cloud without opening inbound firewalls. The Switch Server is the rendezvous point and both sides dial out to it.
@@ -1256,20 +1344,20 @@ Callable flows solve the classic hybrid problem of calling on-prem from cloud wi
 
 **Q: Would you use Trace nodes in production? Why or why not?**
 
-- Generally no — Trace nodes force a full parse of the message to render it, which kills throughput
+- Generally no, Trace nodes force a full parse of the message to render it, which kills throughput
 - But in a diagnostic crunch they are easier to enable than service/user trace and have less overhead than full debugging
 - Compromise: leave Trace nodes disabled, enable them temporarily to root-cause, then turn off
 - Prefer logs/events/activity log for steady-state observability
 
-Trace nodes are a debugging tool, not a monitoring one. The main cost is the forced parse — the thing you took care to avoid with BLOB is defeated by a Trace node down the line.
+Trace nodes are a debugging tool, not a monitoring one. The main cost is the forced parse, the thing you took care to avoid with BLOB is defeated by a Trace node down the line.
 
 ### Performance
 
-**Q: A message flow is performing badly — how do you find the slow node?**
+**Q: A message flow is performing badly, how do you find the slow node?**
 
 - Enable flow and node statistics: `mqsichangeflowstats -s ... -c active -t basic`
 - Collect stats over a representative interval; read the CPU and elapsed time per node
-- Look for the node with the highest elapsed time — that's usually the bottleneck
+- Look for the node with the highest elapsed time, that's usually the bottleneck
 - Cross-check with backend timings (DB, HTTP) via their own monitoring
 
 Stats give you a ground-truth breakdown per node; you don't guess, you measure. After that, the fix depends on whether the bottleneck is parsing, downstream, or code.
@@ -1279,7 +1367,7 @@ Stats give you a ground-truth breakdown per node; you don't guess, you measure. 
 **Q: How do you increase throughput of a flow handling many small messages?**
 
 - Increase additional instances on the input node so multiple threads process in parallel
-- Commit count / batch settings on MQInput (`Commit Count`) — process several messages per commit to reduce transaction overhead
+- Commit count / batch settings on MQInput (`Commit Count`), process several messages per commit to reduce transaction overhead
 - Choose the cheapest parser you can get away with (BLOB if no parse needed)
 - Scale horizontally: additional integration servers behind a cluster / LB
 
@@ -1287,9 +1375,9 @@ Small-message flows are usually bound by overhead per message. Parallelism and b
 
 **Q: How do you increase throughput of a flow handling large messages?**
 
-- Deploy the flow in a separate integration server (historically 'execution group') — isolate memory pressure
+- Deploy the flow in a separate integration server (historically 'execution group'), isolate memory pressure
 - Avoid parsing when possible; stream the payload (File Input record detection, FTP node) rather than loading it all
-- Reduce message copies — minimise the number of nodes that mutate the tree
+- Reduce message copies, minimise the number of nodes that mutate the tree
 - Tune JVM heap and GC if JavaCompute is involved
 
 Large messages stress memory and GC more than CPU. Isolation (own server) and streaming are the main tools; raw parallelism often hurts because you multiply memory pressure.
@@ -1310,20 +1398,20 @@ The trick is to avoid materialising the whole file in memory. Record-based strea
 **Q: How do you set up a database connection from ACE on Windows / Linux?**
 
 - Install and configure the ODBC driver for the DB (DataDirect drivers ship with ACE for common DBs)
-- Windows — create a System DSN in ODBC Data Source Administrator (64-bit)
-- Linux — define the DSN in `odbc.ini` and point `ODBCINI` / `MQSI_ODBC_INI` to it
+- Windows, create a System DSN in ODBC Data Source Administrator (64-bit)
+- Linux, define the DSN in `odbc.ini` and point `ODBCINI` / `MQSI_ODBC_INI` to it
 - Supply credentials with `mqsisetdbparms` (or via the ACE vault), reference the DSN from the Database/Compute node
 
 The pattern is the same on both OSes: ODBC DSN + credentials stored separately + node references the DSN. The main difference is GUI vs config file.
 
 **Q: How do you debug database connection issues in ACE?**
 
-- Check the integration server log for BIP2322 / BIP2393-style messages (DB connection errors) — use `mqsiexplain` if the cause/action isn't obvious
-- `mqsicvp` (Connection Verification Program) — tests the ODBC DSN outside of a flow so you can isolate ACE vs driver vs DB
-- Verify credentials are actually stored — if using `mqsisetdbparms`, list them back; if using the ACE vault, use the vault commands to show the stored key so you know the credential is where ACE expects it
+- Check the integration server log for BIP2322 / BIP2393-style messages (DB connection errors), use `mqsiexplain` if the cause/action isn't obvious
+- `mqsicvp` (Connection Verification Program), tests the ODBC DSN outside of a flow so you can isolate ACE vs driver vs DB
+- Verify credentials are actually stored, if using `mqsisetdbparms`, list them back; if using the ACE vault, use the vault commands to show the stored key so you know the credential is where ACE expects it
 - Check ODBC driver version / library paths (`LD_LIBRARY_PATH`, `PATH`, and the `odbc.ini` / `ODBCINI` / `MQSI_ODBC_INI` pointers on Linux)
 - Attempt a plain `isql` / `osql` connection with the same DSN and creds to prove the ODBC + credential combination works independently of ACE
-- If connection succeeds but queries fail: usually schema/permissions on the DB side — validate against a known-good connection tool
+- If connection succeeds but queries fail: usually schema/permissions on the DB side, validate against a known-good connection tool
 
 Isolate whether the problem is ACE config, ODBC driver, credentials, or the database itself. The order that saves the most time: (1) check BIP messages, (2) validate the stored credential (mqsisetdbparms list or vault show), (3) `mqsicvp`, (4) plain `isql`. Each step narrows the failure domain, and skipping straight to 'mqsicvp fails, must be the driver' is how afternoons get wasted.
 
@@ -1332,26 +1420,26 @@ _References:_
 
 ### Artefacts
 
-**Q: Shared library vs static library — what is the difference, and when do you use which?**
+**Q: Shared library vs static library, what is the difference, and when do you use which?**
 
-- **Static library** — compiled into every BAR file that uses it; changes require rebuilding and redeploying each consuming application
-- **Shared library** — deployed once to the integration server and referenced by multiple applications at runtime; one update flows to every consumer without rebuilding them
-- Shared libraries are the right default for anything reused across applications — common subflows, ESQL routines, XSDs, message models
-- Static libraries are **functionally deprecated** — they still work, but they don't bring anything to the table over shared libraries anymore; stick to shared (or just put the code inside the application if it's genuinely internal)
+- **Static library**: compiled into every BAR file that uses it; changes require rebuilding and redeploying each consuming application
+- **Shared library**: deployed once to the integration server and referenced by multiple applications at runtime; one update flows to every consumer without rebuilding them
+- Shared libraries are the right default for anything reused across applications, common subflows, ESQL routines, XSDs, message models
+- Static libraries are **functionally deprecated**: they still work, but they don't bring anything to the table over shared libraries anymore; stick to shared (or just put the code inside the application if it's genuinely internal)
 - Treat shared libs as a deployment-time contract: a breaking change ripples to every consumer, so version them carefully and test in staging before production
 
-Shared libraries are a reuse mechanism with a lifecycle contract. Static libraries are a legacy approach with no remaining functional advantage — calling them functionally deprecated (not officially deprecated) is the accurate framing and signals you've kept up with modern ACE practice.
+Shared libraries are a reuse mechanism with a lifecycle contract. Static libraries are a legacy approach with no remaining functional advantage, calling them functionally deprecated (not officially deprecated) is the accurate framing and signals you've kept up with modern ACE practice.
 
 **Q: How does the practical definition of a shared library change when you deploy ACE in containers?**
 
-- In a classic Integration Node topology, a shared library lives in the node and is genuinely shared across many integration servers / applications on the same host — one physical copy, many consumers
+- In a classic Integration Node topology, a shared library lives in the node and is genuinely shared across many integration servers / applications on the same host, one physical copy, many consumers
 - In a container, each pod is its own integration server with its own filesystem; a shared library deployed to that container is only 'shared' among the applications *inside* that container
-- That scope is typically far narrower than in a node setup — often just the handful of apps packaged into that image — so the reuse benefit shrinks
+- That scope is typically far narrower than in a node setup, often just the handful of apps packaged into that image, so the reuse benefit shrinks
 - Operationally they start behaving like static libraries: updating the shared lib means rebuilding and redeploying the container image anyway
 - Lifecycle consequence: treat shared libraries in containers as a code-organisation tool (keep BARs lean, group reusable flows) rather than an independent deployment unit
-- If cross-container reuse matters, you solve it at a different layer — shared base images, shared git modules in the build, or callable flows over the network
+- If cross-container reuse matters, you solve it at a different layer, shared base images, shared git modules in the build, or callable flows over the network
 
-The word 'shared' means something different in containers. The runtime-level 'update once, all consumers see it' benefit effectively disappears because each pod ships its own copy. Calling this out shows you think about deployment model, not just the ACE feature in isolation — and it's a common source of wasted effort in teams that try to replicate node-era library patterns inside containers.
+The word 'shared' means something different in containers. The runtime-level 'update once, all consumers see it' benefit effectively disappears because each pod ships its own copy. Calling this out shows you think about deployment model, not just the ACE feature in isolation, and it's a common source of wasted effort in teams that try to replicate node-era library patterns inside containers.
 
 ### REST
 
@@ -1363,13 +1451,13 @@ The word 'shared' means something different in containers. The runtime-level 'up
 - Secure with a Security Profile (basic, LDAP, OAuth) + HTTPS policy
 - Document at runtime via the built-in Swagger UI / OpenAPI endpoint
 
-ACE's REST API projects are OpenAPI-first — you design the contract then implement each operation. This keeps the API surface explicit and makes the runtime self-documenting.
+ACE's REST API projects are OpenAPI-first, you design the contract then implement each operation. This keeps the API surface explicit and makes the runtime self-documenting.
 
 ### DFDL
 
 **Q: When do you use DFDL and how does it compare to MRM?**
 
-- DFDL — Data Format Description Language, open standard for describing fixed/variable/delimited binary and text formats
+- DFDL, Data Format Description Language, open standard for describing fixed/variable/delimited binary and text formats
 - Use cases: CSV, COBOL copybooks, SWIFT, fixed-length records, custom binary protocols
 - Modelled in the Toolkit, preview with sample data, versioned in Git as XSDs/schemas
 - Replacement direction for MRM; MRM is legacy but still supported
@@ -1378,11 +1466,11 @@ DFDL is the modern, industry-standard way to describe non-XML/non-JSON formats. 
 
 ### Routing
 
-**Q: What routing options do you have in ACE — Filter, Route, Label?**
+**Q: What routing options do you have in ACE, Filter, Route, Label?**
 
-- Filter node — single ESQL boolean expression, true/false terminals
-- Route node — match XPath-like expressions, multiple terminals, first-match
-- RouteToLabel + Label nodes — compute a label name at runtime, then branch dynamically
+- Filter node, single ESQL boolean expression, true/false terminals
+- Route node, match XPath-like expressions, multiple terminals, first-match
+- RouteToLabel + Label nodes, compute a label name at runtime, then branch dynamically
 - Pick Route for simple static fan-out, RouteToLabel for dynamic content-based routing
 
 Route is declarative and readable for a handful of cases; RouteToLabel is for runtime-decided routing or when the set of destinations is larger or dynamic.
@@ -1391,14 +1479,14 @@ Route is declarative and readable for a handful of cases; RouteToLabel is for ru
 
 **Q: How can you write to logs yourself from within an ACE flow?**
 
-- **Log node** — drag-and-drop node that writes a configurable message + message-tree snapshot to the server log; easiest way to emit structured entries without writing code
-- **LOG statement in ESQL** — write directly from a Compute node with severity levels and formatted text; good for conditional logging inside business logic
-- **Trace node** — writes the full logical message tree to a destination (user trace, file, console); heavy — useful for diagnostics but not routine logging in production because it forces a full parse
-- **JavaCompute** — plain `System.out` / your logging framework from Java also ends up in the integration server console, if you prefer Java-style logging
-- Pick **Log node** for lightweight structured events, **LOG statement** for conditional ESQL-driven logging, **Trace node** only for debugging — never as permanent production instrumentation
+- **Log node**: drag-and-drop node that writes a configurable message + message-tree snapshot to the server log; easiest way to emit structured entries without writing code
+- **LOG statement in ESQL**: write directly from a Compute node with severity levels and formatted text; good for conditional logging inside business logic
+- **Trace node**: writes the full logical message tree to a destination (user trace, file, console); heavy, useful for diagnostics but not routine logging in production because it forces a full parse
+- **JavaCompute**: plain `System.out` / your logging framework from Java also ends up in the integration server console, if you prefer Java-style logging
+- Pick **Log node** for lightweight structured events, **LOG statement** for conditional ESQL-driven logging, **Trace node** only for debugging, never as permanent production instrumentation
 - Whatever you pick, keep log levels disciplined and make the message self-contained enough to search for later (correlation IDs, business keys)
 
-ACE gives you three idiomatic ways to log from a flow: the Log node (declarative), the LOG ESQL statement (procedural) and the Trace node (heavyweight diagnostic). Mentioning the performance cost of Trace nodes specifically — and that they force a full message parse — signals you've been burned by leaving one on in production at least once.
+ACE gives you three idiomatic ways to log from a flow: the Log node (declarative), the LOG ESQL statement (procedural) and the Trace node (heavyweight diagnostic). Mentioning the performance cost of Trace nodes specifically, and that they force a full message parse, signals you've been burned by leaving one on in production at least once.
 
 _References:_
 - <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-log-node>
@@ -1409,8 +1497,8 @@ _References:_
 
 **Q: Every deploy your ACE application starts but does not respond. How do you diagnose?**
 
-- Check the integration server log for BIP messages at deploy time — especially any BIP21xx (config/property) or BIP22xx (DB/MQ connect)
-- `mqsilist -r` for resources — is the app deployed, started, and do nodes show ready?
+- Check the integration server log for BIP messages at deploy time, especially any BIP21xx (config/property) or BIP22xx (DB/MQ connect)
+- `mqsilist -r` for resources, is the app deployed, started, and do nodes show ready?
 - Verify policies and BAR overrides actually applied: inspect `overrides/` and use `mqsireportproperties`
 - Hit the health endpoint and check JMX/metrics for node status
 - If MQ-triggered: check backend connectivity (channel, queue authorizations)
@@ -1423,11 +1511,11 @@ Starting without responding almost always means 'app loaded, but an input node c
 
 **Q: What cloud platforms are you familiar with?**
 
-- Azure — AKS, ARO (Azure Red Hat OpenShift), Service Bus
-- AWS — EKS, ROSA (Red Hat OpenShift on AWS), SQS, MSK
-- GCP — GKE, Pub/Sub
-- IBM Cloud — ROKS (Red Hat OpenShift on IBM Cloud), CP4I
-- On-prem — OpenShift, vanilla Kubernetes
+- Azure, AKS, ARO (Azure Red Hat OpenShift), Service Bus
+- AWS, EKS, ROSA (Red Hat OpenShift on AWS), SQS, MSK
+- GCP, GKE, Pub/Sub
+- IBM Cloud, ROKS (Red Hat OpenShift on IBM Cloud), CP4I
+- On-prem, OpenShift, vanilla Kubernetes
 
 Listen for which clouds the candidate actually deployed to vs read about. For integration work, container platform (AKS/EKS/ROSA/ARO) matters more than the cloud brand.
 
@@ -1435,9 +1523,9 @@ Listen for which clouds the candidate actually deployed to vs read about. For in
 
 **Q: What is the difference between AKS and EKS?**
 
-- AKS — Azure Kubernetes Service; control plane managed by Azure, worker nodes are Azure VMs
-- EKS — Amazon Elastic Kubernetes Service; control plane managed by AWS, workers are EC2 or Fargate
-- Integration — AKS ties deeply to Azure AD, ACR, Monitor; EKS to IAM, ECR, CloudWatch
+- AKS, Azure Kubernetes Service; control plane managed by Azure, worker nodes are Azure VMs
+- EKS, Amazon Elastic Kubernetes Service; control plane managed by AWS, workers are EC2 or Fargate
+- Integration, AKS ties deeply to Azure AD, ACR, Monitor; EKS to IAM, ECR, CloudWatch
 - Both are vanilla Kubernetes under the hood; workloads are largely portable between them
 
 The underlying Kubernetes is the same; the differences are identity, registry, networking and logging integrations. Skilled candidates call out which of those matter for the platform they want to use.
@@ -1446,12 +1534,12 @@ The underlying Kubernetes is the same; the differences are identity, registry, n
 
 **Q: What is managed OpenShift called on Azure and on AWS?**
 
-- Azure — ARO (Azure Red Hat OpenShift), jointly managed by Microsoft and Red Hat
-- AWS — ROSA (Red Hat OpenShift Service on AWS), jointly managed by AWS and Red Hat
+- Azure, ARO (Azure Red Hat OpenShift), jointly managed by Microsoft and Red Hat
+- AWS, ROSA (Red Hat OpenShift Service on AWS), jointly managed by AWS and Red Hat
 - Both give you a full OpenShift cluster with SLAs and integrated billing
 - IBM Cloud equivalent: ROKS (Red Hat OpenShift on IBM Cloud)
 
-ARO and ROSA let you run OpenShift with a managed control plane on the hyperscaler of your choice — important for CP4I deployments that expect OpenShift.
+ARO and ROSA let you run OpenShift with a managed control plane on the hyperscaler of your choice, important for CP4I deployments that expect OpenShift.
 
 ### CP4I
 
@@ -1462,16 +1550,16 @@ ARO and ROSA let you run OpenShift with a managed control plane on the hyperscal
 - Shared foundational services: Platform Navigator, keycloak-based auth, automation assets
 - One subscription / entitlement covers the whole suite
 
-CP4I is how IBM packages its integration portfolio for containers. The big benefit is operator-driven lifecycle — create an IntegrationServer or QueueManager by applying a YAML and the operator does the rest.
+CP4I is how IBM packages its integration portfolio for containers. The big benefit is operator-driven lifecycle, create an IntegrationServer or QueueManager by applying a YAML and the operator does the rest.
 
 ### Containers
 
 **Q: What are the container patterns for MQ and ACE in Kubernetes?**
 
-- MQ — StatefulSet per qmgr for stable network identity and persistent volumes; Native HA uses 3 replicas
-- ACE — Deployment (stateless) with multiple replicas behind a Service; state lives in MQ/DB
+- MQ, StatefulSet per qmgr for stable network identity and persistent volumes; Native HA uses 3 replicas
+- ACE, Deployment (stateless) with multiple replicas behind a Service; state lives in MQ/DB
 - Config via ConfigMap / Secret; ACE vault unlocked with a K8s secret
-- Readiness and liveness probes — ACE /health endpoint; MQ uses built-in operator probes
+- Readiness and liveness probes, ACE /health endpoint; MQ uses built-in operator probes
 
 The split is simple: MQ is stateful, ACE is (should be) stateless. Getting that split right in Kubernetes saves a lot of pain later.
 
@@ -1479,21 +1567,21 @@ The split is simple: MQ is stateful, ACE is (should be) stateless. Getting that 
 
 ### MQ
 
-- [IBM MQ Documentation (Knowledge Center)](https://www.ibm.com/docs/en/ibm-mq) _(docs)_ — Canonical reference. Start here for any MQ concept or command.
-- [IBM MQ Developer](https://developer.ibm.com/components/ibm-mq/) _(docs)_ — Tutorials, container images, downloads, community pieces.
-- [ibm-messaging on GitHub](https://github.com/ibm-messaging) _(github)_ — Official samples, container images, MQ operator, performance reports.
-- [MQ Performance Reports (Tim Zielke et al.)](https://github.com/ibm-messaging/mqperf) _(github)_ — Detailed performance numbers per platform and version.
+- [IBM MQ Documentation (Knowledge Center)](https://www.ibm.com/docs/en/ibm-mq) _(docs)_, Canonical reference. Start here for any MQ concept or command.
+- [IBM MQ Developer](https://developer.ibm.com/components/ibm-mq/) _(docs)_, Tutorials, container images, downloads, community pieces.
+- [ibm-messaging on GitHub](https://github.com/ibm-messaging) _(github)_, Official samples, container images, MQ operator, performance reports.
+- [MQ Performance Reports (Tim Zielke et al.)](https://github.com/ibm-messaging/mqperf) _(github)_, Detailed performance numbers per platform and version.
 - [IBM MQ Community (Support forum)](https://community.ibm.com/community/user/integration/communities/community-home?CommunityKey=183ec850-4947-49c8-9a2e-8e7c7fc46c64) _(community)_
-- [MQ High Availability (MQTC 2018)](https://www.ibm.com/support/pages/system/files/inline-files/MQTC_v2018_High_Availability.pdf) _(pdf)_ — Solid deep dive into MI, RDQM and cluster HA. Also stashed locally at Docs/MQTC_v2018_High_Availability.pdf in the original repo.
+- [MQ High Availability (MQTC 2018)](https://www.ibm.com/support/pages/system/files/inline-files/MQTC_v2018_High_Availability.pdf) _(pdf)_, Solid deep dive into MI, RDQM and cluster HA. Also stashed locally at Docs/MQTC_v2018_High_Availability.pdf in the original repo.
 
 ### ACE
 
 - [IBM ACE Documentation (v12)](https://www.ibm.com/docs/en/app-connect/12.0) _(docs)_
 - [App Connect on IBM Developer](https://developer.ibm.com/components/app-connect/) _(docs)_
-- [ot4i on GitHub](https://github.com/ot4i) _(github)_ — ACE container samples, patterns, toolkit extensions.
-- [BIP message reference](https://www.ibm.com/docs/en/app-connect/12.0?topic=messages-bip) _(docs)_ — Look up any BIPxxxx code. Equivalent to running `mqsiexplain <code>`.
+- [ot4i on GitHub](https://github.com/ot4i) _(github)_, ACE container samples, patterns, toolkit extensions.
+- [BIP message reference](https://www.ibm.com/docs/en/app-connect/12.0?topic=messages-bip) _(docs)_, Look up any BIPxxxx code. Equivalent to running `mqsiexplain <code>`.
 - [IBM Integration Community](https://community.ibm.com/community/user/integration/home) _(community)_
-- [DFDL spec (OGF)](https://www.ogf.org/documents/GFD.240.pdf) _(pdf)_ — Formal DFDL specification. Overkill for daily work but the reference.
+- [DFDL spec (OGF)](https://www.ogf.org/documents/GFD.240.pdf) _(pdf)_, Formal DFDL specification. Overkill for daily work but the reference.
 
 ### Cloud
 
@@ -1504,4 +1592,4 @@ The split is simple: MQ is stateful, ACE is (should be) stateless. Getting that 
 ### All
 
 - [IBM Integration blog](https://community.ibm.com/community/user/integration/blogs/matthias-jung1) _(blog)_
-- [IBM Redbooks — integration](https://www.redbooks.ibm.com/) _(book)_ — Search for 'IBM MQ', 'App Connect Enterprise', 'Cloud Pak for Integration'.
+- [IBM Redbooks, integration](https://www.redbooks.ibm.com/) _(book)_, Search for 'IBM MQ', 'App Connect Enterprise', 'Cloud Pak for Integration'.
