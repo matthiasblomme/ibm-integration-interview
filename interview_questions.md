@@ -2,14 +2,14 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 115
+**Total questions:** 116
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (14)](#mq-dev)
 - [ACE, Admin (37)](#ace-admin)
-- [ACE, Dev (26)](#ace-dev)
+- [ACE, Dev (27)](#ace-dev)
 - [Cloud (5)](#cloud)
 
 ## General
@@ -964,13 +964,13 @@ Most day-to-day policies are dynamic. The few that aren't can trip you up when y
 **Q: What are the ways to build a BAR file, and when do you pick which?**
 
 - **Toolkit**: right-click on the project and build BAR via the UI. Compiles everything on the fly (XMLNSC/DFDL/Data Maps/Java/message sets); fine for devs, not for CI
-- **`mqsicreatebar`**: headless Toolkit-based build from projects on disk. Still needs an Eclipse-style workspace; legacy-friendly
+- **`mqsicreatebar`**: command-line wrapper around a **headless Eclipse** build. Still needs a Toolkit-style workspace, so a CI runner has to install the Toolkit AND typically wrap the call in `xvfb-run` because the headless Eclipse still expects a display; heavier and slower than `ibmint` on a pipeline
 - **`mqsipackagebar`**: CLI packager that bundles already-built artefacts into a BAR. It is a **packager, not a full compiler**: message sets and Java must be built first. In CI this usually means the developer has done a **'Build for mqsipackagebar'** step in the Toolkit (or a Maven/Gradle equivalent) to generate the binaries the pipeline then packages. `-c` compiles XMLNSC / DFDL / Data Maps; `-i` includes unsupported elements
-- **`ibmint package`**: modern, no-Toolkit, no-Eclipse build; compiles at build time; used in CI by default
+- **`ibmint package`**: modern, **genuinely headless** build: no Toolkit, no Eclipse, no `xvfb-run` ceremony. Compiles at build time and is the CI-friendly default
 - Maven / Gradle plugins, wrap any of the above so the build plugs into a standard pipeline
-- Rule of thumb: new CI pipelines → `ibmint package`. Legacy project types that `ibmint` doesn't yet cover → `mqsicreatebar` or `mqsipackagebar` with an explicit 'Build for' prep. Toolkit build only for interactive developer loops
+- Rule of thumb: new CI pipelines → `ibmint package`. Legacy project types that `ibmint` doesn't yet cover → `mqsicreatebar` (accept the Toolkit + `xvfb-run` footprint) or `mqsipackagebar` with an explicit 'Build for' prep. Toolkit build only for interactive developer loops
 
-The four ways are usually listed as Toolkit / `mqsicreatebar` / `mqsipackagebar` / `ibmint package`. The practical nuance most candidates miss is that `mqsipackagebar` is a **packager**, not a compiler, Java and message sets must have been built beforehand, which is what the Toolkit's 'Build for mqsipackagebar' step (or a Maven/Gradle equivalent) produces. For new work, `ibmint package` compiles everything at build time and needs no Eclipse, this is the CI-friendly default. `mqsipackagebar` + `-c` remains useful when you want to bundle already-built XMLNSC / DFDL / Data Maps.
+The four ways are usually listed as Toolkit / `mqsicreatebar` / `mqsipackagebar` / `ibmint package`. Two practical nuances most candidates miss: (1) `mqsipackagebar` is a **packager**, not a compiler, so Java and message sets must have been built beforehand, which is what the Toolkit's 'Build for mqsipackagebar' step (or a Maven/Gradle equivalent) produces. (2) `mqsicreatebar` runs a **headless Eclipse under the hood**, which is heavier on the runner and typically needs `xvfb-run` in a CI pipeline, whereas `ibmint package` is genuinely headless and has none of that ceremony. For new work, `ibmint package` is the CI-friendly default; `mqsipackagebar` + `-c` remains useful when you want to bundle already-built XMLNSC / DFDL / Data Maps.
 
 **Q: Explain `mqsiapplybaroverride`, `mqsireload` and `ibmint optimize`.**
 
@@ -1492,6 +1492,25 @@ _References:_
 - <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-log-node>
 - <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=statements-log-statement>
 - <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=server-using-trace-nodes-integration>
+
+### ESQL
+
+**Q: How do you access the second-to-last element in an array using ESQL positional operators?**
+
+- [ ] `Array.Item[--]`, Not a real ESQL positional operator. `--` has no meaning inside the subscript.
+- [ ] `Array.Item[-1]`, Negative integer indexing is a Python / JavaScript habit; ESQL uses `[<N]` to count from the end, not a leading minus sign.
+- [ ] `Array.Item[-2]`, Same story: ESQL does not use negative integers to index from the end.
+- [ ] `Array.Item[2>]`, Syntactically invalid. The operator `>` belongs inside the bracket, in front of the number (e.g. `[>2]` = second from start).
+- [ ] `Array.Item[>2]`, `[>2]` means second element counting from the **start**, not from the end. Right shape, wrong direction.
+- [ ] `Array.Item[2<]`, Syntactically invalid. The `<` operator goes in front of the number, not after it.
+- [x] `Array.Item[<2]`, Correct. `[<]` counts from the end: `[<1]` or `[<]` is the last element, `[<2]` is the last but one (penultimate), `[<3]` is third from last, and so on.
+
+- `[<]` counts from the **end**: `Item[<]` / `Item[<1]` = last, `Item[<2]` = penultimate, `Item[<3]` = third from last
+- `[>]` counts from the **start**: `Item[>]` / `Item[>1]` = first, `Item[>2]` = second
+- ESQL does NOT support negative integer indexing (`[-2]`), and the operator (`>` or `<`) must appear **before** the number inside the brackets
+- Absolute indexing stays the same: `Item[N]` or `Item[=N]` addresses position N from the start, 1-based
+
+Second-to-last = `[<2]`. Mnemonic: `>` counts forward from the start, `<` counts back from the end, and the numeric suffix (if any) is a 1-based offset in that direction. The common wrong answers are habits from other languages (`[-2]`) or operator-position mix-ups (`[2<]` vs `[<2]`).
 
 ### Troubleshooting
 

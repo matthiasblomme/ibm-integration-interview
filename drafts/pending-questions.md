@@ -281,42 +281,37 @@ already in the bank: this is 'what is it', that is 'how is it shipped'.
 - **Tags:** esql, logical-tree, indexing, array, json
 
 ### Question
-In ESQL, when do you use the `[>]` or `[<]` operator on a tree path, and
-how do they help when building an array of JSON objects?
+In ESQL, what do the `[>]` and `[<]` positional operators do on a tree
+path, and how do they help when building an array of JSON objects?
 
 ### Answer, bullets
-- `[>]` and `[<]` are **index qualifiers** used when navigating or
-  assigning to repeating tree elements (arrays)
-- `[>]`, "last" / "after the last". When reading, it refers to the last
-  occurrence. When assigning, it creates a **new occurrence at the end**
-- `[<]`, "first" / "before the first". When reading, it refers to the
-  first occurrence. When assigning, it creates a **new occurrence at the
-  beginning**
-- Typical use: appending a new item to an output array without knowing
-  how many are already there:
-  `SET OutputRoot.XMLNSC.Root.Item[>] = ...`
-- Contrast with `[N]` (position N) and `[=N]` (exactly position N) ,
-  `[>]` / `[<]` are positional relative to the current set rather than
-  absolute
-- **Building an array of JSON objects**: the idiomatic pattern is:
-  `CREATE LASTCHILD OF OutputRoot.JSON.Data.Items NAME 'Item';` to open
-  the array element, then `CREATE LASTCHILD OF OutputRoot.JSON.Data.Items.Item[<]`
-  to add each nested field to the newly-created last item. Repeat per
-  record from the source
-- Common pattern in transformation flows: loop over an input array, push
-  each shaped output element with `Target.Items.Item[>]`
+- `[>]` and `[<]` are **positional index operators** used when navigating
+  or assigning to repeating tree elements (arrays)
+- `[>]` counts from the **start**: `Field[>]` (equivalent to `Field[>1]`)
+  is the first occurrence, `Field[>2]` is the second, and so on
+- `[<]` counts from the **end**: `Field[<]` (equivalent to `Field[<1]`)
+  is the **last** occurrence, `Field[<2]` is the last but one (the
+  penultimate), `Field[<3]` is third-from-last, etc.
+- Compare with absolute indexing: `Field[N]` or `Field[=N]` addresses
+  position N from the start (1-based), independent of where the array
+  currently ends
+- **Building an array of JSON objects**: the idiomatic pattern is to
+  append a new Item with `CREATE LASTCHILD OF OutputRoot.JSON.Data.Items
+  NAME 'Item';`, then populate its fields by addressing
+  `OutputRoot.JSON.Data.Items.Item[<]`, which now refers to that newly
+  added last item. Repeat per record from the source
+- Common transform loop: iterate the input array, on each iteration
+  `CREATE LASTCHILD` a new Item and fill its fields via `Item[<]`
 
 ### Explanation
-These operators let ESQL build up arrays in the output tree without
-tracking indices by hand. The mnemonic: `>` points past the last element
-(append), `<` points before the first (prepend). Most of the time you'll
-see `[>]` in output-building code and `[<]` / `[N]` when reading or
-pushing into the newly-created last record. Building a JSON array of
-objects is exactly this pattern: `CREATE LASTCHILD` to add the outer
-Item, then use `Item[<]` to populate fields on that latest item.
-Candidates who use these fluently have written non-trivial ESQL
-transforms, beginners tend to increment their own counters or end up
-with malformed arrays.
+The mnemonic to keep them straight: `>` points forward from the start,
+`<` points back from the end. `Field[>]` = first, `Field[<]` = last,
+and you can extend either with a number (`[>2]` second from start,
+`[<2]` second from end / penultimate). Together with `CREATE LASTCHILD`
+they're the idiomatic way to build up an output array without hand-rolling
+an index counter. Candidates who use `[<]` and `[<2]` fluently have
+written non-trivial ESQL transforms; beginners tend to increment their
+own counters or end up with malformed arrays.
 
 ### References
 - (pending) IBM ACE ESQL reference, element indexing
