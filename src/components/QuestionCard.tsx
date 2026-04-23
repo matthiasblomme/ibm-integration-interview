@@ -1,12 +1,69 @@
 import { useState } from 'react';
 import type { Question } from '../types';
+import type { RatingValue } from '../lib/storage';
+import { useAnswerLength } from '../lib/prefs';
 
-export function QuestionCard({ q, defaultOpen = false }: { q: Question; defaultOpen?: boolean }) {
+function prettyUrl(url: string): string {
+  try {
+    const u = new URL(url);
+    const path = u.pathname.replace(/\/$/, '');
+    return `${u.hostname}${path}`;
+  } catch {
+    return url;
+  }
+}
+
+interface QuestionCardProps {
+  q: Question;
+  defaultOpen?: boolean;
+  rating?: RatingValue;
+}
+
+const ratingLabel: Record<RatingValue, string> = {
+  'got-it': 'Last marked: got it',
+  unsure: 'Last marked: unsure',
+  missed: 'Last marked: missed',
+};
+
+export function QuestionCard({ q, defaultOpen = false, rating }: QuestionCardProps) {
   const [open, setOpen] = useState(defaultOpen);
+  const [length] = useAnswerLength();
+  const toggle = () => setOpen((o) => !o);
+
+  const shortAvailable = !!q.answerBulletsShort && q.answerBulletsShort.length > 0;
+  const showShort = length === 'short' && shortAvailable;
+  const showShortMissing = length === 'short' && !shortAvailable;
+  const bullets = showShort ? q.answerBulletsShort! : q.answerBullets;
+  const showExplanation = !showShort;
+  const hasChoices =
+    (q.answerType === 'single' || q.answerType === 'multi') &&
+    Array.isArray(q.choices) &&
+    q.choices.length > 0;
   return (
     <div className="card">
-      <div className="question-header" onClick={() => setOpen((o) => !o)}>
-        <div className="q-text">{q.question}</div>
+      <div
+        className="question-header"
+        role="button"
+        tabIndex={0}
+        aria-expanded={open}
+        onClick={toggle}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggle();
+          }
+        }}
+      >
+        <div className="q-text">
+          {rating && (
+            <span
+              className={`status-dot ${rating}`}
+              aria-label={ratingLabel[rating]}
+              title={ratingLabel[rating]}
+            />
+          )}
+          {q.question}
+        </div>
         <div>
           <span className={`tag product-${q.product}`}>{q.product}</span>
           <span className="tag role">{q.role}</span>
@@ -21,12 +78,44 @@ export function QuestionCard({ q, defaultOpen = false }: { q: Question; defaultO
       </div>
       {open && (
         <div className="answer">
+          {showShortMissing && (
+            <p className="muted" style={{ fontStyle: 'italic', marginBottom: '0.5rem' }}>
+              Long answer only — no short version written yet.
+            </p>
+          )}
+          {hasChoices && (
+            <ul className="choices">
+              {q.choices!.map((c, i) => (
+                <li key={i} className={c.correct ? 'correct' : 'incorrect'}>
+                  <span className="choice-marker" aria-hidden="true">
+                    {c.correct ? '✓' : '·'}
+                  </span>
+                  {c.text}
+                  {c.explanation && <span className="muted"> — {c.explanation}</span>}
+                </li>
+              ))}
+            </ul>
+          )}
           <ul>
-            {q.answerBullets.map((b, i) => (
+            {bullets.map((b, i) => (
               <li key={i}>{b}</li>
             ))}
           </ul>
-          <p>{q.answerExplanation}</p>
+          {showExplanation && <p>{q.answerExplanation}</p>}
+          {q.references && q.references.length > 0 && (
+            <div className="references">
+              <strong>References</strong>
+              <ul>
+                {q.references.map((url) => (
+                  <li key={url}>
+                    <a href={url} target="_blank" rel="noopener noreferrer">
+                      {prettyUrl(url)}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       )}
     </div>

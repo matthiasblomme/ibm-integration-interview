@@ -51,10 +51,11 @@ Two workflows live under [.github/workflows/](.github/workflows/):
 3. Push to `main` — `deploy.yml` runs and publishes to
    `https://<user>.github.io/<repo>/`.
 
-**Important:** the Vite `base` in
-[vite.config.ts](vite.config.ts) is hardcoded to `/ibm-integration-interview/`
-because GitHub Pages serves project pages under that subpath. If your repo name
-is different, update `REPO_BASE` in `vite.config.ts` to match.
+**Important:** the Vite `base` defaults to `/ibm-integration-interview/` in
+[vite.config.ts](vite.config.ts) because GitHub Pages serves project pages
+under that subpath. If your repo name is different, either change the
+`DEFAULT_REPO_BASE` constant or set the `REPO_BASE` env var at build time
+(e.g. `REPO_BASE=/my-fork/ npm run build` — include leading and trailing `/`).
 
 The app uses `HashRouter`, so routes look like `/#/browse`. This avoids the
 GitHub Pages 404-on-refresh problem for client-side routes without needing a
