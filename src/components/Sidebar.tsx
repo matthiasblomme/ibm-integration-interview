@@ -1,9 +1,10 @@
-import type { Product, Role } from '../types';
+import type { Level, Product, Role } from '../types';
 
 export interface FilterState {
   products: Product[];
   roles: Role[];
   topics: string[];
+  levels: Level[];
   query: string;
 }
 
@@ -13,9 +14,10 @@ interface Props {
   topics: string[];
   allProducts: Product[];
   allRoles: Role[];
+  allLevels: Level[];
 }
 
-export function Filters({ state, onChange, topics, allProducts, allRoles }: Props) {
+export function Filters({ state, onChange, topics, allProducts, allRoles, allLevels }: Props) {
   const toggle = <T,>(arr: T[], value: T): T[] =>
     arr.includes(value) ? arr.filter((v) => v !== value) : [...arr, value];
 
@@ -58,6 +60,21 @@ export function Filters({ state, onChange, topics, allProducts, allRoles }: Prop
                 style={{ marginRight: 4, marginBottom: 4 }}
               >
                 {r}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <label>Level</label>
+          <div>
+            {allLevels.map((l) => (
+              <button
+                key={l}
+                className={state.levels.includes(l) ? 'primary' : 'ghost'}
+                onClick={() => onChange({ ...state, levels: toggle(state.levels, l) })}
+                style={{ marginRight: 4, marginBottom: 4 }}
+              >
+                {l}
               </button>
             ))}
           </div>

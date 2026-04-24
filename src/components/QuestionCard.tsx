@@ -70,6 +70,7 @@ export function QuestionCard({ q, defaultOpen = false, rating }: QuestionCardPro
       <div style={{ marginTop: '0.4rem' }}>
         <span className="tag">{q.topic}</span>
         <span className="tag">{q.difficulty}</span>
+        {q.level && <span className={`tag level-${q.level}`}>{q.level}</span>}
         {q.tags.slice(0, 4).map((t) => (
           <span key={t} className="tag">#{t}</span>
         ))}

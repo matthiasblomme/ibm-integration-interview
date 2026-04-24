@@ -130,6 +130,7 @@ export function FlashCard({ q, index, total, onRate, onSkip }: Props) {
             <span className="tag product-MQ" style={{ marginLeft: 8 }}>{q.product}</span>
             <span className="tag role">{q.role}</span>
             <span className="tag">{q.topic}</span>
+            {q.level && <span className={`tag level-${q.level}`}>{q.level}</span>}
             {isMcq && (
               <span className="tag" style={{ marginLeft: 4 }}>
                 {q.answerType === 'single' ? 'Single choice' : 'Multi select'}
