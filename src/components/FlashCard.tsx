@@ -28,10 +28,10 @@ export function FlashCard({ q, index, total, onRate, onSkip }: Props) {
     setGrade(null);
   }, [q.id]);
 
-  const shortAvailable = !!q.answerBulletsShort && q.answerBulletsShort.length > 0;
-  const showShort = length === 'short' && shortAvailable;
-  const bullets = showShort ? q.answerBulletsShort! : q.answerBullets;
-  const showExplanation = !showShort;
+  const shortBullets = q.answerBulletsShort?.length ? q.answerBulletsShort : null;
+  const useShort = length === 'short' && shortBullets !== null;
+  const bullets = useShort ? shortBullets : q.answerBullets;
+  const showExplanation = !useShort;
 
   const canSubmit = isMcq && selected.size > 0 && !submitted;
 
@@ -130,6 +130,7 @@ export function FlashCard({ q, index, total, onRate, onSkip }: Props) {
             <span className="tag product-MQ" style={{ marginLeft: 8 }}>{q.product}</span>
             <span className="tag role">{q.role}</span>
             <span className="tag">{q.topic}</span>
+            {q.level && <span className={`tag level-${q.level}`}>{q.level}</span>}
             {isMcq && (
               <span className="tag" style={{ marginLeft: 4 }}>
                 {q.answerType === 'single' ? 'Single choice' : 'Multi select'}

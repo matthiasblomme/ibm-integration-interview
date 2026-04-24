@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { questions } from '../data/questions';
-import type { Product, Question, Role } from '../types';
+import type { Level, Product, Question, Role } from '../types';
 import { FlashCard } from '../components/FlashCard';
 import {
   clearSession,
@@ -44,6 +44,7 @@ function PoolSummary({
 
 const ALL_PRODUCTS: Product[] = ['MQ', 'ACE', 'Cloud', 'General'];
 const ALL_ROLES: Role[] = ['Admin', 'Dev', 'Any'];
+const ALL_LEVELS: Level[] = ['junior', 'medior', 'senior'];
 
 type Phase = 'configure' | 'run' | 'done';
 
@@ -55,6 +56,7 @@ export function Quiz() {
   const [shuffle, setShuffle] = useState(true);
   const [prioritise, setPrioritise] = useState(true);
   const [include, setInclude] = useState<'both' | 'auto' | 'free'>('both');
+  const [levels, setLevels] = useState<Level[]>([]);
 
   const [queue, setQueue] = useState<Question[]>([]);
   const [index, setIndex] = useState(0);
@@ -99,12 +101,13 @@ export function Quiz() {
     return questions.filter((q) => {
       if (!products.includes(q.product)) return false;
       if (!roles.includes(q.role)) return false;
+      if (levels.length && (!q.level || !levels.includes(q.level))) return false;
       const isAuto = q.answerType === 'single' || q.answerType === 'multi';
       if (include === 'auto' && !isAuto) return false;
       if (include === 'free' && isAuto) return false;
       return true;
     });
-  }, [products, roles, include]);
+  }, [products, roles, levels, include]);
 
   const toggle = <T,>(arr: T[], v: T, setter: (n: T[]) => void) => {
     setter(arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
@@ -119,7 +122,7 @@ export function Quiz() {
       }
     }
     if (prioritise) {
-      // Stable sort by priority bucket — missed first, then unsure, then unseen,
+      // Stable sort by priority bucket, missed first, then unsure, then unseen,
       // then got-it. Within each bucket the prior shuffle order is preserved.
       working = working
         .map((q, i) => ({ q, i, b: priorityBucket(progress, q.id) }))
@@ -164,7 +167,7 @@ export function Quiz() {
       <div>
         <h1>Quiz</h1>
         <p className="muted">
-          Pick what to practise. You'll flip through flashcards and rate yourself — progress is saved
+          Pick what to practise. You'll flip through flashcards and rate yourself, progress is saved
           in this browser.
         </p>
         {savedSession && (
@@ -206,6 +209,20 @@ export function Quiz() {
                 style={{ marginRight: 4, marginBottom: 4 }}
               >
                 {r}
+              </button>
+            ))}
+          </div>
+          <div>
+            <label>Levels</label>
+            {ALL_LEVELS.map((l) => (
+              <button
+                key={l}
+                className={levels.includes(l) ? 'primary' : 'ghost'}
+                onClick={() => toggle(levels, l, setLevels)}
+                style={{ marginRight: 4, marginBottom: 4 }}
+                title="Leave empty to include all levels (including unlabelled)"
+              >
+                {l}
               </button>
             ))}
           </div>

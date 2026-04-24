@@ -1,4 +1,4 @@
-# IBM Integration Interview Prep — ACE & MQ
+# IBM Integration Interview Prep, ACE & MQ
 
 A small React + Vite webapp that lets you browse, search and quiz yourself on
 IBM ACE and IBM MQ interview questions (Dev + Admin), plus a curated resource
@@ -6,8 +6,8 @@ list. Intended as a study / interview-prep tool.
 
 All content lives in plain JSON:
 
-- [src/data/questions.json](src/data/questions.json) — question bank (single source of truth)
-- [src/data/resources.json](src/data/resources.json) — curated links
+- [src/data/questions.json](src/data/questions.json), question bank (single source of truth)
+- [src/data/resources.json](src/data/resources.json), curated links
 
 A readable Markdown export is kept at
 [interview_questions.md](interview_questions.md), regenerated from the JSON.
@@ -26,36 +26,36 @@ npm run gen:md   # regenerate interview_questions.md from JSON
 
 ## Features
 
-- **Browse** — filter by product (MQ / ACE / Cloud / General), role (Admin /
+- **Browse**: filter by product (MQ / ACE / Cloud / General), role (Admin /
   Dev / Any) and topic. Full-text search across question, answer and tags
   (Fuse.js).
-- **Quiz** — flashcard mode. Pick filters, draw N random questions, reveal
+- **Quiz**: flashcard mode. Pick filters, draw N random questions, reveal
   answers and self-rate. Progress is kept in `localStorage`.
-- **Resources** — curated IBM docs, community sites, GitHub repos and
+- **Resources**: curated IBM docs, community sites, GitHub repos and
   reference PDFs, filterable by product.
 
 ## GitHub workflows
 
 Two workflows live under [.github/workflows/](.github/workflows/):
 
-- [ci.yml](.github/workflows/ci.yml) — runs on every pull request (and push to
+- [ci.yml](.github/workflows/ci.yml), runs on every pull request (and push to
   `main`): typechecks, builds, and verifies `interview_questions.md` is in sync
   with the JSON. Use this as the required status check in branch protection.
-- [deploy.yml](.github/workflows/deploy.yml) — runs on push to `main`: builds
+- [deploy.yml](.github/workflows/deploy.yml), runs on push to `main`: builds
   and publishes to GitHub Pages.
 
 ## Deploy to GitHub Pages
 
 1. Push this repo to GitHub.
 2. In repo **Settings → Pages**, set **Source** to **GitHub Actions**.
-3. Push to `main` — `deploy.yml` runs and publishes to
+3. Push to `main`, `deploy.yml` runs and publishes to
    `https://<user>.github.io/<repo>/`.
 
 **Important:** the Vite `base` defaults to `/ibm-integration-interview/` in
 [vite.config.ts](vite.config.ts) because GitHub Pages serves project pages
 under that subpath. If your repo name is different, either change the
 `DEFAULT_REPO_BASE` constant or set the `REPO_BASE` env var at build time
-(e.g. `REPO_BASE=/my-fork/ npm run build` — include leading and trailing `/`).
+(e.g. `REPO_BASE=/my-fork/ npm run build`, include leading and trailing `/`).
 
 The app uses `HashRouter`, so routes look like `/#/browse`. This avoids the
 GitHub Pages 404-on-refresh problem for client-side routes without needing a
@@ -66,7 +66,7 @@ GitHub Pages 404-on-refresh problem for client-side routes without needing a
 Branch protection lives on GitHub, not in the repo, so this has to be enabled
 once the repo is pushed. You have two options.
 
-### Option A — GitHub UI
+### Option A, GitHub UI
 
 Repo **Settings → Branches → Branch protection rules → Add rule**:
 
@@ -77,12 +77,12 @@ Repo **Settings → Branches → Branch protection rules → Add rule**:
 - ✅ **Require status checks to pass before merging**
   - ✅ Require branches to be up to date before merging
   - Search for and add the check named **`Typecheck & Build`** (from
-    `ci.yml`) — it appears in the list after the workflow has run at least
+    `ci.yml`), it appears in the list after the workflow has run at least
     once (open a throwaway PR first if needed)
 - Leave **Include administrators** off if you're the only admin, so you don't
   lock yourself out.
 
-### Option B — one-liner with `gh` CLI
+### Option B, one-liner with `gh` CLI
 
 After the CI workflow has run at least once so the check name is registered:
 

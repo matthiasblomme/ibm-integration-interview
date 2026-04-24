@@ -1,6 +1,7 @@
 export type Product = 'MQ' | 'ACE' | 'Cloud' | 'General';
 export type Role = 'Admin' | 'Dev' | 'Any';
 export type Difficulty = 'easy' | 'medium' | 'hard';
+export type Level = 'junior' | 'medior' | 'senior';
 
 export type AnswerType = 'free' | 'single' | 'multi';
 
@@ -23,6 +24,8 @@ export interface Question {
   answerExplanation: string;
   tags: string[];
   difficulty: Difficulty;
+  /** Optional seniority level this question targets. */
+  level?: Level;
   /** Optional list of URLs to authoritative sources for this question. */
   references?: string[];
   /**

@@ -30,15 +30,13 @@ export function QuestionCard({ q, defaultOpen = false, rating }: QuestionCardPro
   const [length] = useAnswerLength();
   const toggle = () => setOpen((o) => !o);
 
-  const shortAvailable = !!q.answerBulletsShort && q.answerBulletsShort.length > 0;
-  const showShort = length === 'short' && shortAvailable;
-  const showShortMissing = length === 'short' && !shortAvailable;
-  const bullets = showShort ? q.answerBulletsShort! : q.answerBullets;
-  const showExplanation = !showShort;
-  const hasChoices =
-    (q.answerType === 'single' || q.answerType === 'multi') &&
-    Array.isArray(q.choices) &&
-    q.choices.length > 0;
+  const shortBullets = q.answerBulletsShort?.length ? q.answerBulletsShort : null;
+  const useShort = length === 'short' && shortBullets !== null;
+  const showShortMissing = length === 'short' && shortBullets === null;
+  const bullets = useShort ? shortBullets : q.answerBullets;
+  const showExplanation = !useShort;
+  const isMcq = q.answerType === 'single' || q.answerType === 'multi';
+  const choices = isMcq && q.choices?.length ? q.choices : null;
   return (
     <div className="card">
       <div
@@ -72,6 +70,7 @@ export function QuestionCard({ q, defaultOpen = false, rating }: QuestionCardPro
       <div style={{ marginTop: '0.4rem' }}>
         <span className="tag">{q.topic}</span>
         <span className="tag">{q.difficulty}</span>
+        {q.level && <span className={`tag level-${q.level}`}>{q.level}</span>}
         {q.tags.slice(0, 4).map((t) => (
           <span key={t} className="tag">#{t}</span>
         ))}
@@ -80,18 +79,18 @@ export function QuestionCard({ q, defaultOpen = false, rating }: QuestionCardPro
         <div className="answer">
           {showShortMissing && (
             <p className="muted" style={{ fontStyle: 'italic', marginBottom: '0.5rem' }}>
-              Long answer only — no short version written yet.
+              Long answer only, no short version written yet.
             </p>
           )}
-          {hasChoices && (
+          {choices && (
             <ul className="choices">
-              {q.choices!.map((c, i) => (
+              {choices.map((c, i) => (
                 <li key={i} className={c.correct ? 'correct' : 'incorrect'}>
                   <span className="choice-marker" aria-hidden="true">
                     {c.correct ? '✓' : '·'}
                   </span>
                   {c.text}
-                  {c.explanation && <span className="muted"> — {c.explanation}</span>}
+                  {c.explanation && <span className="muted">, {c.explanation}</span>}
                 </li>
               ))}
             </ul>

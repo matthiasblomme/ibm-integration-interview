@@ -15,7 +15,7 @@ const roleOrder = ['Any', 'Admin', 'Dev'];
 function sectionTitle(product, role) {
   if (product === 'General') return 'General';
   if (role === 'Any') return `${product}`;
-  return `${product} — ${role}`;
+  return `${product}, ${role}`;
 }
 
 function groupKey(q) {
@@ -41,7 +41,7 @@ const orderedKeys = [...groups.keys()].sort((a, b) => {
 const out = [];
 out.push('# IBM ACE and MQ Interview Questions');
 out.push('');
-out.push('Generated from `src/data/questions.json` — edit the JSON and run `npm run gen:md`.');
+out.push('Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.');
 out.push('');
 out.push(`**Total questions:** ${questions.length}`);
 out.push('');
@@ -75,7 +75,7 @@ for (const k of orderedKeys) {
       if (Array.isArray(q.choices) && q.choices.length) {
         for (const c of q.choices) {
           const marker = c.correct ? '[x]' : '[ ]';
-          const note = c.explanation ? ` — ${c.explanation}` : '';
+          const note = c.explanation ? `, ${c.explanation}` : '';
           out.push(`- ${marker} ${c.text}${note}`);
         }
         out.push('');
@@ -115,7 +115,7 @@ for (const [product, list] of byProduct) {
   out.push(`### ${product}`);
   out.push('');
   for (const r of list) {
-    const note = r.note ? ` — ${r.note}` : '';
+    const note = r.note ? `, ${r.note}` : '';
     out.push(`- [${r.title}](${r.url}) _(${r.kind})_${note}`);
   }
   out.push('');

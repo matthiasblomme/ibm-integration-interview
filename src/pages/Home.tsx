@@ -49,7 +49,7 @@ export function Home() {
         </div>
         <div className="stat-card">
           <h3><Link to="/quiz">Quiz</Link></h3>
-          <p className="muted">Flashcard mode. Rate yourself after each answer — progress saved locally.</p>
+          <p className="muted">Flashcard mode. Rate yourself after each answer, progress saved locally.</p>
         </div>
         <div className="stat-card">
           <h3><Link to="/resources">Resources</Link></h3>

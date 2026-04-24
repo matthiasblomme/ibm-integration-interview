@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { questions } from '../data/questions';
-import type { Product, Question, Role } from '../types';
+import type { Level, Product, Question, Role } from '../types';
 import { QuestionCard } from '../components/QuestionCard';
 import { Filters, type FilterState } from '../components/Sidebar';
 import { createSearchIndex } from '../lib/search';
@@ -8,12 +8,14 @@ import { loadProgress, priorityBucket } from '../lib/storage';
 
 const ALL_PRODUCTS: Product[] = ['MQ', 'ACE', 'Cloud', 'General'];
 const ALL_ROLES: Role[] = ['Admin', 'Dev', 'Any'];
+const ALL_LEVELS: Level[] = ['junior', 'medior', 'senior'];
 
 export function Browse() {
   const [filters, setFilters] = useState<FilterState>({
     products: [],
     roles: [],
     topics: [],
+    levels: [],
     query: '',
   });
   const [weakSpotsOnly, setWeakSpotsOnly] = useState(false);
@@ -37,6 +39,7 @@ export function Browse() {
       if (filters.products.length && !filters.products.includes(q.product)) return false;
       if (filters.roles.length && !filters.roles.includes(q.role)) return false;
       if (filters.topics.length && !filters.topics.includes(q.topic)) return false;
+      if (filters.levels.length && (!q.level || !filters.levels.includes(q.level))) return false;
       if (weakSpotsOnly && priorityBucket(progress, q.id) === 3) return false;
       return true;
     });
@@ -51,6 +54,7 @@ export function Browse() {
         topics={topics}
         allProducts={ALL_PRODUCTS}
         allRoles={ALL_ROLES}
+        allLevels={ALL_LEVELS}
       />
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '0.5rem' }}>
         <p className="muted" style={{ margin: 0 }}>

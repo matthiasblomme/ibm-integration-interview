@@ -1,4 +1,4 @@
-# Blog-sourced T items — your half (16 of 32)
+# Blog-sourced T items, your half (16 of 32)
 
 Your half of the blog-sourced questions marked `T` (tweak) in
 `blog-sourced-candidates.md`. Focus: **Migration, Vault, Containers,
@@ -21,7 +21,7 @@ if they feel half-baked).
 
 ---
 
-## Section 1 — Migration & modernisation
+## Section 1, Migration & modernisation
 
 ### 1. `ace-migration` · Transformation Advisor fix-pack trap
 
@@ -63,7 +63,7 @@ if they feel half-baked).
 
 ---
 
-## Section 2 — Vault & credentials
+## Section 2, Vault & credentials
 
 ### 5. `setup-ace-vault` · Vault encryption method & key size
 
@@ -78,7 +78,7 @@ if they feel half-baked).
 ### 6. `setup-ace-vault` · Three vault types
 
 - **Question:** What are the three vault types in ACE, and which one is NOT managed by the ACE operator in Kubernetes?
-- **Hook:** Node / server / external — only external needs custom image management.
+- **Hook:** Node / server / external, only external needs custom image management.
 
 **Your refinement:**
 
@@ -98,14 +98,14 @@ if they feel half-baked).
 ### 8. `setup-ace-vault` · `mqsicredentials` API
 
 - **Question:** How does the ACE vault API let you manage credentials, and what replaces `mqsisetdbparms`?
-- **Hook:** `mqsicredentials` CLI — vault-backed, AES-256, supports dynamic update.
+- **Hook:** `mqsicredentials` CLI, vault-backed, AES-256, supports dynamic update.
 
 **Your refinement:**
 
 
 ---
 
-## Section 3 — Container & Kubernetes deployment
+## Section 3, Container & Kubernetes deployment
 
 ### 9. `containerization-series` · Bake vs fry trade-off
 
@@ -157,7 +157,7 @@ if they feel half-baked).
 
 ---
 
-## Section 4 — Security & TLS
+## Section 4, Security & TLS
 
 ### 14. `disable-weak-ciphers-ace` · Verifying weak ciphers on Windows
 
@@ -172,7 +172,7 @@ if they feel half-baked).
 ### 15. `disable-weak-ciphers-ace` · Outbound vs inbound TLS config
 
 - **Question:** Which ACE configuration file controls weak cipher suites when ACE acts as an HTTPS client (outbound)?
-- **Hook:** `java.security` for outbound vs `server.conf.yaml` for inbound — must configure both for full coverage.
+- **Hook:** `java.security` for outbound vs `server.conf.yaml` for inbound, must configure both for full coverage.
 
 **Your refinement:**
 

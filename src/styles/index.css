@@ -35,6 +35,9 @@
 :root[data-theme='light'] .tag.product-Cloud { color: #a86100; }
 :root[data-theme='light'] .tag.product-General { color: #6039a6; }
 :root[data-theme='light'] .tag.role { color: #8a4b00; }
+:root[data-theme='light'] .tag.level-junior { color: #0d7377; }
+:root[data-theme='light'] .tag.level-medior { color: #a86100; }
+:root[data-theme='light'] .tag.level-senior { color: #9b2c2c; }
 :root[data-theme='light'] button.primary { color: #ffffff; }
 
 * {
@@ -147,6 +150,15 @@ label { display: block; margin-bottom: 0.3rem; color: var(--text-dim); font-size
   letter-spacing: 0.02em;
   margin-bottom: 1.25rem;
   font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.nav .brand-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  flex-shrink: 0;
 }
 .nav a {
   display: block;
@@ -191,6 +203,9 @@ label { display: block; margin-bottom: 0.3rem; color: var(--text-dim); font-size
 .tag.product-Cloud { color: #fcd3a1; }
 .tag.product-General { color: #dabffb; }
 .tag.role { color: #f6c177; }
+.tag.level-junior { color: #8ec8c4; }
+.tag.level-medior { color: #e7b16a; }
+.tag.level-senior { color: #d67b7b; }
 
 .filters {
   display: grid;
