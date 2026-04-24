@@ -2,14 +2,14 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 125
+**Total questions:** 128
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (14)](#mq-dev)
 - [ACE, Admin (40)](#ace-admin)
-- [ACE, Dev (33)](#ace-dev)
+- [ACE, Dev (36)](#ace-dev)
 - [Cloud (5)](#cloud)
 
 ## General
@@ -569,7 +569,7 @@ _References:_
 - **Linux sysctls:** `net.ipv4.tcp_keepalive_time` (idle before first probe), `tcp_keepalive_intvl` (probe gap), `tcp_keepalive_probes` (how many failed probes before declaring dead)
 - **Windows:** equivalent registry values under `HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters`
 - Main failures it catches: firewalls silently dropping idle connections, NAT entries timing out, dead network paths where the remote host disappeared without a proper close
-- Tune the idle time to beat your firewall's idle-drop window (often 15–30 minutes) rather than leaving it at the OS default
+- Tune the idle time to beat your firewall's idle-drop window (often 15-30 minutes) rather than leaving it at the OS default
 
 TCP KeepAlive is the network layer's 'is this socket actually alive?' probe. It's a standard socket option, MQ just asks the OS to turn it on for its sockets. The subtlety is that enabling `KEEPALIVE(YES)` on the channel is only half the job; without tuning the OS-level interval the kernel default is so long that firewalls will silently drop connections long before a probe fires. IBM has a dedicated support note about this exact two-step setup.
 
@@ -1650,6 +1650,64 @@ In ACE you rarely touch `MQMD.Persistence` directly; you set it declaratively vi
 
 _References:_
 - <https://www.ibm.com/support/pages/ibm-mq-message-persistence-faqs>
+
+### Observability
+
+**Q: What is OpenTelemetry (OTel), and how does ACE use it?**
+
+- OpenTelemetry is a CNCF observability framework and toolkit for producing trace, metric and log telemetry in a vendor-neutral way, so any compliant producer can export to any compliant backend (IBM Instana, Jaeger, Zipkin, Dynatrace, Splunk, Elastic APM) without re-instrumenting code
+- ACE (on Linux x86-64 / zSeries / POWER-LE, AIX, Windows) supports emitting OTel **traces only** at this time, shipped as span data to an OTLP collector endpoint. Metrics and logs are out of scope for the built-in OTel integration
+- Supported nodes: MQ (MQInput, MQGet, MQOutput, MQPublication, MQReply), HTTP (Input / Reply / Request and async variants), Kafka (Consumer, Producer, Read), REST (Request, async), SOAP (Input, Reply, Request, async), and the full Callable-flow family (CallableInput / Reply, CallableFlowInvoke, async variants)
+- Enable and configure in `server.conf.yaml` under `ResourceManagers.OpenTelemetryManager`: set `openTelemetryEnabled: true`, then `exporterOtlpGrpcEndpoint` (e.g. `'telemetryagent.host.com:4317'`) or `exporterOtlpHttpUrl` (e.g. `'http://<host>:<port>/v1/traces'`), plus `openTelemetryServiceName` (defaults to `App Connect Enterprise-<server name>`), span processor (`batch` or `simple`), optional credentials (`openTelemetryHttpSecurityId` / `openTelemetryGrpcSecurityId` pointing at a vault entry with `credential-type: opentelemetry`, authtypes `basic`, `accessToken`, `apiKey`), and TLS truststore properties
+- Propagation: input nodes read the incoming trace parent from transport headers and start child spans; HTTP / REST / SOAP request nodes add the current trace parent to outbound HTTP headers; MQOutput writes it into the MQRFH2 `usr` folder. **Gotcha:** MQGet currently ignores an existing trace parent in the MQRFH2 header, so MQ-to-MQ chains do not propagate all the way through yet
+- Known limitations worth flagging in an interview: no telemetry for Collector, Aggregation, Sequence / Resequence or Timer nodes, or for integration-node listener queues; SOAP WS-RM / WS-Addressing and SOAP-over-JMS are unsupported; Flow-Exerciser injection produces 'sparse spans' with no transport data. Check active settings via `GET /apiv2/resource-managers/opentelemetry-manager` (admin REST API) or `mqsireportproperties ... opentelemetry-manager`
+
+OTel is how ACE plugs into modern cross-service distributed tracing, a complement to the existing activity log, flow / resource stats and Log / Trace nodes rather than a replacement. Candidates should know that ACE emits traces only (not metrics or logs), that context flows in via transport headers and request nodes propagate it onwards, and that a configured integration server appears as a span tree inside a larger distributed trace. The real discriminators: the unsupported-node list and the MQGet-ignores-inbound-trace-parent gotcha, both of which surface in real rollouts.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=management-configuring-opentelemetry-trace-integration-server>
+- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=server-turning-off-opentelemetry-message-flow>
+- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=functions-opentelemetry-trace-parent-function>
+- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=functions-opentelemetry-trace-state-function>
+
+### Caching
+
+**Q: What cache and reusable-state options does ACE offer, and when would you pick each?**
+
+- **Environment tree** (`Environment.*`, from ESQL / Mapping / Java): per-message, flow-scoped state that lasts for a single flow run. The default for anything you only need while processing one message
+- **Long-lived variables** in ESQL (`DECLARE ... SHARED`): per-flow, single integration server, alive until the flow is restarted or reconfigured. Useful for single-server memoisation but **not** a cluster-wide cache
+- **Local cache** (Java, ACE 12.0.4.0+): a `HashMap`-backed in-memory cache scoped to one integration server. API-compatible with the global cache via the `MbLocalMap` class, but no cross-server replication and no transactions. Enable with `GlobalCache.defaultCacheType: 'local'` in `server.conf.yaml`
+- **Embedded global cache** (ACE 13.0.3.0+, replaces the deprecated embedded WXS grid): built-in, works on Java 8 and Java 17, container-friendly, replicated across participating integration servers, no database required. Accessed via `MbGlobalMap` from Java or Mapping nodes; administered with `ibmint display cache` (inspect replication, maps, keys, memory) and `ibmint clear cache` (per server, not network-wide)
+- **External Redis global cache**: same `MbGlobalMap` API, backed by any Redis-API-compatible server (Redis Open Source 6.2.0+ API, not necessarily Redis-branded). Operations map one-to-one onto Redis commands: `put` -> `SET ... NX`, `update` -> `SET ... XX`, `get` -> `GET`, `remove` -> `GETDEL`, `containsKey` -> `EXISTS`; plus `AUTH` / `SELECT` / `CLIENT SETNAME` at connect time. Survives server restart, scales independently, shareable across unrelated servers or clusters
+- **Deprecated, do not pick for new work:** embedded and external WebSphere eXtreme Scale (WXS) grids, deprecated from ACE 13.0.3.0, require Java 8, and are **not** supported in containers. Migration path: embedded global cache (from embedded WXS) or external Redis (from external WXS)
+- Pick by scope, lifetime and persistence: in-flight = environment tree; single-flow memoisation = long-lived / SHARED variables; single-server memoisation = local cache; cross-server ephemeral with no infra = embedded global cache; cross-cluster or must-survive-restart = external Redis; durable truth = database
+
+IBM treats caching in ACE as a spectrum from in-message state to fully external infrastructure, and the interview signal is whether the candidate frames the decision by scope, lifetime and persistence rather than by listing products. The two v13 headlines to know: the new embedded global cache from 13.0.3.0 replaces the old WXS grid with something that actually works in containers and no longer forces Java 8; and the external Redis backend means the same `MbGlobalMap` API can drive a shared, durable store. Knowing the WXS grids are deprecated is a good tell that the candidate is current, not repeating older material.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=overview-choosing-right-type-cache>
+- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=overview-embedded-global-cache>
+- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=overview-external-redis-global-cache>
+- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=overview-local-cache>
+- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=dco-differences-between-local-cache-embedded-global-cache-external-redis-global-cache>
+
+### Designer
+
+**Q: How do you run App Connect Enterprise Designer locally, and what are the sharp edges?**
+
+- ACE Designer is a browser-based, graphical, no-code, **stand-alone off-cloud** flow-authoring tool that ships with the ACE 13 install itself, no container image or separate download needed. Supported on Windows, Linux (x86-64, POWER, Z), AIX, and z/OS Container Extensions (zCX)
+- Start it by running the **`Designer`** command from the Integration Console, or via the 'IBM App Connect Enterprise Designer' entry in the Windows Start menu. The UI opens in the default browser; the first launch can take a minute or two to come up
+- Useful flags on the `Designer` command: `--designer-directory` (where artefacts and config live; defaults to `$HOME/IBM/ACEDesigner13`), `--vault-key` (unlocks the credential vault non-interactively, otherwise you'll be prompted), `--launch-browser true|false`, and `--service-trace` / `--diagnostic-trace` for IBM Support scenarios only
+- First launch creates a **vault** (encrypted credential store for connector accounts) and asks for a vault key; subsequent launches prompt for that key to unlock. If you forget the key, either use **Reset vault** in the UI (wipes accounts) or run `ibmint update vault-key --designer-directory ...` to rotate it
+- Use case fit: a developer or business user on a laptop who wants to author event-driven flows or flows for an API without a cluster or SaaS subscription. Designer flows are packaged and deployed to an ACE integration server, and run alongside toolkit-authored message flows. Import / export is built in for sharing
+- Hard constraints: **not multi-user compatible**, two people editing the same flow from different locations will lose each other's changes. The `--designer-directory` is a per-user artefact store, not something you commit straight into a repo. For shared team authoring use the `DesignerAuthoring` resource on the App Connect Operator instead
+
+The on-prem ACE 13 Designer is simply part of the install: run the `Designer` command and you get the browser UI on localhost backed by a local vault. Candidates sometimes assume Designer is SaaS-only, or that it needs a `DesignerAuthoring` resource on the Operator; the stand-alone local path is the simplest of the three. The signals worth probing: awareness of the vault / vault key lifecycle, of the not-multi-user constraint, and of the clean split between authoring in Designer and running on a separate integration server.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=designer-app-connect-enterprise-overview>
+- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=designer-starting-app-connect-enterprise>
+- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=commands-designer-command>
 
 ### Troubleshooting
 

@@ -17,11 +17,11 @@ Your job: refine the question and its answer. Fill in the **Your
 refinement** block with any of:
 
 - A corrected or sharpened question wording
-- Bullets of facts the answer should hit (3–6 ideal)
-- A short paragraph of context (2–3 sentences), the "why" / what
+- Bullets of facts the answer should hit (3-6 ideal)
+- A short paragraph of context (2-3 sentences), the "why" / what
   interviewers should listen for
 - Authoritative references (IBM Docs / MQ Tech Conf / blog URLs / IBM
-  Community links), ideally 1–3 per question
+  Community links), ideally 1-3 per question
 - Any traps, gotchas or production tells worth flagging
 
 If a question feels weak or redundant once you've looked at it, it's

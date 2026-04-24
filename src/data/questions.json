@@ -936,7 +936,7 @@
       "**Linux sysctls:** `net.ipv4.tcp_keepalive_time` (idle before first probe), `tcp_keepalive_intvl` (probe gap), `tcp_keepalive_probes` (how many failed probes before declaring dead)",
       "**Windows:** equivalent registry values under `HKLM\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters`",
       "Main failures it catches: firewalls silently dropping idle connections, NAT entries timing out, dead network paths where the remote host disappeared without a proper close",
-      "Tune the idle time to beat your firewall's idle-drop window (often 15–30 minutes) rather than leaving it at the OS default"
+      "Tune the idle time to beat your firewall's idle-drop window (often 15-30 minutes) rather than leaving it at the OS default"
     ],
     "answerExplanation": "TCP KeepAlive is the network layer's 'is this socket actually alive?' probe. It's a standard socket option, MQ just asks the OS to turn it on for its sockets. The subtlety is that enabling `KEEPALIVE(YES)` on the channel is only half the job; without tuning the OS-level interval the kernel default is so long that firewalls will silently drop connections long before a probe fires. IBM has a dedicated support note about this exact two-step setup.",
     "tags": ["keepalive", "tcp", "channel", "network"],

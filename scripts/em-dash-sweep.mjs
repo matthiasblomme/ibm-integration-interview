@@ -1,7 +1,14 @@
-// Replace em dashes project-wide.
-// Rule 1: `**Term** — ` at the start of a bullet/fragment becomes `**Term**: `.
-// Rule 2: any remaining ` — ` (em dash flanked by spaces) becomes `, `.
-// Rule 3: bare `—` without spaces (rare) becomes `,`.
+// Replace em dashes and en dashes project-wide with ASCII-friendly
+// equivalents that a European AZERTY keyboard can type directly.
+//
+// Em dash rules (U+2014):
+//   Rule 1: `**Term** — ` at the start of a bullet/fragment becomes `**Term**: `.
+//   Rule 2: any remaining ` — ` (em dash flanked by spaces) becomes `, `.
+//   Rule 3: bare `—` without spaces (rare) becomes `,`.
+//
+// En dash rule (U+2013):
+//   Rule 4: any en dash becomes a plain hyphen (covers numeric ranges
+//           like `3-6` or `15-30 minutes` and anything else).
 //
 // Scope: src/data/questions.json, src/data/resources.json, drafts/*.md,
 // IMPLEMENTATION-PLAN.md, README.md, index.html, scripts/*.mjs, src/**.
@@ -14,6 +21,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, '..');
 
 const EM = '\u2014';
+const EN = '\u2013';
 
 function sweepText(s) {
   let out = s;
@@ -23,6 +31,9 @@ function sweepText(s) {
   out = out.replace(/ \u2014 /g, ', ');
   // 3) any em dash left (e.g. at end of token, no spaces) => ','
   out = out.replace(/\u2014/g, ',');
+  // 4) en dashes anywhere => plain hyphen (handles numeric ranges like 3-6,
+  //    duration ranges like 15-30 minutes, and anything else)
+  out = out.replace(/\u2013/g, '-');
   return out;
 }
 
@@ -62,6 +73,8 @@ const all = new Set([
   ...draftsFiles,
 ]);
 
+const dashRegex = /[\u2014\u2013]/g;
+
 let totalBefore = 0;
 let totalAfter = 0;
 let changed = 0;
@@ -72,10 +85,10 @@ for (const f of all) {
   } catch {
     continue;
   }
-  const before = (txt.match(/\u2014/g) || []).length;
+  const before = (txt.match(dashRegex) || []).length;
   if (before === 0) continue;
   const swept = sweepText(txt);
-  const after = (swept.match(/\u2014/g) || []).length;
+  const after = (swept.match(dashRegex) || []).length;
   writeFileSync(f, swept, 'utf8');
   totalBefore += before;
   totalAfter += after;
@@ -83,4 +96,4 @@ for (const f of all) {
   console.log(`${f.replace(root, '.').replace(/\\/g, '/')}: ${before} -> ${after}`);
 }
 console.log('---');
-console.log(`Files changed: ${changed}. Em dashes before: ${totalBefore}. After: ${totalAfter}.`);
+console.log(`Files changed: ${changed}. Em/en dashes before: ${totalBefore}. After: ${totalAfter}.`);

@@ -279,7 +279,7 @@ no code, candidate mode needs a real backend.
   Transactionality, Persistence…) have deep answers that are great for learning
   but too long for quick revision or as a flashcard prompt. Offer a short
   version for scanning and a long version for study, with the reader choosing.
-- **Schema change:** Add an optional `answerBulletsShort: string[]` (≤ 3–4
+- **Schema change:** Add an optional `answerBulletsShort: string[]` (≤ 3-4
   bullets, tight one-liners) to `Question` in `src/types.ts`. The existing
   `answerBullets` + `answerExplanation` remain the long version and stay
   required. Backfill is gradual, questions without a short answer fall back
@@ -326,7 +326,7 @@ no code, candidate mode needs a real backend.
 - **Data work:**
   - Pick ~20 existing questions suitable for auto-grading and add `choices`
     to them (persistence, MQPER_*, MI vs HA, LTS vs CD, AKS/EKS, parsers,
-    etc.). Write 4–6 options per question, with 1 correct (single) or 2–3
+    etc.). Write 4-6 options per question, with 1 correct (single) or 2-3
     correct (multi).
   - Teaching content (`answerBullets` + `answerExplanation`) stays, it's
     shown after the user submits, the same way the current flashcard reveal
