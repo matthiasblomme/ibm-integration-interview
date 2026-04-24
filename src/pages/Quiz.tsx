@@ -44,7 +44,7 @@ function PoolSummary({
 
 const ALL_PRODUCTS: Product[] = ['MQ', 'ACE', 'Cloud', 'General'];
 const ALL_ROLES: Role[] = ['Admin', 'Dev', 'Any'];
-const ALL_LEVELS: Level[] = ['junior', 'medior', 'senior'];
+const ALL_LEVELS: Level[] = ['junior', 'medior', 'senior', 'any'];
 
 type Phase = 'configure' | 'run' | 'done';
 

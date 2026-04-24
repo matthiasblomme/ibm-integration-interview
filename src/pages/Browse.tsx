@@ -8,7 +8,7 @@ import { loadProgress, priorityBucket } from '../lib/storage';
 
 const ALL_PRODUCTS: Product[] = ['MQ', 'ACE', 'Cloud', 'General'];
 const ALL_ROLES: Role[] = ['Admin', 'Dev', 'Any'];
-const ALL_LEVELS: Level[] = ['junior', 'medior', 'senior'];
+const ALL_LEVELS: Level[] = ['junior', 'medior', 'senior', 'any'];
 
 export function Browse() {
   const [filters, setFilters] = useState<FilterState>({

@@ -20,7 +20,7 @@ const questionSchema = z
     answerExplanation: z.string(),
     tags: z.array(z.string()),
     difficulty: z.enum(['easy', 'medium', 'hard']),
-    level: z.enum(['junior', 'medior', 'senior']).optional(),
+    level: z.enum(['junior', 'medior', 'senior', 'any']).optional(),
     references: z.array(z.string().url()).optional(),
     answerType: z.enum(['free', 'single', 'multi']).optional(),
     choices: z.array(choiceSchema).optional(),

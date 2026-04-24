@@ -1,7 +1,7 @@
 export type Product = 'MQ' | 'ACE' | 'Cloud' | 'General';
 export type Role = 'Admin' | 'Dev' | 'Any';
 export type Difficulty = 'easy' | 'medium' | 'hard';
-export type Level = 'junior' | 'medior' | 'senior';
+export type Level = 'junior' | 'medior' | 'senior' | 'any';
 
 export type AnswerType = 'free' | 'single' | 'multi';
 

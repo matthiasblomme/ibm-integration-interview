@@ -38,6 +38,7 @@
 :root[data-theme='light'] .tag.level-junior { color: #0d7377; }
 :root[data-theme='light'] .tag.level-medior { color: #a86100; }
 :root[data-theme='light'] .tag.level-senior { color: #9b2c2c; }
+:root[data-theme='light'] .tag.level-any { color: #5a6270; }
 :root[data-theme='light'] button.primary { color: #ffffff; }
 
 * {
@@ -206,6 +207,7 @@ label { display: block; margin-bottom: 0.3rem; color: var(--text-dim); font-size
 .tag.level-junior { color: #8ec8c4; }
 .tag.level-medior { color: #e7b16a; }
 .tag.level-senior { color: #d67b7b; }
+.tag.level-any { color: var(--text-dim); }
 
 .filters {
   display: grid;
@@ -378,6 +380,26 @@ label { display: block; margin-bottom: 0.3rem; color: var(--text-dim); font-size
 
 .muted { color: var(--text-dim); }
 .spacer { height: 1rem; }
+
+.footer {
+  margin-top: 3rem;
+  padding: 1.25rem 0;
+  border-top: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+.footer-logo {
+  height: 32px;
+  width: auto;
+  border-radius: 4px;
+}
+.footer a {
+  font-weight: 600;
+}
 
 @media (max-width: 720px) {
   .layout { grid-template-columns: 1fr; }

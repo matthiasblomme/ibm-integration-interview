@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import { ThemeToggle } from './ThemeToggle';
 import { AnswerLengthToggle } from './AnswerLengthToggle';
+import { Footer } from './Footer';
 
 export function Layout() {
   return (
@@ -19,6 +20,7 @@ export function Layout() {
       </nav>
       <main className="main">
         <Outlet />
+        <Footer />
       </main>
     </div>
   );
