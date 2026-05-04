@@ -13,7 +13,7 @@ Fields are the same as in `questions.json`, rendered for readability.
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** medium
-- **Tags:** migration, v13, ibmint, extract, keystore, shared-classes, odbc
+- **Tags:** migration, v13, ibmint, extract, keystore, shared-classes, odbc, udn
 
 ### Question
 When you use `ibmint extract node` to pull a v11 / v12 integration
@@ -21,41 +21,45 @@ node into v13, what does the tool leave behind, and how do you
 avoid silent runtime failures because of it?
 
 ### Answer, bullets
-- `ibmint extract node` pulls a node's configuration into files
-  you can version and redeploy into v13. It emits a detailed log
-  of what was extracted AND what was skipped, read the **entire**
-  output, not just the success line
-- Consistently skipped: **keystores and truststores**,
-  **shared-classes JARs**, **ODBC configuration** (`odbc.ini`,
-  `odbcinst.ini`), and **environment-specific scripts and cron
-  jobs**. Copy these over by hand
-- Classic failure mode: the v13 server starts, logs look clean,
-  dashboard is green, and then the first flow that opens a TLS
-  connection or loads a JDBC driver fails at runtime because the
-  keystore or shared-classes JAR never followed the config
-- Shared-classes JARs are the most common gotcha because nothing
-  complains at startup; the problem only surfaces when a
-  JavaCompute node tries to resolve a class from them
-- Practical pattern: extract, diff the output directory against
-  the source node's work path, and then script the copy for the
-  omitted categories so it is reproducible on re-runs
-- IIB 10 to 13 specific wrinkle: the tool converts configurable
-  services to policies, but the generated policies land
-  **node-wide**, not scoped to the individual server that needs
-  them. Functionally fine, messy in practice; plan time to split
-  and relocate them
+- **What it does:** `ibmint extract node` extracts the
+  configuration and deployed resources of a source component and
+  recreates them in the specified v13 integration node. It does
+  not copy the surrounding runtime environment, so several
+  categories need to be moved by hand
+- **Shared-classes JARs:** not extracted. Server starts clean;
+  the first JavaCompute node that needs a class from a missing
+  JAR fails at runtime. The classic one to miss because nothing
+  complains at startup
+- **Keystores and truststores:** not extracted. First outbound
+  TLS call raises a handshake error
+- **ODBC configuration:** `odbc.ini` and `odbcinst.ini` are not
+  extracted. Any flow using a database node loses its DSN
+- **User-defined nodes:** `.lil` files and plug-in JARs under
+  the node's plugins directory are not extracted. Flows
+  referencing a UDN will not deploy on the new node without the
+  plug-in copied over
+- **Environment variables, shell / service scripts, cron jobs:**
+  they sit outside the node's config, so the tool cannot see
+  them. Recreate them by hand (systemd units, Windows service
+  definitions, `.profile`, any housekeeping scripts)
 
 ### Explanation
 `ibmint extract node` is the supported path for pulling a v11 /
-v12 node into v13, but it skips a handful of critical artefacts
-silently in the sense that the skip is logged but not loud. The
-interview signal is whether the candidate has actually run a
-migration and knows to read the full output and copy the skipped
-categories by hand, not assume "extract worked, we are done".
+v12 node into v13, but the set it covers is the node's own
+config plus deployed resources, not the runtime environment
+around it. Keystores, shared-classes JARs, ODBC DSNs, UDN
+plug-ins, env vars, and scripts all have to be copied by hand.
+The tool logs what was skipped, but the log is easy to miss,
+and the resulting server starts clean and fails later.
+Practical pattern: read the full extract output, diff against
+the source node's work path, and script the copies so it is
+reproducible. The interview signal is whether the candidate has
+actually run a migration and knows the skip list by heart.
 
 ### References
 - Blog: Migrating ACE to v13 (matthiasblomme)
-- https://www.ibm.com/docs/en/app-connect/13.0.x?topic=migrating-app-connect-enterprise-130
+- https://www.ibm.com/docs/en/app-connect/13.0.x?topic=commands-ibmint-extract-node-command
+- https://www.ibm.com/docs/en/app-connect/13.0.x?topic=130-performing-in-place-migration-integration-node
 
 ---
 
@@ -86,11 +90,6 @@ node, and what should you watch out for?
   immediately
 - To revert to the shipped default, run the same command with
   `--default`
-- Watch-out: TAD flags `SSL_*` cipher prefixes as Java 8
-  blockers. The JSSE provider maps `SSL_*` to `TLS_*` on the
-  same underlying suites, so that is cosmetic, not a real Java 8
-  pin. Rename to `TLS_*` when you are in the file anyway, but do
-  not pin a server to Java 8 over it
 - Java 8 is a holding position, not an endpoint. Every server
   pinned to Java 8 needs a named owner and a retirement date;
   document which server runs which JVM or you will forget
@@ -290,6 +289,7 @@ experience.
 
 - **Product / Role / Topic:** ACE / Admin / Monitoring
 - **Difficulty:** medium
+- **Level:** senior
 - **Tags:** btm, correlator, monitoring-event, transaction-definition
 
 ### Question
@@ -350,6 +350,7 @@ special, have actually used the product.
 
 - **Product / Role / Topic:** ACE / Admin / Troubleshooting
 - **Difficulty:** easy
+- **Level:** medior
 - **Tags:** log-analyzer, troubleshooting, service-trace, activity-log, accounting-statistics, v13
 
 ### Question
@@ -1243,6 +1244,173 @@ reading the feature correctly.
 ### References
 - Blog: ACE v13 new features overview (matthiasblomme)
 - https://www.ibm.com/docs/en/app-connect/13.0.x?topic=new-whats-app-connect-enterprise
+
+---
+
+## 22. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
+
+- **Product / Role / Topic:** ACE / Admin / Migration
+- **Difficulty:** medium
+- **Tags:** migration, iib10, configurable-services, policies, ibmint-extract, node-scope
+
+### Question
+When migrating from IIB 10 to ACE v13, how are configurable
+services transformed, and what practical fix-up do you need to
+plan for after the extract runs?
+
+### Answer, bullets
+- **Configurable services are gone in v13.** The v13 world is
+  policies (`.policyxml`), not configurable services. Anything
+  IIB 10 expressed as a configurable service needs a policy
+  equivalent on the target
+- **`ibmint extract node` does the rewrite automatically.**
+  Configurable-service definitions are extracted and converted
+  to policy files as part of the extract output. You do not
+  write the policies by hand
+- **But the generated policies land node-wide, not
+  server-scoped.** All policies come out at the node level, even
+  ones that only one server actually uses. Same behaviour
+  existed on the IIB 10 to v12 path
+- **Consequence:** functionally correct but messy. Every
+  integration server sees every policy, including ones for
+  unrelated applications, which muddies ownership and makes the
+  policy list harder to reason about
+- **Fix-up pass after extract:** split the generated policy set
+  and move each policy onto the server that uses it. Boring but
+  worth doing once, before the node grows and the relocation
+  gets harder. Especially important if you run multiple apps
+  per server with distinct security or resource policies
+
+### Explanation
+IIB 10 migration to v13 has one real gotcha beyond Java 17
+cleanup: `ibmint extract` translates configurable services to
+policies automatically, but it does so at node scope, not at
+the specific-server scope where the underlying configurable
+service lived. The result is a pile of node-wide policies,
+which works but is not how you would structure it if writing
+from scratch. Candidates who know about this wrinkle, and say
+they budget an explicit fix-up pass to split and relocate, have
+done the migration for real.
+
+### References
+- Blog: Migrating ACE to v13 (matthiasblomme)
+- https://www.ibm.com/docs/en/app-connect/13.0.x?topic=130-performing-in-place-migration-integration-node
+
+---
+
+## 23. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
+
+- **Product / Role / Topic:** ACE / Admin / Migration
+- **Difficulty:** easy
+- **Tags:** migration, java-8, java-17, ibmint, specify-jre, mcq
+- **answerType:** single
+
+### Question
+Which command pins an integration server to a specific JRE
+version (Java 8 or Java 17) in ACE v13?
+
+### Choices
+
+- `mqsispecifyjre`, **wrong.** No such `mqsi*` command exists.
+  The `mqsi*` family never had a per-server JRE selector; Java
+  selection in older versions was via `mqsichangebroker` flags
+  or `MQSI_FORCE_JVM` style environment variables, not a
+  dedicated command
+- `ibmint set java`, **wrong.** `ibmint set` is a real
+  subcommand family (`ibmint set credential`,
+  `ibmint set webuser-password`, etc.), but there is no
+  `set java` variant. Plausible-sounding distractor for
+  candidates who know `ibmint set credential` exists
+- `ibmint specify jre`, **correct.** Syntax:
+  `ibmint specify jre --version 8|17 --integration-node <n> --integration-server <s>`
+  (node-managed) or `--work-directory <d>` (independent).
+  Writes `server.java.yaml` next to the server config; change
+  takes effect on the next server start. Revert with the same
+  command plus `--default`
+- `mqsirevertjava`, **wrong.** Invented name. The revert
+  mechanism is `ibmint specify jre --default`, not a separate
+  command, and the `mqsi*` family never had a paired-revert
+  command for JVM selection
+
+### Answer, bullets
+- `ibmint specify jre` is the only supported way to pin an
+  integration server's JRE in v13
+- Writes the choice into `server.java.yaml` next to the server
+  config; takes effect on the next server start
+- Supports `--version 8|17`, or `--default` to revert to the
+  shipped default
+- Scope is per-server (or per-work-directory for independent
+  servers), not node-wide
+
+### Explanation
+The `ibmint` command family replaced the old `mqsi*`-style
+broker admin commands for most v12+ operations, and
+`specify jre` is the one that sets per-server JVM selection.
+Candidates who pick `ibmint specify jre` have used the command;
+candidates picking `mqsispecifyjre` or `mqsirevertjava` are
+pattern-matching on the old `mqsi*` naming scheme that does
+not apply here.
+
+### References
+- Blog: Migrating ACE to v13 (matthiasblomme)
+- https://www.ibm.com/docs/en/app-connect/13.0.x?topic=migrating-app-connect-enterprise-130
+
+---
+
+## 24. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
+
+- **Product / Role / Topic:** ACE / Admin / Migration
+- **Difficulty:** easy
+- **Tags:** migration, v13, in-place, parallel, extract, mcq
+- **answerType:** multi
+
+### Question
+Which of these are documented IBM migration styles for moving
+an existing estate to ACE v13? (select all that apply)
+
+### Choices
+
+- `in-place migration`, **correct.** Migrate the integration
+  node on the same machine, keeping the same name.
+  `ibmint extract node --overwrite-existing` replaces the old
+  node with a v13 node in the same spot
+- `parallel migration`, **correct.** Stand up a new v13
+  integration node beside the old one and move application
+  logic across at your own pace. Lets you test old and new
+  side by side until you cut over
+- `shadow migration`, **wrong.** Invented distractor, not a
+  documented ACE migration style. Sounds plausible because it
+  echoes real terms elsewhere, but no migration path of this
+  name exists in the ACE catalog
+- `wave migration`, **wrong.** Invented distractor, not a
+  documented ACE migration style
+- `extract migration`, **correct.** Use `ibmint extract node`
+  or `ibmint extract server` to pull configuration and
+  resources out as files, then redeploy them into a fresh v13
+  environment, usually as independent integration servers
+
+### Answer, bullets
+- IBM documents exactly three migration styles: **in-place**,
+  **parallel**, and **extract**
+- The three styles differ in where the target lives (same
+  machine vs beside it vs fresh environment) and how much
+  old-and-new coexistence you get
+- Extract is the flexible one: the same `ibmint extract`
+  command can feed in-place swaps, parallel setups, or a clean
+  split into independent integration servers
+- Any other style name in this space is a distractor and
+  should be rejected
+
+### Explanation
+IBM names three migration styles: in-place, parallel, and
+extract. The other two options in the list are made-up
+distractors that sound plausible to a candidate pattern-matching
+on familiar-sounding words. Picking all three real styles is the
+safe answer.
+
+### References
+- Blog: Migrating ACE to v13 (matthiasblomme)
+- https://www.ibm.com/docs/en/app-connect/13.0.x?topic=migrating-app-connect-enterprise-130
 
 ---
 

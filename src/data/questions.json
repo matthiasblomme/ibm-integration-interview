@@ -13,7 +13,8 @@
     ],
     "answerExplanation": "Open-ended opener. The point is less the exact rating and more whether the person calibrates honestly and can back claims with concrete examples. Listen for over-confidence or vague statements.",
     "tags": ["soft-skills", "assessment"],
-    "difficulty": "easy"
+    "difficulty": "easy",
+    "level": "any"
   },
   {
     "id": "gen-002",
