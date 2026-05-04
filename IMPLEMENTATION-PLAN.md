@@ -34,6 +34,17 @@ the prior batch have all landed). Export regenerated from JSON via
 - **25 farmed-out review batch** (`D:\tmp\review-batch-25.md`): sent to
   an external reviewer, awaiting return.
 
+**Parked / future check-up:**
+
+- **mqseries.net forum references** in `mq-adm-011` and `mq-adm-026`
+  currently return Cloudflare HTTP 403 to scripts AND to a real
+  browser. Confirmed not just a bot-block; the forum itself is in a
+  Cloudflare-challenged state right now. Re-check periodically; if
+  still inaccessible, find a replacement source or drop the link.
+  - `mq-adm-011`: https://mqseries.net/phpBB/viewtopic.php?t=78106
+  - `mq-adm-026`: https://mqseries.net/phpBB/viewtopic.php?t=69195
+    (Morag Hughson REQONLY thread)
+
 **Project-wide rules in force:**
 
 - Em dashes forbidden anywhere in the repo (swept once, script kept at
