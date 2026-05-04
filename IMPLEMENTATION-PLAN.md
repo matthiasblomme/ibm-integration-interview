@@ -26,8 +26,12 @@ the prior batch have all landed). Export regenerated from JSON via
 - **Blog-sourced candidates** (`drafts/blog-sourced-candidates.md`): 75
   items with the author's verdicts filled in. User-half of the T items
   (16) walked interactively and graduated. Helper-half of the T items
-  (16) sent out in `drafts/blog-tweaks-helper.md`, awaiting return. K
-  items (22) still need batch-drafting into `questions.json`.
+  (16) sent out in `drafts/blog-tweaks-helper.md`, awaiting return.
+  **All 22 K items have been drafted** (21 sit in
+  `drafts/pending-questions.md` as `ace-adm-041..051` /
+  `ace-dev-036..045`; #66 Global Cache already graduated as
+  `ace-dev-034`); they graduate as part of the 24-draft walk-through
+  above, no separate batch-draft pass needed.
 - **Bob-sourced candidates** (`drafts/bob-sourced-candidates.md`): 79
   items generated from internal guidelines; Verdict column still empty,
   awaiting author pass.
