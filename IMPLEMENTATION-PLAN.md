@@ -6,16 +6,23 @@ once shipped.
 
 ## Current status
 
-**Bank:** 125 questions in `src/data/questions.json` (latest: `ace-adm-040`
-TAD). Export regenerated from JSON via `npm run gen:md` into
-`interview_questions.md`.
+**Bank:** 128 questions in `src/data/questions.json` (latest graduated:
+`ace-dev-035` Designer-local; the 3 OTel / cache / Designer stubs from
+the prior batch have all landed). Export regenerated from JSON via
+`npm run gen:md` into `interview_questions.md`.
 
 **Working tracks:**
 
 - **Pending drafts review** (this plan entry "Pending question drafts"):
-  the 10-item batch has been walked, 9 graduated, 1 dropped. 3 stubs
-  remain in `drafts/pending-questions.md` awaiting authoring (OTel, cache
-  options, Designer-local).
+  the original 10-item batch is fully closed (9 graduated, 1 dropped, 3
+  stubs since authored as `ace-dev-033/034/035`). A **new 24-item batch**
+  now sits in `drafts/pending-questions.md` awaiting the keep / tweak /
+  rewrite walk-through: 14 admin drafts (`ace-adm-041`..`054`) and 10
+  dev drafts (`ace-dev-036`..`045`), covering v13 migration, Operator /
+  cert-manager, BTM, Log Analyzer, unit testing, BAR build commands,
+  ESQL JSON arrays, Discovery / Kafka / HTTP auth / JSONata nodes,
+  Project Bob, Agent Preview, MCP support, and the IIB 10 policy
+  rewrite gotcha.
 - **Blog-sourced candidates** (`drafts/blog-sourced-candidates.md`): 75
   items with the author's verdicts filled in. User-half of the T items
   (16) walked interactively and graduated. Helper-half of the T items
