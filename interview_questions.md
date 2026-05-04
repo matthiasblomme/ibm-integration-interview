@@ -2,13 +2,13 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 128
+**Total questions:** 129
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (14)](#mq-dev)
-- [ACE, Admin (40)](#ace-admin)
+- [ACE, Admin (41)](#ace-admin)
 - [ACE, Dev (36)](#ace-dev)
 - [Cloud (5)](#cloud)
 
@@ -1215,6 +1215,22 @@ TAD is the 'know-before-you-start' tool for ACE / IIB modernisation, specificall
 
 _References:_
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=tasks-running-transformation-advisor-tool>
+
+**Q: What does `ibmint extract node` NOT bring along during a v13 migration?**
+
+- **What it does:** `ibmint extract node` extracts the configuration and deployed resources of a source component and recreates them in the specified v13 integration node. It does not copy the surrounding runtime environment, so several categories need to be moved by hand
+- **Shared-classes JARs:** not extracted. Server starts clean; the first JavaCompute node that needs a class from a missing JAR fails at runtime. The classic one to miss because nothing complains at startup
+- **Keystores and truststores:** not extracted. First outbound TLS call raises a handshake error
+- **ODBC configuration:** `odbc.ini` and `odbcinst.ini` are not extracted. Any flow using a database node loses its DSN
+- **User-defined nodes:** `.lil` files and plug-in JARs under the node's plugins directory are not extracted. Flows referencing a UDN will not deploy on the new node without the plug-in copied over
+- **Environment variables, shell / service scripts, cron jobs:** they sit outside the node's config, so the tool cannot see them. Recreate them by hand (systemd units, Windows service definitions, `.profile`, any housekeeping scripts)
+- **Live aggregation state is lost:** IBM's in-place migration doc explicitly tells you to check 'no aggregations in progress' before migrating, because in-flight aggregation data is not preserved across the v13 cutover. Drain or fail aggregations before extract, not after
+
+`ibmint extract node` is the supported path for pulling a v11 / v12 node into v13, but the set it covers is the node's own config plus deployed resources, not the runtime environment around it. Keystores, shared-classes JARs, ODBC DSNs, UDN plug-ins, env vars, and scripts all have to be copied by hand. The tool logs what was skipped, but the log is easy to miss, and the resulting server starts clean and fails later. Practical pattern: read the full extract output, diff against the source node's work path, and script the copies so it is reproducible. The interview signal is whether the candidate has actually run a migration and knows the skip list by heart.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=commands-ibmint-extract-node-command>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=130-performing-in-place-migration-integration-node>
 
 ### Flow lifecycle
 
