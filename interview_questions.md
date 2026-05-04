@@ -555,7 +555,6 @@ _References:_
 - The two ends negotiate HBINT at channel start, the **lower** of the two configured values wins
 - Default is 300 seconds (5 minutes). Lower it when you need faster failure detection (at the cost of a bit more chatter)
 - Crucially, heartbeat works **even on an idle channel**: e.g. when a client is sitting inside a long-running MQGET with WAIT; without HBINT a dead-but-not-torn-down conversation looks fine
-- Because it's an MQ conversation, HBINT can catch situations where the MQ agent is stuck even though the underlying TCP socket still appears connected
 
 HBINT is MQ's own liveness ping between a client and the qmgr (or between two qmgrs over a message channel). It operates above TCP, so it can notice problems with the MQ conversation that TCP itself doesn't see. Negotiated between peers, the lower value wins, so both sides should be set deliberately, not left at whatever was defined on one end.
 
@@ -582,10 +581,9 @@ _References:_
 - **HBINT catches:** MQ conversation stuck while TCP looks fine (hung agent, long idle MQGET WAIT with a broken peer, mis-behaving client that no longer processes flows)
 - **KeepAlive catches:** network paths gone away, firewall silently dropping idle sockets, NAT entry timing out, peer host disappearing without a proper close, none of which HBINT notices because no MQ flow attempts are being made
 - **Use both.** They're complementary, not alternatives. HBINT defends the MQ conversation; KeepAlive defends the underlying socket. Disabling one leaves the other's blind spot exposed
-- **Rough tuning:** HBINT somewhere between 60 s and the default 300 s (shorter = faster failure detection, a little more chatter). KeepAlive idle tuned to fire sooner than your network's firewall idle timeout (often 15 minutes or less)
-- On the channel config that means `HBINT(300)` (or lower) plus `KEEPALIVE(YES)`, and don't forget the OS-level keepalive knobs, otherwise KeepAlive is only nominally enabled
+- **Joint tuning:** treat HBINT and KeepAlive as a pair, both configured deliberately, not just one. The common production failure mode is `KEEPALIVE(YES)` set on the channel with kernel defaults left untouched, so KeepAlive is enabled in name only
 
-The cleanest way to frame it is by what each protocol sees: HBINT knows about MQ conversations but not about sockets, KeepAlive knows about sockets but not about MQ. Each blind spot is the other's strength, which is why production MQ setups enable both. The common mistake is turning on `KEEPALIVE(YES)` on the channel and assuming that's sufficient, kernel defaults of 2 hours before the first probe mean you'll still hit firewall idle drops, so OS-level tuning is mandatory for KeepAlive to actually do its job.
+The cleanest way to frame it is by what each protocol sees: HBINT knows about MQ conversations but not about sockets, KeepAlive knows about sockets but not about MQ. Each blind spot is the other's strength, which is why production MQ setups enable both. The common mistake is treating `KEEPALIVE(YES)` on the channel as sufficient on its own, see `mq-dev-013` for why the OS-level knobs are mandatory.
 
 _References:_
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.con.doc/q081890_.html>
