@@ -2,13 +2,13 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 129
+**Total questions:** 130
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (14)](#mq-dev)
-- [ACE, Admin (41)](#ace-admin)
+- [ACE, Admin (42)](#ace-admin)
 - [ACE, Dev (36)](#ace-dev)
 - [Cloud (5)](#cloud)
 
@@ -1231,6 +1231,22 @@ _References:_
 _References:_
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=commands-ibmint-extract-node-command>
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=130-performing-in-place-migration-integration-node>
+
+**Q: How do you keep one integration server on Java 8 when the rest of v13 runs Java 17?**
+
+- v13 ships both a Java 17 and a Java 8 runtime. Java 17 is the default. The IBM-documented Java-8-only blockers are the **CORBARequest node**, **WebSphere Registry and Repository (WSRR)**, **WebSphere eXtreme Scale (WXS)**, and **TFIM** (when the WSTrust STS Security Provider is enabled); pre-13.0.7 deployments using **WS-Security** or **WS-ReliableMessaging** also still need Java 8. Pin those per-server without downgrading the whole node
+- Command for a node-managed server: `ibmint specify jre --version 8 --integration-node <nodeName> --integration-server <serverName>`. For an independent server: `ibmint specify jre --version 8 --work-directory <dir>`
+- It writes a **`server.java.yaml`** next to the server config with contents like `javaVersion: 8` and `aceVersion: 13.0.6.0`. The change takes effect on the **next server start**, not immediately
+- To revert to the shipped default, run the same command with `--default`
+- **Java 17 behaviour differences to watch:** the JVM no longer observes `TMPDIR`; set `_JAVA_OPTIONS="-Djava.io.tmpdir=..."` or `ResourceManagers.JVM.jvmSystemProperty` in `server.conf.yaml` / `node.conf.yaml` instead. JSSE trace `-Djavax.net.debug=true` is Java 8 only; use `-Djavax.net.debug=all` for cross-version
+- Java 8 is a holding position, not an endpoint. Every server pinned to Java 8 needs a named owner and a retirement date; document which server runs which JVM or you will forget
+
+An estate rarely moves to v13 at 100% Java 17 on day one. `ibmint specify jre` lets you keep the handful of servers that still need Java 8 (CORBARequest, WSRR, WXS, TFIM-with-STS, or pre-13.0.7 WS-Security / WS-ReliableMessaging) while the rest of the node moves forward. Good candidates mention the `server.java.yaml` file, the need to restart the server for it to take effect, and the small Java 17 behaviour deltas (TMPDIR, JSSE trace) that bite when you forget.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=commands-ibmint-specify-jre-command>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=java-limitations-jre-versions-app-connect-enterprise>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=migrating-app-connect-enterprise-130>
 
 ### Flow lifecycle
 

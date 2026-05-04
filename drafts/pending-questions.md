@@ -9,54 +9,8 @@ Fields are the same as in `questions.json`, rendered for readability.
 ---
 
 
-## 1. `ace-adm-042`, How do you keep one integration server on Java 8 when the rest of v13 runs Java 17?
 
-- **Product / Role / Topic:** ACE / Admin / Migration
-- **Difficulty:** medium
-- **Tags:** migration, java-17, java-8, ibmint, specify-jre, v13
-
-### Question
-In an ACE v13 estate where Java 17 is the default, how do you
-keep a specific server on Java 8 without downgrading the whole
-node, and what should you watch out for?
-
-### Answer, bullets
-- v13 ships both a Java 17 and a Java 8 runtime. Java 17 is the
-  default; some workloads still need Java 8 (WS-Security with
-  Kerberos, LTPA or SAML; libraries with native dependencies you
-  cannot modernise yet) and you can pin those per-server without
-  downgrading the whole node
-- Command for a node-managed server:
-  `ibmint specify jre --version 8 --integration-node <nodeName>
-  --integration-server <serverName>`. For an independent server:
-  `ibmint specify jre --version 8 --work-directory <dir>`
-- It writes a **`server.java.yaml`** next to the server config
-  with contents like `javaVersion: 8` and `aceVersion: 13.0.6.0`.
-  The change takes effect on the **next server start**, not
-  immediately
-- To revert to the shipped default, run the same command with
-  `--default`
-- Java 8 is a holding position, not an endpoint. Every server
-  pinned to Java 8 needs a named owner and a retirement date;
-  document which server runs which JVM or you will forget
-
-### Explanation
-An estate rarely moves to v13 at 100% Java 17 on day one.
-`ibmint specify jre` lets you keep the handful of servers that
-still need Java 8 (typically WS-Security with non-UsernameToken
-or non-X509 tokens, or native-library dependencies) while the
-rest of the node moves forward. Good candidates mention the
-`server.java.yaml` file, the need to restart the server for it
-to take effect, and the SSL_*-vs-TLS_* non-issue that TAD
-over-flags.
-
-### References
-- Blog: Migrating ACE to v13 (matthiasblomme)
-- https://www.ibm.com/docs/en/app-connect/13.0.x?topic=migrating-app-connect-enterprise-130
-
----
-
-## 2. `ace-adm-043`, What are the three migration styles for moving to ACE v13, and which one preserves parallel testing?
+## 1. `ace-adm-043`, What are the three migration styles for moving to ACE v13, and which one preserves parallel testing?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** medium
@@ -116,7 +70,7 @@ rebuild) are showing real experience.
 
 ---
 
-## 3. `ace-adm-044`, Why is cert-manager required when installing the ACE Operator on plain Kubernetes, and what fails without it?
+## 2. `ace-adm-044`, Why is cert-manager required when installing the ACE Operator on plain Kubernetes, and what fails without it?
 
 - **Product / Role / Topic:** ACE / Admin / Operator
 - **Difficulty:** medium
@@ -173,7 +127,7 @@ tell-tale.
 
 ---
 
-## 4. `ace-adm-045`, What is Business Transaction Monitoring (BTM), and which databases does v13 support for the event store?
+## 3. `ace-adm-045`, What is Business Transaction Monitoring (BTM), and which databases does v13 support for the event store?
 
 - **Product / Role / Topic:** ACE / Admin / Monitoring
 - **Difficulty:** medium
@@ -231,7 +185,7 @@ experience.
 
 ---
 
-## 5. `ace-adm-046`, What is the global transaction correlator in BTM, and why must the first event set it explicitly?
+## 4. `ace-adm-046`, What is the global transaction correlator in BTM, and why must the first event set it explicitly?
 
 - **Product / Role / Topic:** ACE / Admin / Monitoring
 - **Difficulty:** medium
@@ -292,7 +246,7 @@ special, have actually used the product.
 
 ---
 
-## 6. `ace-adm-047`, What is the ACE Log Analyzer, and what file types does it process?
+## 5. `ace-adm-047`, What is the ACE Log Analyzer, and what file types does it process?
 
 - **Product / Role / Topic:** ACE / Admin / Troubleshooting
 - **Difficulty:** easy
@@ -346,7 +300,7 @@ monitoring dashboard.
 
 ---
 
-## 7. `ace-dev-036`, How do you run Toolkit unit tests against a custom integration server with policies and shared classes?
+## 6. `ace-dev-036`, How do you run Toolkit unit tests against a custom integration server with policies and shared classes?
 
 - **Product / Role / Topic:** ACE / Dev / Testing
 - **Difficulty:** medium
@@ -407,7 +361,7 @@ tests are unreliable.
 
 ---
 
-## 8. `ace-dev-037`, What does `ignorePath()` do in ACE unit tests, and why is it essential?
+## 7. `ace-dev-037`, What does `ignorePath()` do in ACE unit tests, and why is it essential?
 
 - **Product / Role / Topic:** ACE / Dev / Testing
 - **Difficulty:** easy
@@ -465,7 +419,7 @@ passing tests for real flows.
 
 ---
 
-## 9. `ace-dev-038`, Compare `mqsicreatebar`, `mqsipackagebar`, and `ibmint package`. When do you pick each?
+## 8. `ace-dev-038`, Compare `mqsicreatebar`, `mqsipackagebar`, and `ibmint package`. When do you pick each?
 
 - **Product / Role / Topic:** ACE / Dev / Build
 - **Difficulty:** medium
@@ -533,7 +487,7 @@ comfortable with real build pipelines.
 
 ---
 
-## 10. `ace-dev-039`, What is the `Item` element in ACE's JSON-array representation, and why is it needed?
+## 9. `ace-dev-039`, What is the `Item` element in ACE's JSON-array representation, and why is it needed?
 
 - **Product / Role / Topic:** ACE / Dev / ESQL
 - **Difficulty:** easy
@@ -589,7 +543,7 @@ this with `IDENTITY(JSON.Array)` and either `CREATE LASTCHILD`
 
 ---
 
-## 11. `ace-dev-040`, Why is `CREATE FIELD ... IDENTITY(JSON.Array)` necessary when preparing JSON array output in ESQL?
+## 10. `ace-dev-040`, Why is `CREATE FIELD ... IDENTITY(JSON.Array)` necessary when preparing JSON array output in ESQL?
 
 - **Product / Role / Topic:** ACE / Dev / ESQL
 - **Difficulty:** easy
@@ -650,7 +604,7 @@ comfortable with ESQL-to-JSON serialisation.
 
 ---
 
-## 12. `ace-dev-041`, What are Discovery Request and Discovery Input nodes in ACE v13, and how do they differ from traditional transport nodes?
+## 11. `ace-dev-041`, What are Discovery Request and Discovery Input nodes in ACE v13, and how do they differ from traditional transport nodes?
 
 - **Product / Role / Topic:** ACE / Dev / Connectors
 - **Difficulty:** easy
@@ -716,7 +670,7 @@ hatch" show they understand the complementary positioning.
 
 ---
 
-## 13. `ace-dev-042`, What does the Kafka Schema Registry policy add in ACE v13, and what serialisation format does it unlock?
+## 12. `ace-dev-042`, What does the Kafka Schema Registry policy add in ACE v13, and what serialisation format does it unlock?
 
 - **Product / Role / Topic:** ACE / Dev / Kafka
 - **Difficulty:** medium
@@ -774,7 +728,7 @@ configuration" show they have been tracking the Kafka roadmap.
 
 ---
 
-## 14. `ace-dev-043`, Which authentication types can the v13 HTTPRequest / RESTRequest nodes use directly, and what does that replace?
+## 13. `ace-dev-043`, Which authentication types can the v13 HTTPRequest / RESTRequest nodes use directly, and what does that replace?
 
 - **Product / Role / Topic:** ACE / Dev / Nodes
 - **Difficulty:** medium
@@ -835,7 +789,7 @@ modern APIs.
 
 ---
 
-## 15. `ace-dev-044`, What is the JSONata Mapping node in ACE v13, and how does it differ from Graphical Data Maps?
+## 14. `ace-dev-044`, What is the JSONata Mapping node in ACE v13, and how does it differ from Graphical Data Maps?
 
 - **Product / Role / Topic:** ACE / Dev / Mapping
 - **Difficulty:** easy
@@ -894,7 +848,7 @@ picked between them on real flows.
 
 ---
 
-## 16. `ace-adm-048`, What does `mqsirestart` do, and why is it better than `mqsistop` + `mqsistart`?
+## 15. `ace-adm-048`, What does `mqsirestart` do, and why is it better than `mqsistop` + `mqsistart`?
 
 - **Product / Role / Topic:** ACE / Admin / Operations
 - **Difficulty:** easy
@@ -952,7 +906,7 @@ syntax, and who compare it to the absence of a built-in
 
 ---
 
-## 17. `ace-adm-049`, How does `mqsistopmsgflow` differ from `ibmint stop server`?
+## 16. `ace-adm-049`, How does `mqsistopmsgflow` differ from `ibmint stop server`?
 
 - **Product / Role / Topic:** ACE / Admin / Operations
 - **Difficulty:** medium
@@ -1015,7 +969,7 @@ production, not just labs.
 
 ---
 
-## 18. `ace-dev-045`, What is Project Bob, and where does it fit compared with a generic Copilot for modernising ACE code?
+## 17. `ace-dev-045`, What is Project Bob, and where does it fit compared with a generic Copilot for modernising ACE code?
 
 - **Product / Role / Topic:** ACE / Dev / Tooling
 - **Difficulty:** easy
@@ -1078,7 +1032,7 @@ the subscription shape.
 
 ---
 
-## 19. `ace-adm-050`, What is the ACE Agent Preview in the Dashboard, and what are its constraints?
+## 18. `ace-adm-050`, What is the ACE Agent Preview in the Dashboard, and what are its constraints?
 
 - **Product / Role / Topic:** ACE / Admin / AI
 - **Difficulty:** easy
@@ -1136,7 +1090,7 @@ reading the preview label correctly.
 
 ---
 
-## 20. `ace-adm-051`, What is the MCP (Model Context Protocol) feature in ACE v13.0.7.0, and how does it expose REST APIs?
+## 19. `ace-adm-051`, What is the MCP (Model Context Protocol) feature in ACE v13.0.7.0, and how does it expose REST APIs?
 
 - **Product / Role / Topic:** ACE / Admin / AI
 - **Difficulty:** medium
@@ -1193,7 +1147,7 @@ reading the feature correctly.
 
 ---
 
-## 21. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
+## 20. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** medium
@@ -1244,7 +1198,7 @@ done the migration for real.
 
 ---
 
-## 22. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
+## 21. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy
@@ -1303,7 +1257,7 @@ not apply here.
 
 ---
 
-## 23. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
+## 22. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy
