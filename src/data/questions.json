@@ -178,8 +178,8 @@
     "answerExplanation": "Both models handle restart recovery after a clean or crash restart, the key differentiator is media recovery, i.e. replaying the log to rebuild a damaged object. Linear enables it at the cost of extra admin work (rcdmqimg + archiving); circular trades that away for simplicity. Production installs usually pick linear for exactly that reason.",
     "references": [
       "https://www.ibm.com/support/pages/ibm-mq-linear-and-circular-logging",
-      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0%2Fcom.ibm.mq.con.doc%2Fq018440_.html",
-      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0%2Fcom.ibm.mq.pla.doc%2Fq018445_.html"
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0%2Fcom.ibm.mq.con.doc%2Fq018440_.html",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0%2Fcom.ibm.mq.pla.doc%2Fq018445_.html"
     ],
     "tags": ["logging", "recovery"],
     "difficulty": "medium"
@@ -282,13 +282,13 @@
     ],
     "answerExplanation": "Cluster-based pub/sub is the right default when you want scale and auto-discovery across peer qmgrs; hierarchy is the answer when you need controlled, structured links (e.g. connecting otherwise-separate clusters). Knowing PUBSCOPE/SUBSCOPE exists to scope traffic is what separates 'I've used MQ pub/sub' from 'I've designed a pub/sub topology'.",
     "references": [
-      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=networks-publishsubscribe-clusters",
-      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=networks-connecting-queue-manager-publishsubscribe-hierarchy",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=networks-publishsubscribe-clusters",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=networks-connecting-queue-manager-publishsubscribe-hierarchy",
       "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=explorer-configuring-publishsubscribe-mq-queue-managers",
-      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.con.doc/q017435_.htm",
-      "https://www.ibm.com/docs/en/app-connect/11.0.0?topic=applications-publishsubscribe-overview",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.con.doc/q017435_.htm",
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=applications-publishsubscribe-overview",
       "https://www.mqtechconference.com/sessions_v2014/MQTC_pubsub_networks.pdf",
-      "https://mqseries.net/phpBB/viewtopic.php?t=78106&sid=f3b380efc56696085c1231f21d"
+      "https://mqseries.net/phpBB/viewtopic.php?t=78106"
     ],
     "tags": ["pubsub", "cluster", "routing"],
     "difficulty": "hard"
@@ -341,9 +341,9 @@
     ],
     "answerExplanation": "A UOW is how MQ gives you atomicity across several message operations, and (via XA) across MQ plus other resources like a database. Local vs global is really 'single-phase vs two-phase commit', mention MQCMIT/MQBACK/MQBEGIN by name and you signal you've actually written transactional MQ code rather than just heard about it.",
     "references": [
-      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q026790_.html",
-      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.sce.doc/q023320_.htm",
-      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.dev.doc/q106030_.htm",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q026790_.html",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.sce.doc/q023320_.htm",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.dev.doc/q106030_.htm",
       "https://usuaris.tinet.cat/sag/mq_trmgr.htm",
       "https://www.mqtechconference.com/sessions_v2014/Introduction_to_MQ.pdf"
     ],
@@ -369,7 +369,7 @@
     "references": [
       "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=objects-persistence",
       "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=properties-mq-queue",
-      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=descriptor-persistence-mqlong",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=descriptor-persistence-mqlong",
       "https://www.ibm.com/docs/en/integration-bus/10.0.0?topic=messages-ensuring-that-are-not-lost",
       "https://www.ibm.com/support/pages/ibm-mq-message-persistence-faqs",
       "https://www.ibm.com/support/pages/node/6576289",
@@ -645,9 +645,9 @@
     ],
     "answerExplanation": "The essence: client = network access via a channel, bindings = same-host direct access through the local MQ runtime. Bindings is simpler and faster when app and qmgr live on the same server; client is more flexible and is the normal choice when they're separate. In ACE this shows up as two distinct configuration paths, client needs a channel + listener on the MQ side, local just needs the co-located qmgr name. Modern deployments (containers, separate app/qmgr pods) almost always use client mode with reconnection enabled.",
     "references": [
-      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q030760_.html",
-      "https://www.ibm.com/docs/en/app-connect/11.0.0?topic=mq-configuring-client-connection",
-      "https://www.ibm.com/docs/en/app-connect/11.0.0?topic=mq-configuring-local-connection"
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q030760_.html",
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=mq-configuring-client-connection",
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=mq-configuring-local-connection"
     ],
     "tags": ["client", "bindings", "mqconnx"],
     "difficulty": "easy"
@@ -671,7 +671,7 @@
     "references": [
       "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=tables-configuring-binary-format-ccdt",
       "https://www.ibm.com/docs/en/ace-ipaas?topic=types-mqccdt",
-      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.mig.doc/q001640_.html"
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.mig.doc/q001640_.html"
     ],
     "tags": ["ccdt", "json", "clntwght"],
     "difficulty": "medium"
@@ -697,8 +697,8 @@
     "references": [
       "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=restart-automatic-client-reconnection",
       "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=configuring-recovery-restart",
-      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.con.doc/q081900_.html",
-      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q032520_.html"
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.con.doc/q081900_.html",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q032520_.html"
     ],
     "tags": ["reconnect", "ccdt", "resilience"],
     "difficulty": "medium"
@@ -720,7 +720,7 @@
     "answerExplanation": "Set persistence explicitly if the message matters, don't rely on queue defaults unless you deliberately want AS_Q_DEF behaviour. DEFPSIST is a suggestion, not an override, and persistent + non-persistent messages can sit on the same queue. Persistence alone doesn't give you atomicity, pair it with syncpoint when the message represents business state you can't afford to partially process.",
     "references": [
       "https://www.ibm.com/support/pages/ibm-mq-message-persistence-faqs",
-      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=descriptor-persistence-mqlong"
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=descriptor-persistence-mqlong"
     ],
     "tags": ["persistence", "mqmd", "jms"],
     "difficulty": "easy"
@@ -741,12 +741,12 @@
     ],
     "answerExplanation": "The clean framing is: **properties = API abstraction, MQRFH2 = on-the-wire header format that sometimes carries them**. Not everything is always stored in an MQRFH2, and you don't need to parse an MQRFH2 to read or set a property, the MQI exposes them directly. Candidates who conflate the two ('properties live in MQRFH2') give themselves away; the `PROPCTL` values and the usr/jms/mcd folder names are the precision tells.",
     "references": [
-      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q032000_.htm",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q032000_.htm",
       "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=mqi-mqrfh2-rules-formatting-header-2",
       "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=2-field-details-mqrfh2",
-      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q029560_.htm",
-      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q022860_.htm",
-      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q022920_.htm"
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q029560_.htm",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q022860_.htm",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q022920_.htm"
     ],
     "tags": ["properties", "mqrfh2", "propctl"],
     "difficulty": "medium"
@@ -770,7 +770,7 @@
     ],
     "answerExplanation": "Subscribing is really about two choices: a topic string to listen on and a destination queue to receive matches. Non-durable sub = subscription disappears with the client; durable sub = subscription persists, messages keep arriving, app resumes by name. The key ACE nuance: ACE flows don't subscribe directly, you wire up an MQ subscription that feeds an ordinary queue, and the flow reads that queue. That's a common gotcha in interviews when someone expects a 'subscribe to a topic' flow primitive and the answer is 'no, you set up the subscription in MQ and read the resulting queue'.",
     "references": [
-      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=properties-mq-subscription",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=properties-mq-subscription",
       "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=objects-working-subscriptions",
       "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=objects-mq-console-working-subscriptions",
       "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=consumers-durable-subscribers",
@@ -799,8 +799,8 @@
     "answerExplanation": "XA is the correct answer when 'commit MQ and another resource together' is a hard requirement. The mental shift candidates sometimes miss: the qmgr becomes a participant, not the coordinator, and the app stops using MQCMIT/MQBACK in favour of the TM's API. Naming the extended transactional client explicitly, the XA switch structure, and the 'one qmgr per coordinator instance' rule are the precision tells. For modern architectures, mention that an outbox / idempotent consumer pattern is often a simpler alternative to XA for new designs.",
     "references": [
       "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=clients-what-is-extended-transactional-client",
-      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.con.doc/q016540_.htm",
-      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/xms_managed_mq.html",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.con.doc/q016540_.htm",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/xms_managed_mq.html",
       "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=coordination-mq-xa-switch-structure"
     ],
     "tags": ["xa", "2pc", "transaction"],
@@ -825,7 +825,7 @@
     "answerExplanation": "Two things to nail in an answer: (1) the actual definition, a poison message is one that loops forever because nothing stops it, and (2) the collaboration model between MQ and the consumer. MQ provides the bookkeeping (BackoutCount) and the policy hooks (BOTHRESH, BOQNAME), but the consumer (or its framework) is what actually reroutes the message. With `BOTHRESH(0)` there IS no threshold, and 'I have a backout handler' doesn't help because it never fires, the number one operational mistake is assuming framework-level handling compensates for queue defaults that don't enable it. Know the fallback (DLQ if BOQNAME put fails) and the hardened-backout-count option for the precision tells.",
     "references": [
       "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=consumers-poison-messages-in-xms",
-      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q032280_.html",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q032280_.html",
       "https://www.ibm.com/support/pages/ibm-mq-message-persistence-faqs"
     ],
     "tags": ["poison", "backout", "bothresh"],
@@ -849,7 +849,7 @@
     "references": [
       "https://www.ibm.com/docs/en/was/9.0.5?topic=network-differences-between-service-integration-mq",
       "https://www.ibm.com/docs/SSFKSJ_9.2.0/com.ibm.mq.pro.doc/q003460_.htm",
-      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q123770_.html"
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q123770_.html"
     ],
     "tags": ["mqi", "jms"],
     "difficulty": "easy"
@@ -875,8 +875,8 @@
       "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=reference-mqgmo-get-message-options",
       "https://www.mqtechconference.com/sessions_v2013/WMQ_Best_Practices.pdf",
       "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=multiplatforms-get-sample-programs",
-      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.dev.doc/q101830_.html",
-      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q026320_.html"
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.dev.doc/q101830_.html",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q026320_.html"
     ],
     "tags": ["mqget", "mqgmo", "browse"],
     "difficulty": "medium"
@@ -901,7 +901,7 @@
     "references": [
       "https://www.ibm.com/support/pages/ibm-mq-message-persistence-faqs",
       "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=constants-mqper-persistence-values",
-      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=descriptor-persistence-mqlong"
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=descriptor-persistence-mqlong"
     ]
   },
   {
@@ -922,7 +922,7 @@
     "tags": ["hbint", "heartbeat", "channel", "liveness"],
     "difficulty": "medium",
     "references": [
-      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.con.doc/q081890_.html"
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.con.doc/q081890_.html"
     ]
   },
   {
@@ -964,7 +964,7 @@
     "tags": ["hbint", "keepalive", "channel", "network", "liveness", "tuning"],
     "difficulty": "hard",
     "references": [
-      "https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.con.doc/q081890_.html",
+      "https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.con.doc/q081890_.html",
       "https://www.ibm.com/support/pages/two-steps-are-needed-setting-tcpip-keepalive-ibm-mq"
     ]
   },
@@ -1218,7 +1218,7 @@
     ],
     "answerExplanation": "Three independent choices to reason about: which image you start from (operator-provided, ACECC, or fully custom), how artefacts get into the running container (baked, deploy-time mount, runtime pull), and how the deployment is driven (operator, GitOps, CI, Ansible, …). Candidates who can articulate these three axes separately, and place a real deployment on each, have clearly done this in anger rather than just read a diagram.",
     "references": [
-      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=release-models-packaging-versions-app-connect-operator"
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=release-models-packaging-versions-app-connect-operator"
     ],
     "tags": ["containers", "cp4i", "operator"],
     "difficulty": "hard"
@@ -1261,9 +1261,9 @@
     "tags": ["operator", "cp4i", "openshift", "channels", "operand", "olm"],
     "difficulty": "medium",
     "references": [
-      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=release-models-packaging-versions-app-connect-operator",
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=release-models-packaging-versions-app-connect-operator",
       "https://www.ibm.com/support/pages/ibm-app-connect-enterprise-certified-container-versions-support-lifecycle",
-      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=release-app-connect-operand-versions-features"
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=release-app-connect-operand-versions-features"
     ]
   },
   {
@@ -2112,9 +2112,9 @@
     "tags": ["logging", "log-node", "esql", "trace-node", "instrumentation"],
     "difficulty": "easy",
     "references": [
-      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-log-node",
-      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=statements-log-statement",
-      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=server-using-trace-nodes-integration"
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-log-node",
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=statements-log-statement",
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=server-using-trace-nodes-integration"
     ]
   },
   {
@@ -2161,7 +2161,7 @@
     "tags": ["switch-server", "saas", "ace-as-a-service", "callable-flow", "connectivity-agent", "hybrid"],
     "difficulty": "medium",
     "references": [
-      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=resources-switch-server-refere"
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=resources-switch-server-refere"
     ]
   },
   {
@@ -2183,14 +2183,14 @@
     "tags": ["group", "groupscatter", "groupgather", "groupcomplete", "collector", "aggregation", "fan-out", "flow-pattern"],
     "difficulty": "medium",
     "references": [
-      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-groupscatter-node",
-      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-groupgather-node",
-      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-groupcomplete-node",
-      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-collector-node",
-      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-aggregatecontrol-node",
-      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-aggregatereply-node",
-      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-aggregaterequest-node",
-      "https://www.ibm.com/docs/en/app-connect/11.0.0?topic=nodes-group-aggregation"
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-groupscatter-node",
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-groupgather-node",
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-groupcomplete-node",
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-collector-node",
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-aggregatecontrol-node",
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-aggregatereply-node",
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-aggregaterequest-node",
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-group-aggregation"
     ]
   },
   {
@@ -2212,8 +2212,8 @@
     "tags": ["sequence", "resequence", "ordering", "sequence-group", "mq-storage", "flow-pattern"],
     "difficulty": "medium",
     "references": [
-      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=sequences-message-sequencing",
-      "https://www.ibm.com/docs/en/app-connect/11.0.0?topic=nodes-sequence-node",
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=sequences-message-sequencing",
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-sequence-node",
       "https://www.ibm.com/docs/en/integration-bus/10.0.0?topic=nodes-configuring-sequence-node"
     ]
   },
@@ -2292,10 +2292,10 @@
     "tags": ["otel", "opentelemetry", "observability", "tracing", "resource-managers", "v13"],
     "difficulty": "medium",
     "references": [
-      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=management-configuring-opentelemetry-trace-integration-server",
-      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=server-turning-off-opentelemetry-message-flow",
-      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=functions-opentelemetry-trace-parent-function",
-      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=functions-opentelemetry-trace-state-function"
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=management-configuring-opentelemetry-trace-integration-server",
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=server-turning-off-opentelemetry-message-flow",
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=functions-opentelemetry-trace-parent-function",
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=functions-opentelemetry-trace-state-function"
     ]
   },
   {
@@ -2317,11 +2317,11 @@
     "tags": ["global-cache", "cache", "redis", "mbglobalmap", "local-cache", "long-lived-variables", "environment-tree", "wxs"],
     "difficulty": "medium",
     "references": [
-      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=overview-choosing-right-type-cache",
-      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=overview-embedded-global-cache",
-      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=overview-external-redis-global-cache",
-      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=overview-local-cache",
-      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=dco-differences-between-local-cache-embedded-global-cache-external-redis-global-cache"
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=overview-choosing-right-type-cache",
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=overview-embedded-global-cache",
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=overview-external-redis-global-cache",
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=overview-local-cache",
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=dco-differences-between-local-cache-embedded-global-cache-external-redis-global-cache"
     ]
   },
   {
@@ -2342,9 +2342,9 @@
     "tags": ["designer", "ace-designer", "local-dev", "vault", "ibmint"],
     "difficulty": "easy",
     "references": [
-      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=designer-app-connect-enterprise-overview",
-      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=designer-starting-app-connect-enterprise",
-      "https://www.ibm.com/docs/en/app-connect/13.0.x?topic=commands-designer-command"
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=designer-app-connect-enterprise-overview",
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=designer-starting-app-connect-enterprise",
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=commands-designer-command"
     ]
   },
   {
@@ -2368,7 +2368,7 @@
     "tags": ["tad", "tadatacollector", "migration", "iib", "ace-v11", "container", "modernization"],
     "difficulty": "medium",
     "references": [
-      "https://www.ibm.com/docs/en/app-connect/11.0.0?topic=tasks-running-transformation-advisor-tool"
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=tasks-running-transformation-advisor-tool"
     ]
   },
   {

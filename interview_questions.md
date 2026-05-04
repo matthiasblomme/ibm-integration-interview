@@ -131,8 +131,8 @@ Both models handle restart recovery after a clean or crash restart, the key diff
 
 _References:_
 - <https://www.ibm.com/support/pages/ibm-mq-linear-and-circular-logging>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0%2Fcom.ibm.mq.con.doc%2Fq018440_.html>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0%2Fcom.ibm.mq.pla.doc%2Fq018445_.html>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0%2Fcom.ibm.mq.con.doc%2Fq018440_.html>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0%2Fcom.ibm.mq.pla.doc%2Fq018445_.html>
 
 ### Security
 
@@ -188,13 +188,13 @@ The key mental model is topic trees and subscriptions. Publishers don't know sub
 Cluster-based pub/sub is the right default when you want scale and auto-discovery across peer qmgrs; hierarchy is the answer when you need controlled, structured links (e.g. connecting otherwise-separate clusters). Knowing PUBSCOPE/SUBSCOPE exists to scope traffic is what separates 'I've used MQ pub/sub' from 'I've designed a pub/sub topology'.
 
 _References:_
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=networks-publishsubscribe-clusters>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=networks-connecting-queue-manager-publishsubscribe-hierarchy>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=networks-publishsubscribe-clusters>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=networks-connecting-queue-manager-publishsubscribe-hierarchy>
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=explorer-configuring-publishsubscribe-mq-queue-managers>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.con.doc/q017435_.htm>
-- <https://www.ibm.com/docs/en/app-connect/11.0.0?topic=applications-publishsubscribe-overview>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.con.doc/q017435_.htm>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=applications-publishsubscribe-overview>
 - <https://www.mqtechconference.com/sessions_v2014/MQTC_pubsub_networks.pdf>
-- <https://mqseries.net/phpBB/viewtopic.php?t=78106&sid=f3b380efc56696085c1231f21d>
+- <https://mqseries.net/phpBB/viewtopic.php?t=78106>
 
 **Q: How can you temporarily disable an MQ subscription without deleting it?**
 
@@ -259,9 +259,9 @@ MQ carries structured metadata plus an opaque body. Headers compose, an MQMD may
 A UOW is how MQ gives you atomicity across several message operations, and (via XA) across MQ plus other resources like a database. Local vs global is really 'single-phase vs two-phase commit', mention MQCMIT/MQBACK/MQBEGIN by name and you signal you've actually written transactional MQ code rather than just heard about it.
 
 _References:_
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q026790_.html>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.sce.doc/q023320_.htm>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.dev.doc/q106030_.htm>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q026790_.html>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.sce.doc/q023320_.htm>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.dev.doc/q106030_.htm>
 - <https://usuaris.tinet.cat/sag/mq_trmgr.htm>
 - <https://www.mqtechconference.com/sessions_v2014/Introduction_to_MQ.pdf>
 
@@ -282,7 +282,7 @@ Persistence trades throughput for durability, and it is ALWAYS set by the puttin
 _References:_
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=objects-persistence>
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=properties-mq-queue>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=descriptor-persistence-mqlong>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=descriptor-persistence-mqlong>
 - <https://www.ibm.com/docs/en/integration-bus/10.0.0?topic=messages-ensuring-that-are-not-lost>
 - <https://www.ibm.com/support/pages/ibm-mq-message-persistence-faqs>
 - <https://www.ibm.com/support/pages/node/6576289>
@@ -507,9 +507,9 @@ _References:_
 The essence: client = network access via a channel, bindings = same-host direct access through the local MQ runtime. Bindings is simpler and faster when app and qmgr live on the same server; client is more flexible and is the normal choice when they're separate. In ACE this shows up as two distinct configuration paths, client needs a channel + listener on the MQ side, local just needs the co-located qmgr name. Modern deployments (containers, separate app/qmgr pods) almost always use client mode with reconnection enabled.
 
 _References:_
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q030760_.html>
-- <https://www.ibm.com/docs/en/app-connect/11.0.0?topic=mq-configuring-client-connection>
-- <https://www.ibm.com/docs/en/app-connect/11.0.0?topic=mq-configuring-local-connection>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q030760_.html>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=mq-configuring-client-connection>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=mq-configuring-local-connection>
 
 **Q: What is a CCDT and how do you use it?**
 
@@ -526,7 +526,7 @@ A CCDT is the central connection-definition file for MQ clients, you put channel
 _References:_
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=tables-configuring-binary-format-ccdt>
 - <https://www.ibm.com/docs/en/ace-ipaas?topic=types-mqccdt>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.mig.doc/q001640_.html>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.mig.doc/q001640_.html>
 
 **Q: How do you make an MQ client application resilient to qmgr failures?**
 
@@ -545,8 +545,8 @@ Resilience = reconnect + endpoints + failure detection + well-behaved app logic.
 _References:_
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=restart-automatic-client-reconnection>
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=configuring-recovery-restart>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.con.doc/q081900_.html>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q032520_.html>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.con.doc/q081900_.html>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q032520_.html>
 
 **Q: What is the MQ heartbeat (HBINT)?**
 
@@ -560,7 +560,7 @@ _References:_
 HBINT is MQ's own liveness ping between a client and the qmgr (or between two qmgrs over a message channel). It operates above TCP, so it can notice problems with the MQ conversation that TCP itself doesn't see. Negotiated between peers, the lower value wins, so both sides should be set deliberately, not left at whatever was defined on one end.
 
 _References:_
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.con.doc/q081890_.html>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.con.doc/q081890_.html>
 
 **Q: What is the MQ TCP KeepAlive?**
 
@@ -588,7 +588,7 @@ _References:_
 The cleanest way to frame it is by what each protocol sees: HBINT knows about MQ conversations but not about sockets, KeepAlive knows about sockets but not about MQ. Each blind spot is the other's strength, which is why production MQ setups enable both. The common mistake is turning on `KEEPALIVE(YES)` on the channel and assuming that's sufficient, kernel defaults of 2 hours before the first probe mean you'll still hit firewall idle drops, so OS-level tuning is mandatory for KeepAlive to actually do its job.
 
 _References:_
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.con.doc/q081890_.html>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.con.doc/q081890_.html>
 - <https://www.ibm.com/support/pages/two-steps-are-needed-setting-tcpip-keepalive-ibm-mq>
 
 ### Messages
@@ -606,7 +606,7 @@ Set persistence explicitly if the message matters, don't rely on queue defaults 
 
 _References:_
 - <https://www.ibm.com/support/pages/ibm-mq-message-persistence-faqs>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=descriptor-persistence-mqlong>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=descriptor-persistence-mqlong>
 
 **Q: What are MQ message properties and how do they relate to MQRFH2?**
 
@@ -620,12 +620,12 @@ _References:_
 The clean framing is: **properties = API abstraction, MQRFH2 = on-the-wire header format that sometimes carries them**. Not everything is always stored in an MQRFH2, and you don't need to parse an MQRFH2 to read or set a property, the MQI exposes them directly. Candidates who conflate the two ('properties live in MQRFH2') give themselves away; the `PROPCTL` values and the usr/jms/mcd folder names are the precision tells.
 
 _References:_
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q032000_.htm>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q032000_.htm>
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=mqi-mqrfh2-rules-formatting-header-2>
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=2-field-details-mqrfh2>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q029560_.htm>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q022860_.htm>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q022920_.htm>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q029560_.htm>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q022860_.htm>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q022920_.htm>
 
 **Q: What are the three MQPER_* persistence values and what does AS_Q_DEF actually resolve to?**
 
@@ -640,7 +640,7 @@ Every MQ developer has to know the three persistence values, but AS_Q_DEF is whe
 _References:_
 - <https://www.ibm.com/support/pages/ibm-mq-message-persistence-faqs>
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=constants-mqper-persistence-values>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=descriptor-persistence-mqlong>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=descriptor-persistence-mqlong>
 
 ### Pub/Sub
 
@@ -659,7 +659,7 @@ _References:_
 Subscribing is really about two choices: a topic string to listen on and a destination queue to receive matches. Non-durable sub = subscription disappears with the client; durable sub = subscription persists, messages keep arriving, app resumes by name. The key ACE nuance: ACE flows don't subscribe directly, you wire up an MQ subscription that feeds an ordinary queue, and the flow reads that queue. That's a common gotcha in interviews when someone expects a 'subscribe to a topic' flow primitive and the answer is 'no, you set up the subscription in MQ and read the resulting queue'.
 
 _References:_
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=properties-mq-subscription>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=properties-mq-subscription>
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=objects-working-subscriptions>
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=objects-mq-console-working-subscriptions>
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=consumers-durable-subscribers>
@@ -683,8 +683,8 @@ XA is the correct answer when 'commit MQ and another resource together' is a har
 
 _References:_
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=clients-what-is-extended-transactional-client>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.con.doc/q016540_.htm>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/xms_managed_mq.html>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.con.doc/q016540_.htm>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/xms_managed_mq.html>
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=coordination-mq-xa-switch-structure>
 
 ### Error handling
@@ -704,7 +704,7 @@ Two things to nail in an answer: (1) the actual definition, a poison message is 
 
 _References:_
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=consumers-poison-messages-in-xms>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q032280_.html>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q032280_.html>
 - <https://www.ibm.com/support/pages/ibm-mq-message-persistence-faqs>
 
 ### APIs
@@ -723,7 +723,7 @@ JMS is the ergonomic, portable choice for Java apps, especially anything that li
 _References:_
 - <https://www.ibm.com/docs/en/was/9.0.5?topic=network-differences-between-service-integration-mq>
 - <https://www.ibm.com/docs/SSFKSJ_9.2.0/com.ibm.mq.pro.doc/q003460_.htm>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q123770_.html>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q123770_.html>
 
 ### MQGET
 
@@ -744,8 +744,8 @@ _References:_
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=reference-mqgmo-get-message-options>
 - <https://www.mqtechconference.com/sessions_v2013/WMQ_Best_Practices.pdf>
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=multiplatforms-get-sample-programs>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.dev.doc/q101830_.html>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q026320_.html>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.dev.doc/q101830_.html>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q026320_.html>
 
 ## ACE, Admin
 
@@ -802,9 +802,9 @@ Each jump has a different flavour: WMB→IIB is cosmetic, IIB→ACE v11 is archi
 The operator world is stream- and channel-based rather than version-and-fix-pack based. The important mental shift is that you subscribe to a channel in OLM and IBM publishes which operand (ACE container) versions flow through that channel, you don't pin a specific ACE fix-pack the way you would on-prem. Know the words 'operator', 'operand', 'channel', 'CD vs LTS/Cycle-2', and 'EUS' and you're fluent.
 
 _References:_
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=release-models-packaging-versions-app-connect-operator>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=release-models-packaging-versions-app-connect-operator>
 - <https://www.ibm.com/support/pages/ibm-app-connect-enterprise-certified-container-versions-support-lifecycle>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=release-app-connect-operand-versions-features>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=release-app-connect-operand-versions-features>
 
 **Q: Explain the ACE versioning scheme (V.R.M.F) and what each digit means.**
 
@@ -1037,7 +1037,7 @@ _References:_
 Three independent choices to reason about: which image you start from (operator-provided, ACECC, or fully custom), how artefacts get into the running container (baked, deploy-time mount, runtime pull), and how the deployment is driven (operator, GitOps, CI, Ansible, …). Candidates who can articulate these three axes separately, and place a real deployment on each, have clearly done this in anger rather than just read a diagram.
 
 _References:_
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=release-models-packaging-versions-app-connect-operator>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=release-models-packaging-versions-app-connect-operator>
 
 **Q: What approaches reduce ACE container startup time, and which ones are Kubernetes-specific?**
 
@@ -1216,7 +1216,7 @@ TAD tells you *what's in scope* and *where the hard bits are*, not *what to do*.
 TAD is the 'know-before-you-start' tool for ACE / IIB modernisation, specifically for pre-v13 estates (IIB 10, ACE 11, ACE 12). You run `TADataCollector` against a backed-up node or a packaged BAR and it tells you what is deployed, what may block the migration, and how hard each workload is likely to be (Simple / Moderate / Complex, with a Green / Yellow / Red severity per issue). Candidates sometimes confuse TAD with the broader IBM Cloud Transformation Advisor product; in the ACE context, TAD is the ACE-specific tool.
 
 _References:_
-- <https://www.ibm.com/docs/en/app-connect/11.0.0?topic=tasks-running-transformation-advisor-tool>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=tasks-running-transformation-advisor-tool>
 
 ### Flow lifecycle
 
@@ -1543,9 +1543,9 @@ Route is declarative and readable for a handful of cases; RouteToLabel is for ru
 ACE gives you three idiomatic ways to log from a flow: the Log node (declarative), the LOG ESQL statement (procedural) and the Trace node (heavyweight diagnostic). Mentioning the performance cost of Trace nodes specifically, and that they force a full message parse, signals you've been burned by leaving one on in production at least once.
 
 _References:_
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-log-node>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=statements-log-statement>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=server-using-trace-nodes-integration>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-log-node>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=statements-log-statement>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=server-using-trace-nodes-integration>
 
 ### ESQL
 
@@ -1592,7 +1592,7 @@ The mnemonic to keep them straight: `>` points forward from the start, `<` point
 The Switch Server is the rendezvous point that lets on-prem and SaaS flows reach each other without inbound firewall holes. Who runs it flips with the deployment model: on-prem = you run it; SaaS = IBM hosts it and you manage it as a resource in the same namespace as Designer and Dashboard, associating it with them. Framing the Switch Server as 'the connectivity layer for hybrid App Connect' (callable flows AND private-network reach via connectivity agents) is broader and more accurate than 'it is only for callable flows'.
 
 _References:_
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=resources-switch-server-refere>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=resources-switch-server-refere>
 
 ### Patterns
 
@@ -1609,14 +1609,14 @@ _References:_
 'Grouping nodes' is umbrella language that in practice covers three different ACE families with different trade-offs. Group (Scatter/Gather/Complete) is the modern, stateless, MQ-free choice for fast fan-out/fan-in inside one server. Collector is the right answer when messages arrive independently from many sources, out of order, and you want rule-based collection; it is MQ-backed, which is why it behaves more like the classic aggregation pattern than like Group. Aggregation (AggregateControl / Request / Reply) remains the right choice when you need recoverable aggregation state or cross-server orchestration.
 
 _References:_
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-groupscatter-node>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-groupgather-node>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-groupcomplete-node>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-collector-node>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-aggregatecontrol-node>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-aggregatereply-node>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-aggregaterequest-node>
-- <https://www.ibm.com/docs/en/app-connect/11.0.0?topic=nodes-group-aggregation>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-groupscatter-node>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-groupgather-node>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-groupcomplete-node>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-collector-node>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-aggregatecontrol-node>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-aggregatereply-node>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-aggregaterequest-node>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-group-aggregation>
 
 **Q: What are sequencing nodes used for in ACE, and what are the runtime constraints you need to know?**
 
@@ -1631,8 +1631,8 @@ _References:_
 Sequencing nodes solve the tension between 'process in parallel for throughput' and 'preserve order where it matters for correctness'. The important nuance most candidates miss is that order preservation is per-sequence-group, not flow-wide, and that sequencing is MQ-backed state (similar to the Collector node), so it picks up the same MQ co-location / remote-qmgr requirements. The 'one thread per group' property is how ACE keeps the guarantee safe under additional instances.
 
 _References:_
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=sequences-message-sequencing>
-- <https://www.ibm.com/docs/en/app-connect/11.0.0?topic=nodes-sequence-node>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=sequences-message-sequencing>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-sequence-node>
 - <https://www.ibm.com/docs/en/integration-bus/10.0.0?topic=nodes-configuring-sequence-node>
 
 ### MQ
@@ -1665,10 +1665,10 @@ _References:_
 OTel is how ACE plugs into modern cross-service distributed tracing, a complement to the existing activity log, flow / resource stats and Log / Trace nodes rather than a replacement. Candidates should know that ACE emits traces only (not metrics or logs), that context flows in via transport headers and request nodes propagate it onwards, and that a configured integration server appears as a span tree inside a larger distributed trace. The real discriminators: the unsupported-node list and the MQGet-ignores-inbound-trace-parent gotcha, both of which surface in real rollouts.
 
 _References:_
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=management-configuring-opentelemetry-trace-integration-server>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=server-turning-off-opentelemetry-message-flow>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=functions-opentelemetry-trace-parent-function>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=functions-opentelemetry-trace-state-function>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=management-configuring-opentelemetry-trace-integration-server>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=server-turning-off-opentelemetry-message-flow>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=functions-opentelemetry-trace-parent-function>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=functions-opentelemetry-trace-state-function>
 
 ### Caching
 
@@ -1685,11 +1685,11 @@ _References:_
 IBM treats caching in ACE as a spectrum from in-message state to fully external infrastructure, and the interview signal is whether the candidate frames the decision by scope, lifetime and persistence rather than by listing products. The two v13 headlines to know: the new embedded global cache from 13.0.3.0 replaces the old WXS grid with something that actually works in containers and no longer forces Java 8; and the external Redis backend means the same `MbGlobalMap` API can drive a shared, durable store. Knowing the WXS grids are deprecated is a good tell that the candidate is current, not repeating older material.
 
 _References:_
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=overview-choosing-right-type-cache>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=overview-embedded-global-cache>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=overview-external-redis-global-cache>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=overview-local-cache>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=dco-differences-between-local-cache-embedded-global-cache-external-redis-global-cache>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=overview-choosing-right-type-cache>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=overview-embedded-global-cache>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=overview-external-redis-global-cache>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=overview-local-cache>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=dco-differences-between-local-cache-embedded-global-cache-external-redis-global-cache>
 
 ### Designer
 
@@ -1705,9 +1705,9 @@ _References:_
 The on-prem ACE 13 Designer is simply part of the install: run the `Designer` command and you get the browser UI on localhost backed by a local vault. Candidates sometimes assume Designer is SaaS-only, or that it needs a `DesignerAuthoring` resource on the Operator; the stand-alone local path is the simplest of the three. The signals worth probing: awareness of the vault / vault key lifecycle, of the not-multi-user constraint, and of the clean split between authoring in Designer and running on a separate integration server.
 
 _References:_
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=designer-app-connect-enterprise-overview>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=designer-starting-app-connect-enterprise>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=commands-designer-command>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=designer-app-connect-enterprise-overview>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=designer-starting-app-connect-enterprise>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=commands-designer-command>
 
 ### Troubleshooting
 
