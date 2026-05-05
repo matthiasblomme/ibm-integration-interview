@@ -2509,6 +2509,31 @@
     ]
   },
   {
+    "id": "ace-adm-047",
+    "product": "ACE",
+    "role": "Admin",
+    "topic": "Troubleshooting",
+    "level": "medior",
+    "question": "What is the ACE Log Analyzer, and what file types does it process?",
+    "answerBullets": [
+      "The **Log Analyzer** (`ACELogAnalyser` / `aceloganalyser.jar`, new in v13) is a troubleshooting tool that parses and summarises ACE diagnostic artefacts into navigable reports, instead of hand-reading raw files",
+      "Supported inputs: **Service trace** or **User trace** files; **Activity Log** files in CSV; **Message Flow Accounting and Statistics** files in CSV; **Parser Manager Logs**",
+      "Ships with the runtime at `<install>/server/tools/aceloganalyser.jar`. Two modes: **GUI mode** (default when launched with no args): `java -Xmx2000m -jar <install>/server/tools/aceloganalyser.jar`. **CLI mode** (one functionality per execution): same `java -Xmx2000m -jar ...` plus mandatory `-z <functionality>`, `-f <inputFiles>` (comma-separated), `-d <outputDirectory>`. `-Xmx2000m` matters when the input files are large",
+      "CLI functionalities (one per execution) map to the input types: **Trace family:** `traceAnalysis`, `splitTraceThreads`, `extractUserTrace`, `extractSyslogAndErrorEntries`. **Activity log:** `activityLogAnalysis`. **Accounting & stats:** `splitAccountingAndStatsCSVFiles`. **Parser logs:** `parserManagerAnalysis`",
+      "Output is a per-functionality report directory (typically HTML plus split / extracted artefacts) that you can keep alongside an incident ticket, send to IBM Support, or diff against a baseline from a healthy run",
+      "Companion data-collection tool: **`aceDataCollector`** is the command IBM points you at for gathering the input files in the first place (trace dumps, log bundles); pair it with ACELogAnalyser for end-to-end problem-determination flow",
+      "Before v13 the same investigation was a mix of `mqsiservice` / `mqsireadlog` invocations, Excel-ing stat CSVs, and reading raw trace in a text editor. ACELogAnalyser does not replace any of that, it just produces a human-navigable view over the same inputs",
+      "Intended for problem determination rather than steady-state observability; for live monitoring you still want OTel (traces), activity log (per-node events), and flow / resource stats"
+    ],
+    "answerExplanation": "ACELogAnalyser is the consolidation of trace, activity log, accounting stats, and parser log analysis into one tool, with both a GUI and a CLI (the CLI runs one `-z <functionality>` at a time, output to a directory). It does not do anything the underlying files did not already contain; it just makes them readable as a report. The interview signal is knowing it exists, naming the four input types, naming a couple of CLI functionalities (`traceAnalysis`, `activityLogAnalysis`), mentioning `aceDataCollector` as the companion data-collection tool, and recognising it is a problem-determination tool rather than a monitoring dashboard.",
+    "tags": ["log-analyzer", "troubleshooting", "service-trace", "activity-log", "accounting-statistics", "v13"],
+    "difficulty": "easy",
+    "references": [
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=new-whats-app-connect-enterprise",
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=tools-using-acelognanalyser"
+    ]
+  },
+  {
     "id": "cloud-001",
     "product": "Cloud",
     "role": "Any",

@@ -14,61 +14,8 @@ Fields are the same as in `questions.json`, rendered for readability.
 
 
 
-## 1. `ace-adm-047`, What is the ACE Log Analyzer, and what file types does it process?
 
-- **Product / Role / Topic:** ACE / Admin / Troubleshooting
-- **Difficulty:** easy
-- **Level:** medior
-- **Tags:** log-analyzer, troubleshooting, service-trace, activity-log, accounting-statistics, v13
-
-### Question
-What problem does the v13 Log Analyzer solve, how do you run it,
-and which file types can it consume?
-
-### Answer, bullets
-- The **Log Analyzer** (new in v13) is a troubleshooting tool
-  that consolidates parsing and interpretation of ACE
-  diagnostic artefacts into a single static HTML report,
-  instead of hand-reading raw files
-- Supported inputs:
-  - **Service trace** or **User trace** files
-  - **Activity Log** files in CSV
-  - **Message Flow Accounting and Statistics** files in CSV
-  - **Parser Manager Logs**
-- Launch from an ACE Command Console (the tool ships with the
-  server install):
-  `java -Xmx2000m -jar ./server/tools/aceloganalyser.jar`. The
-  `-Xmx2000m` matters when the input files are large
-- Output is a static HTML report you can keep alongside an
-  incident ticket, send to IBM Support, or diff against a
-  baseline from a healthy run
-- Before v13 the same investigation was a mix of
-  `mqsiservice` / `mqsireadlog` invocations, Excel-ing stat
-  CSVs, and reading raw trace in a text editor. The v13 tool
-  does not replace any of that, it just produces a
-  human-navigable view over the same inputs
-- Intended for problem determination rather than steady-state
-  observability; for live monitoring you still want OTel
-  (traces), activity log (per-node events), and flow / resource
-  stats
-
-### Explanation
-The Log Analyzer is the consolidation of trace, activity log,
-accounting stats, and parser log reading into one tool with
-static HTML output, which speeds up incident review noticeably.
-It does not do anything the underlying files did not already
-contain; it just makes them readable as a report. The interview
-signal is knowing it exists, knowing the four input types, and
-knowing it is a problem-determination tool rather than a
-monitoring dashboard.
-
-### References
-- Blog: ACE v13 new features overview (matthiasblomme)
-- https://www.ibm.com/docs/en/app-connect/13.0.x?topic=new-whats-app-connect-enterprise
-
----
-
-## 2. `ace-dev-036`, How do you run Toolkit unit tests against a custom integration server with policies and shared classes?
+## 1. `ace-dev-036`, How do you run Toolkit unit tests against a custom integration server with policies and shared classes?
 
 - **Product / Role / Topic:** ACE / Dev / Testing
 - **Difficulty:** medium
@@ -129,7 +76,7 @@ tests are unreliable.
 
 ---
 
-## 3. `ace-dev-037`, What does `ignorePath()` do in ACE unit tests, and why is it essential?
+## 2. `ace-dev-037`, What does `ignorePath()` do in ACE unit tests, and why is it essential?
 
 - **Product / Role / Topic:** ACE / Dev / Testing
 - **Difficulty:** easy
@@ -187,7 +134,7 @@ passing tests for real flows.
 
 ---
 
-## 4. `ace-dev-038`, Compare `mqsicreatebar`, `mqsipackagebar`, and `ibmint package`. When do you pick each?
+## 3. `ace-dev-038`, Compare `mqsicreatebar`, `mqsipackagebar`, and `ibmint package`. When do you pick each?
 
 - **Product / Role / Topic:** ACE / Dev / Build
 - **Difficulty:** medium
@@ -255,7 +202,7 @@ comfortable with real build pipelines.
 
 ---
 
-## 5. `ace-dev-039`, What is the `Item` element in ACE's JSON-array representation, and why is it needed?
+## 4. `ace-dev-039`, What is the `Item` element in ACE's JSON-array representation, and why is it needed?
 
 - **Product / Role / Topic:** ACE / Dev / ESQL
 - **Difficulty:** easy
@@ -311,7 +258,7 @@ this with `IDENTITY(JSON.Array)` and either `CREATE LASTCHILD`
 
 ---
 
-## 6. `ace-dev-040`, Why is `CREATE FIELD ... IDENTITY(JSON.Array)` necessary when preparing JSON array output in ESQL?
+## 5. `ace-dev-040`, Why is `CREATE FIELD ... IDENTITY(JSON.Array)` necessary when preparing JSON array output in ESQL?
 
 - **Product / Role / Topic:** ACE / Dev / ESQL
 - **Difficulty:** easy
@@ -372,7 +319,7 @@ comfortable with ESQL-to-JSON serialisation.
 
 ---
 
-## 7. `ace-dev-041`, What are Discovery Request and Discovery Input nodes in ACE v13, and how do they differ from traditional transport nodes?
+## 6. `ace-dev-041`, What are Discovery Request and Discovery Input nodes in ACE v13, and how do they differ from traditional transport nodes?
 
 - **Product / Role / Topic:** ACE / Dev / Connectors
 - **Difficulty:** easy
@@ -438,7 +385,7 @@ hatch" show they understand the complementary positioning.
 
 ---
 
-## 8. `ace-dev-042`, What does the Kafka Schema Registry policy add in ACE v13, and what serialisation format does it unlock?
+## 7. `ace-dev-042`, What does the Kafka Schema Registry policy add in ACE v13, and what serialisation format does it unlock?
 
 - **Product / Role / Topic:** ACE / Dev / Kafka
 - **Difficulty:** medium
@@ -496,7 +443,7 @@ configuration" show they have been tracking the Kafka roadmap.
 
 ---
 
-## 9. `ace-dev-043`, Which authentication types can the v13 HTTPRequest / RESTRequest nodes use directly, and what does that replace?
+## 8. `ace-dev-043`, Which authentication types can the v13 HTTPRequest / RESTRequest nodes use directly, and what does that replace?
 
 - **Product / Role / Topic:** ACE / Dev / Nodes
 - **Difficulty:** medium
@@ -557,7 +504,7 @@ modern APIs.
 
 ---
 
-## 10. `ace-dev-044`, What is the JSONata Mapping node in ACE v13, and how does it differ from Graphical Data Maps?
+## 9. `ace-dev-044`, What is the JSONata Mapping node in ACE v13, and how does it differ from Graphical Data Maps?
 
 - **Product / Role / Topic:** ACE / Dev / Mapping
 - **Difficulty:** easy
@@ -616,7 +563,7 @@ picked between them on real flows.
 
 ---
 
-## 11. `ace-adm-048`, What does `mqsirestart` do, and why is it better than `mqsistop` + `mqsistart`?
+## 10. `ace-adm-048`, What does `mqsirestart` do, and why is it better than `mqsistop` + `mqsistart`?
 
 - **Product / Role / Topic:** ACE / Admin / Operations
 - **Difficulty:** easy
@@ -674,7 +621,7 @@ syntax, and who compare it to the absence of a built-in
 
 ---
 
-## 12. `ace-adm-049`, How does `mqsistopmsgflow` differ from `ibmint stop server`?
+## 11. `ace-adm-049`, How does `mqsistopmsgflow` differ from `ibmint stop server`?
 
 - **Product / Role / Topic:** ACE / Admin / Operations
 - **Difficulty:** medium
@@ -737,7 +684,7 @@ production, not just labs.
 
 ---
 
-## 13. `ace-dev-045`, What is Project Bob, and where does it fit compared with a generic Copilot for modernising ACE code?
+## 12. `ace-dev-045`, What is Project Bob, and where does it fit compared with a generic Copilot for modernising ACE code?
 
 - **Product / Role / Topic:** ACE / Dev / Tooling
 - **Difficulty:** easy
@@ -800,7 +747,7 @@ the subscription shape.
 
 ---
 
-## 14. `ace-adm-050`, What is the ACE Agent Preview in the Dashboard, and what are its constraints?
+## 13. `ace-adm-050`, What is the ACE Agent Preview in the Dashboard, and what are its constraints?
 
 - **Product / Role / Topic:** ACE / Admin / AI
 - **Difficulty:** easy
@@ -858,7 +805,7 @@ reading the preview label correctly.
 
 ---
 
-## 15. `ace-adm-051`, What is the MCP (Model Context Protocol) feature in ACE v13.0.7.0, and how does it expose REST APIs?
+## 14. `ace-adm-051`, What is the MCP (Model Context Protocol) feature in ACE v13.0.7.0, and how does it expose REST APIs?
 
 - **Product / Role / Topic:** ACE / Admin / AI
 - **Difficulty:** medium
@@ -915,7 +862,7 @@ reading the feature correctly.
 
 ---
 
-## 16. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
+## 15. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** medium
@@ -966,7 +913,7 @@ done the migration for real.
 
 ---
 
-## 17. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
+## 16. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy
@@ -1025,7 +972,7 @@ not apply here.
 
 ---
 
-## 18. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
+## 17. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy
