@@ -2,13 +2,13 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 131
+**Total questions:** 132
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (14)](#mq-dev)
-- [ACE, Admin (43)](#ace-admin)
+- [ACE, Admin (44)](#ace-admin)
 - [ACE, Dev (36)](#ace-dev)
 - [Cloud (5)](#cloud)
 
@@ -1119,6 +1119,21 @@ Candidates sometimes conflate 'App Connect' with 'ACE', and conflate 'Operator' 
 - Benefits: declarative config, GitOps-friendly, consistent with other CP4I products, shifts lifecycle work from manual scripts into the cluster itself
 
 The operator is how you run ACE 'the Kubernetes way': you author YAML describing what you want, the operator reconciles reality to match. It is what makes declarative, GitOps-driven ACE deployments practical on OpenShift / CP4I. Good partner question to the operator-release-model one already in the bank: this is 'what is it', that one is 'how is it shipped'.
+
+**Q: Why is cert-manager required when installing the ACE Operator on plain Kubernetes, and what fails without it?**
+
+- The ACE Operator ships **admission webhooks** (validating + mutating) that gate every change to its CRDs (`IntegrationRuntime`, `IntegrationServer`, `Dashboard`, `DesignerAuthoring`, etc.). Admission webhooks have to be served over TLS, and the certs have to be provisioned and rotated by something
+- cert-manager is that something: the Operator's manifests reference cert-manager `Issuer` and `Certificate` resources to mint and rotate the webhook certs. Without cert-manager installed first, the install fails to reconcile with `no matches for kind "Issuer" in version "cert-manager.io/v1"` (the API server does not know what an Issuer is yet)
+- CP4I bundles cert-manager via the IBM Cloud Pak Foundational Services; standalone OpenShift typically adds it via the OpenShift cert-manager Operator. The cert-manager prereq only bites on **plain Kubernetes** (Minikube, kind, DIY) where you install cert-manager yourself before the ACE Operator
+- Install cert-manager before the ACE Operator: `kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.17.2/cert-manager.yaml` (or the current release). Wait for the `cert-manager`, `cert-manager-cainjector`, and `cert-manager-webhook` pods to reach `Running` in the `cert-manager` namespace
+- Verify the CRDs are registered before installing ACE: `kubectl get crd issuers.cert-manager.io clusterissuers.cert-manager.io certificates.cert-manager.io`. All three present means the prereq is satisfied
+- Once cert-manager is up, reuse it for the rest of your TLS story: Dashboard ingress, the `DesignerAuthoring` web UI, and anything else that needs a cluster-signed cert, via `Certificate` resources backed by a `selfsigned-issuer` for dev or a real CA-backed `ClusterIssuer` for shared environments
+
+The Operator is a Kubernetes controller that extends the API with CRDs and gates every CR change through admission webhooks, which must be served over TLS. It outsources the cert lifecycle to cert-manager rather than rolling its own. On CP4I and on OpenShift with the cert-manager Operator this is invisible because cert-manager is already there. On plain Kubernetes (Minikube, kind, vanilla), installing the ACE Operator without cert-manager first is the classic day-one mistake, and the `no matches for kind "Issuer"` reconcile error is the tell-tale.
+
+_References:_
+- <https://cert-manager.io/docs/installation/>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=operator-installing-app-connect>
 
 ### Credentials
 

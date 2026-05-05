@@ -11,64 +11,8 @@ Fields are the same as in `questions.json`, rendered for readability.
 
 
 
-## 1. `ace-adm-044`, Why is cert-manager required when installing the ACE Operator on plain Kubernetes, and what fails without it?
 
-- **Product / Role / Topic:** ACE / Admin / Operator
-- **Difficulty:** medium
-- **Tags:** operator, cert-manager, webhook, kubernetes, minikube, tls, prerequisites
-
-### Question
-Why does the ACE Operator need cert-manager on a vanilla
-Kubernetes cluster (Minikube, kind, DIY), what error do you see
-without it, and where does the requirement come from?
-
-### Answer, bullets
-- The ACE Operator uses Kubernetes **webhooks** (mutating and
-  validating admission webhooks) to validate and mutate its CRDs
-  (`IntegrationRuntime`, `IntegrationServer`, etc.) at admission
-  time. Webhooks must be served over TLS, and their certificates
-  have to be provisioned and rotated
-- cert-manager provides the `Issuer` / `ClusterIssuer` CRDs that
-  the Operator's packaging expects. Without cert-manager
-  installed first, the Operator pod fails to start with
-  `no matches for kind "Issuer" in version "cert-manager.io/v1"`
-- OpenShift and CP4I typically have cert-manager (or the
-  OpenShift cert-manager operator) preinstalled, which is why
-  this only bites on "plain" Kubernetes like Minikube, kind, or
-  DIY clusters
-- Install cert-manager before the ACE Operator:
-  `kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.17.2/cert-manager.yaml`
-  (or the current release). Wait for the `cert-manager`,
-  `cert-manager-cainjector`, and `cert-manager-webhook` pods to
-  become `Running`
-- Verify CRDs are in place before installing ACE:
-  `kubectl get crd issuers.cert-manager.io clusterissuers.cert-manager.io certificates.cert-manager.io`.
-  If those three exist, you are good
-- Once cert-manager is up, you can also use it to issue TLS
-  certs for Dashboard ingress, the `DesignerAuthoring` web UI,
-  and anything else that needs a cluster-signed cert, via
-  `Certificate` resources and a `selfsigned-issuer` or a real
-  CA-backed `ClusterIssuer`
-
-### Explanation
-The Operator is a Kubernetes controller that extends the API
-with CRDs and validates CR changes via webhooks, which must be
-served over TLS. It outsources the cert lifecycle to
-cert-manager rather than rolling its own. On OpenShift / CP4I
-this is invisible because cert-manager is preinstalled. On
-plain Kubernetes (Minikube, kind, vanilla), installing the ACE
-Operator without cert-manager first is the classic day-one
-mistake, and the `no matches for kind "Issuer"` error is the
-tell-tale.
-
-### References
-- Blog: ACE Operator on Minikube (matthiasblomme)
-- https://cert-manager.io/docs/installation/
-- https://www.ibm.com/docs/en/app-connect/13.0.x?topic=operator-installing-app-connect
-
----
-
-## 2. `ace-adm-045`, What is Business Transaction Monitoring (BTM), and which databases does v13 support for the event store?
+## 1. `ace-adm-045`, What is Business Transaction Monitoring (BTM), and which databases does v13 support for the event store?
 
 - **Product / Role / Topic:** ACE / Admin / Monitoring
 - **Difficulty:** medium
@@ -126,7 +70,7 @@ experience.
 
 ---
 
-## 3. `ace-adm-046`, What is the global transaction correlator in BTM, and why must the first event set it explicitly?
+## 2. `ace-adm-046`, What is the global transaction correlator in BTM, and why must the first event set it explicitly?
 
 - **Product / Role / Topic:** ACE / Admin / Monitoring
 - **Difficulty:** medium
@@ -187,7 +131,7 @@ special, have actually used the product.
 
 ---
 
-## 4. `ace-adm-047`, What is the ACE Log Analyzer, and what file types does it process?
+## 3. `ace-adm-047`, What is the ACE Log Analyzer, and what file types does it process?
 
 - **Product / Role / Topic:** ACE / Admin / Troubleshooting
 - **Difficulty:** easy
@@ -241,7 +185,7 @@ monitoring dashboard.
 
 ---
 
-## 5. `ace-dev-036`, How do you run Toolkit unit tests against a custom integration server with policies and shared classes?
+## 4. `ace-dev-036`, How do you run Toolkit unit tests against a custom integration server with policies and shared classes?
 
 - **Product / Role / Topic:** ACE / Dev / Testing
 - **Difficulty:** medium
@@ -302,7 +246,7 @@ tests are unreliable.
 
 ---
 
-## 6. `ace-dev-037`, What does `ignorePath()` do in ACE unit tests, and why is it essential?
+## 5. `ace-dev-037`, What does `ignorePath()` do in ACE unit tests, and why is it essential?
 
 - **Product / Role / Topic:** ACE / Dev / Testing
 - **Difficulty:** easy
@@ -360,7 +304,7 @@ passing tests for real flows.
 
 ---
 
-## 7. `ace-dev-038`, Compare `mqsicreatebar`, `mqsipackagebar`, and `ibmint package`. When do you pick each?
+## 6. `ace-dev-038`, Compare `mqsicreatebar`, `mqsipackagebar`, and `ibmint package`. When do you pick each?
 
 - **Product / Role / Topic:** ACE / Dev / Build
 - **Difficulty:** medium
@@ -428,7 +372,7 @@ comfortable with real build pipelines.
 
 ---
 
-## 8. `ace-dev-039`, What is the `Item` element in ACE's JSON-array representation, and why is it needed?
+## 7. `ace-dev-039`, What is the `Item` element in ACE's JSON-array representation, and why is it needed?
 
 - **Product / Role / Topic:** ACE / Dev / ESQL
 - **Difficulty:** easy
@@ -484,7 +428,7 @@ this with `IDENTITY(JSON.Array)` and either `CREATE LASTCHILD`
 
 ---
 
-## 9. `ace-dev-040`, Why is `CREATE FIELD ... IDENTITY(JSON.Array)` necessary when preparing JSON array output in ESQL?
+## 8. `ace-dev-040`, Why is `CREATE FIELD ... IDENTITY(JSON.Array)` necessary when preparing JSON array output in ESQL?
 
 - **Product / Role / Topic:** ACE / Dev / ESQL
 - **Difficulty:** easy
@@ -545,7 +489,7 @@ comfortable with ESQL-to-JSON serialisation.
 
 ---
 
-## 10. `ace-dev-041`, What are Discovery Request and Discovery Input nodes in ACE v13, and how do they differ from traditional transport nodes?
+## 9. `ace-dev-041`, What are Discovery Request and Discovery Input nodes in ACE v13, and how do they differ from traditional transport nodes?
 
 - **Product / Role / Topic:** ACE / Dev / Connectors
 - **Difficulty:** easy
@@ -611,7 +555,7 @@ hatch" show they understand the complementary positioning.
 
 ---
 
-## 11. `ace-dev-042`, What does the Kafka Schema Registry policy add in ACE v13, and what serialisation format does it unlock?
+## 10. `ace-dev-042`, What does the Kafka Schema Registry policy add in ACE v13, and what serialisation format does it unlock?
 
 - **Product / Role / Topic:** ACE / Dev / Kafka
 - **Difficulty:** medium
@@ -669,7 +613,7 @@ configuration" show they have been tracking the Kafka roadmap.
 
 ---
 
-## 12. `ace-dev-043`, Which authentication types can the v13 HTTPRequest / RESTRequest nodes use directly, and what does that replace?
+## 11. `ace-dev-043`, Which authentication types can the v13 HTTPRequest / RESTRequest nodes use directly, and what does that replace?
 
 - **Product / Role / Topic:** ACE / Dev / Nodes
 - **Difficulty:** medium
@@ -730,7 +674,7 @@ modern APIs.
 
 ---
 
-## 13. `ace-dev-044`, What is the JSONata Mapping node in ACE v13, and how does it differ from Graphical Data Maps?
+## 12. `ace-dev-044`, What is the JSONata Mapping node in ACE v13, and how does it differ from Graphical Data Maps?
 
 - **Product / Role / Topic:** ACE / Dev / Mapping
 - **Difficulty:** easy
@@ -789,7 +733,7 @@ picked between them on real flows.
 
 ---
 
-## 14. `ace-adm-048`, What does `mqsirestart` do, and why is it better than `mqsistop` + `mqsistart`?
+## 13. `ace-adm-048`, What does `mqsirestart` do, and why is it better than `mqsistop` + `mqsistart`?
 
 - **Product / Role / Topic:** ACE / Admin / Operations
 - **Difficulty:** easy
@@ -847,7 +791,7 @@ syntax, and who compare it to the absence of a built-in
 
 ---
 
-## 15. `ace-adm-049`, How does `mqsistopmsgflow` differ from `ibmint stop server`?
+## 14. `ace-adm-049`, How does `mqsistopmsgflow` differ from `ibmint stop server`?
 
 - **Product / Role / Topic:** ACE / Admin / Operations
 - **Difficulty:** medium
@@ -910,7 +854,7 @@ production, not just labs.
 
 ---
 
-## 16. `ace-dev-045`, What is Project Bob, and where does it fit compared with a generic Copilot for modernising ACE code?
+## 15. `ace-dev-045`, What is Project Bob, and where does it fit compared with a generic Copilot for modernising ACE code?
 
 - **Product / Role / Topic:** ACE / Dev / Tooling
 - **Difficulty:** easy
@@ -973,7 +917,7 @@ the subscription shape.
 
 ---
 
-## 17. `ace-adm-050`, What is the ACE Agent Preview in the Dashboard, and what are its constraints?
+## 16. `ace-adm-050`, What is the ACE Agent Preview in the Dashboard, and what are its constraints?
 
 - **Product / Role / Topic:** ACE / Admin / AI
 - **Difficulty:** easy
@@ -1031,7 +975,7 @@ reading the preview label correctly.
 
 ---
 
-## 18. `ace-adm-051`, What is the MCP (Model Context Protocol) feature in ACE v13.0.7.0, and how does it expose REST APIs?
+## 17. `ace-adm-051`, What is the MCP (Model Context Protocol) feature in ACE v13.0.7.0, and how does it expose REST APIs?
 
 - **Product / Role / Topic:** ACE / Admin / AI
 - **Difficulty:** medium
@@ -1088,7 +1032,7 @@ reading the feature correctly.
 
 ---
 
-## 19. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
+## 18. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** medium
@@ -1139,7 +1083,7 @@ done the migration for real.
 
 ---
 
-## 20. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
+## 19. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy
@@ -1198,7 +1142,7 @@ not apply here.
 
 ---
 
-## 21. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
+## 20. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy
