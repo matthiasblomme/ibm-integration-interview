@@ -2460,6 +2460,30 @@
     ]
   },
   {
+    "id": "ace-adm-045",
+    "product": "ACE",
+    "role": "Admin",
+    "topic": "Monitoring",
+    "question": "What is Business Transaction Monitoring (BTM), and which databases does v13 support for the event store?",
+    "answerBullets": [
+      "BTM (Business Transaction Monitoring), re-introduced in ACE 12.0.2.0, correlates monitoring events emitted by message flows so you can track one business transaction (e.g. a single order) across multiple flows, applications, and integration servers",
+      "Four moving parts: **monitoring events** emitted from flow nodes, **an event store** (relational DB), a **transaction definition** that maps events to stages (start / progress / end / failure), and **traffic** to visualise",
+      "In v12, the only supported event-store backends were **IBM Db2** and **Oracle**. v13 adds **Microsoft SQL Server** and **PostgreSQL** via ODBC, broadening deployability in estates that do not run Db2 or Oracle. **Caveat:** PostgreSQL is supported on **Windows and xLinux only** per IBM docs; on other platforms you still pick from the other three",
+      "Events reach the store via a dedicated integration server. IBM's example data store is named **`BTMDataStore`** in the `Stores` section of the server's `server.conf.yaml` (teams often call the server itself `record` in practice). Set `dataSource`, `schema`, `storeMode`, `queue`, and `backoutQueue`; defaults are `SYSTEM.BROKER.DC.RECORD` and `SYSTEM.BROKER.DC.BACKOUT`",
+      "Schema creation scripts ship with ACE under `<install>/server/ddl/<db>/`, for example `DataCaptureSchema_v2.sql` for MonitoringEventV2, or `DataCaptureSchema.sql` for the older WMB format, plus `BusinessCaptureSchema.sql`. Pick the one that matches the `eventFormat` you configure on the integration server",
+      "**Server-level prereqs in `server.conf.yaml`** (this lives on the integration server, NOT `node.conf.yaml`): `Monitoring.MessageFlow.publicationOn: 'active'` and `eventFormat: 'MonitoringEventV2'` (the modern format); `Events.BusinessEvents.MQ.enabled: true` for BTM specifically; `RecordReplay.recordReplayEnabled: true` to enable the recorder",
+      "**MQ prereqs:** BTM is MQ-dependent. Set `defaultQueueManager` (local) or `remoteDefaultQueueManager` (with a policy reference) in `server.conf.yaml`, and ensure `SYSTEM.BROKER.DC.RECORD` / `SYSTEM.BROKER.DC.BACKOUT` exist on that queue manager (run `iib_createqueues` on the queue manager if they do not)"
+    ],
+    "answerExplanation": "BTM is 'distributed tracing for message flows' that predates OpenTelemetry in ACE: monitoring events with a shared correlator, an MQ-backed publication path, an ODBC-backed store, and a web dashboard. The v13 relevance is simple: the event-store backends doubled from two (Db2, Oracle) to four (adding SQL Server and PostgreSQL, with PostgreSQL on Windows / xLinux only), which matters for shops that do not run Db2. Candidates who list all four backends, know the `<install>/server/ddl` scripts, can describe the record / backout queue pair, and remember the MQ default-queue-manager dependency are showing real setup experience.",
+    "tags": ["btm", "monitoring", "db2", "oracle", "sqlserver", "postgresql", "odbc", "v13"],
+    "difficulty": "medium",
+    "references": [
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=management-monitoring-business-transactions",
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=monitoring-business-transaction-monitoring-overview",
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=monitoring-configuring-business-transaction-monitoring"
+    ]
+  },
+  {
     "id": "cloud-001",
     "product": "Cloud",
     "role": "Any",
