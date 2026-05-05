@@ -2,14 +2,14 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 135
+**Total questions:** 136
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (14)](#mq-dev)
 - [ACE, Admin (47)](#ace-admin)
-- [ACE, Dev (36)](#ace-dev)
+- [ACE, Dev (37)](#ace-dev)
 - [Cloud (5)](#cloud)
 
 ## General
@@ -1819,6 +1819,24 @@ _References:_
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=designer-app-connect-enterprise-overview>
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=designer-starting-app-connect-enterprise>
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=commands-designer-command>
+
+### Testing
+
+**Q: How do you run Toolkit unit tests against a custom integration server with policies and shared classes?**
+
+- By default, the Toolkit spins up a fresh default integration server for each test run. That works for flows with no external dependencies, and breaks the moment a flow needs a **policy**, a **user-defined node / plug-in**, or a **shared-classes JAR**. Typical symptom: test fails with a missing-policy or `ClassNotFoundException` before any assertion runs
+- The fix is to point the test at an **existing work directory** that already has what the flow needs. You prepare a custom integration server once (policies deployed, shared-classes directory populated, UDNs available, credentials loaded), then reuse its work directory for tests
+- In the Toolkit: Run Configurations, open your test configuration, go to the **Integration Server Settings** tab, select **Use an existing work directory**, and browse to the custom server's work directory (e.g. `C:\Users\<you>\IBM\ACET13\workspace\UnitTest\TEST_SERVER`). Apply and run
+- Prerequisite: the target integration server must be **stopped** when the test starts; the test process takes ownership of the work directory, and a running server holding the same directory gives a lock / in-use error
+- For shared-classes JARs: create a `shared-classes/` directory directly under the server's work directory and drop the JARs there (same pattern as standalone integration servers and containers). Policies live under the standard policy-project structure in the same work directory
+- Per-test-config setup: each new test configuration starts from defaults, so you will reset the 'Use an existing work directory' choice for every new test. Factor this into your test-config template if you maintain many tests
+- **Fake MQ for unit tests:** the same Integration Server Settings tab has an **Integration Server Override Options** section with a **Real/Fake MQ Manager Name for unit testing** field (default value `FakeQueueManagerName`). Setting it lets the launch config substitute a fake queue manager name into the flow at test time, so flows that touch MQ can be exercised without a live qmgr. The MQ nodes still need to validate configuration, but the runtime does not bind to a real broker
+
+This is the setup that turns 'my flow works when I deploy it, why does my test fail' into a useful test run. The key insight is that the Toolkit's default test runner ignores the custom server you built and uses a fresh one, so you have to redirect each test config to your work directory. Candidates who know this pattern have shipped testable flows with policies or shared classes; candidates who do not will typically claim ACE tests are unreliable.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=dit-developing-integration-tests-by-using-app-connect-enterprise-toolkit>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=tests-configuring-integration-server-run-test-case>
 
 ### Troubleshooting
 

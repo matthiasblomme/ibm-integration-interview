@@ -15,68 +15,8 @@ Fields are the same as in `questions.json`, rendered for readability.
 
 
 
-## 1. `ace-dev-036`, How do you run Toolkit unit tests against a custom integration server with policies and shared classes?
 
-- **Product / Role / Topic:** ACE / Dev / Testing
-- **Difficulty:** medium
-- **Tags:** unit-test, toolkit, policies, shared-classes, run-configurations
-
-### Question
-Toolkit unit tests fail when the flow needs a policy, a
-user-defined node, or a shared-classes JAR. How do you point the
-test at a custom integration server that has those things set
-up, and what are the prerequisites?
-
-### Answer, bullets
-- By default, the Toolkit spins up a fresh default integration
-  server for each test run. That works for flows with no
-  external dependencies, and breaks the moment a flow needs a
-  **policy**, a **user-defined node / plug-in**, or a
-  **shared-classes JAR**. Typical symptom: test fails with a
-  missing-policy or `ClassNotFoundException` before any
-  assertion runs
-- The fix is to point the test at an **existing work
-  directory** that already has what the flow needs. You prepare
-  a custom integration server once (policies deployed,
-  shared-classes directory populated, UDNs available,
-  credentials loaded), then reuse its work directory for tests
-- In the Toolkit: Run Configurations, open your test
-  configuration, go to the **Integration Server Settings** tab,
-  select **Use an existing work directory**, and browse to the
-  custom server's work directory (e.g.
-  `C:\Users\<you>\IBM\ACET13\workspace\UnitTest\TEST_SERVER`).
-  Apply and run
-- Prerequisite: the target integration server must be
-  **stopped** when the test starts; the test process takes
-  ownership of the work directory, and a running server holding
-  the same directory gives a lock / in-use error
-- For shared-classes JARs: create a `shared-classes/` directory
-  directly under the server's work directory and drop the JARs
-  there (same pattern as standalone integration servers and
-  containers). Policies live under the standard policy-project
-  structure in the same work directory
-- Per-test-config setup: each new test configuration starts
-  from defaults, so you will reset the "Use an existing work
-  directory" choice for every new test. Factor this into your
-  test-config template if you maintain many tests
-
-### Explanation
-This is the setup that turns "my flow works when I deploy it,
-why does my test fail" into a useful test run. The key insight
-is that the Toolkit's default test runner ignores the custom
-server you built and uses a fresh one, so you have to redirect
-each test config to your work directory. Candidates who know
-this pattern have shipped testable flows with policies or
-shared classes; candidates who do not will typically claim ACE
-tests are unreliable.
-
-### References
-- Blog: Toolkit unit testing with a custom runtime (matthiasblomme)
-- https://www.ibm.com/docs/en/app-connect/13.0.x?topic=dit-developing-integration-tests-by-using-app-connect-enterprise-toolkit
-
----
-
-## 2. `ace-dev-037`, What does `ignorePath()` do in ACE unit tests, and why is it essential?
+## 1. `ace-dev-037`, What does `ignorePath()` do in ACE unit tests, and why is it essential?
 
 - **Product / Role / Topic:** ACE / Dev / Testing
 - **Difficulty:** easy
@@ -134,7 +74,7 @@ passing tests for real flows.
 
 ---
 
-## 3. `ace-dev-038`, Compare `mqsicreatebar`, `mqsipackagebar`, and `ibmint package`. When do you pick each?
+## 2. `ace-dev-038`, Compare `mqsicreatebar`, `mqsipackagebar`, and `ibmint package`. When do you pick each?
 
 - **Product / Role / Topic:** ACE / Dev / Build
 - **Difficulty:** medium
@@ -202,7 +142,7 @@ comfortable with real build pipelines.
 
 ---
 
-## 4. `ace-dev-039`, What is the `Item` element in ACE's JSON-array representation, and why is it needed?
+## 3. `ace-dev-039`, What is the `Item` element in ACE's JSON-array representation, and why is it needed?
 
 - **Product / Role / Topic:** ACE / Dev / ESQL
 - **Difficulty:** easy
@@ -258,7 +198,7 @@ this with `IDENTITY(JSON.Array)` and either `CREATE LASTCHILD`
 
 ---
 
-## 5. `ace-dev-040`, Why is `CREATE FIELD ... IDENTITY(JSON.Array)` necessary when preparing JSON array output in ESQL?
+## 4. `ace-dev-040`, Why is `CREATE FIELD ... IDENTITY(JSON.Array)` necessary when preparing JSON array output in ESQL?
 
 - **Product / Role / Topic:** ACE / Dev / ESQL
 - **Difficulty:** easy
@@ -319,7 +259,7 @@ comfortable with ESQL-to-JSON serialisation.
 
 ---
 
-## 6. `ace-dev-041`, What are Discovery Request and Discovery Input nodes in ACE v13, and how do they differ from traditional transport nodes?
+## 5. `ace-dev-041`, What are Discovery Request and Discovery Input nodes in ACE v13, and how do they differ from traditional transport nodes?
 
 - **Product / Role / Topic:** ACE / Dev / Connectors
 - **Difficulty:** easy
@@ -385,7 +325,7 @@ hatch" show they understand the complementary positioning.
 
 ---
 
-## 7. `ace-dev-042`, What does the Kafka Schema Registry policy add in ACE v13, and what serialisation format does it unlock?
+## 6. `ace-dev-042`, What does the Kafka Schema Registry policy add in ACE v13, and what serialisation format does it unlock?
 
 - **Product / Role / Topic:** ACE / Dev / Kafka
 - **Difficulty:** medium
@@ -443,7 +383,7 @@ configuration" show they have been tracking the Kafka roadmap.
 
 ---
 
-## 8. `ace-dev-043`, Which authentication types can the v13 HTTPRequest / RESTRequest nodes use directly, and what does that replace?
+## 7. `ace-dev-043`, Which authentication types can the v13 HTTPRequest / RESTRequest nodes use directly, and what does that replace?
 
 - **Product / Role / Topic:** ACE / Dev / Nodes
 - **Difficulty:** medium
@@ -504,7 +444,7 @@ modern APIs.
 
 ---
 
-## 9. `ace-dev-044`, What is the JSONata Mapping node in ACE v13, and how does it differ from Graphical Data Maps?
+## 8. `ace-dev-044`, What is the JSONata Mapping node in ACE v13, and how does it differ from Graphical Data Maps?
 
 - **Product / Role / Topic:** ACE / Dev / Mapping
 - **Difficulty:** easy
@@ -563,7 +503,7 @@ picked between them on real flows.
 
 ---
 
-## 10. `ace-adm-048`, What does `mqsirestart` do, and why is it better than `mqsistop` + `mqsistart`?
+## 9. `ace-adm-048`, What does `mqsirestart` do, and why is it better than `mqsistop` + `mqsistart`?
 
 - **Product / Role / Topic:** ACE / Admin / Operations
 - **Difficulty:** easy
@@ -621,7 +561,7 @@ syntax, and who compare it to the absence of a built-in
 
 ---
 
-## 11. `ace-adm-049`, How does `mqsistopmsgflow` differ from `ibmint stop server`?
+## 10. `ace-adm-049`, How does `mqsistopmsgflow` differ from `ibmint stop server`?
 
 - **Product / Role / Topic:** ACE / Admin / Operations
 - **Difficulty:** medium
@@ -684,7 +624,7 @@ production, not just labs.
 
 ---
 
-## 12. `ace-dev-045`, What is Project Bob, and where does it fit compared with a generic Copilot for modernising ACE code?
+## 11. `ace-dev-045`, What is Project Bob, and where does it fit compared with a generic Copilot for modernising ACE code?
 
 - **Product / Role / Topic:** ACE / Dev / Tooling
 - **Difficulty:** easy
@@ -747,7 +687,7 @@ the subscription shape.
 
 ---
 
-## 13. `ace-adm-050`, What is the ACE Agent Preview in the Dashboard, and what are its constraints?
+## 12. `ace-adm-050`, What is the ACE Agent Preview in the Dashboard, and what are its constraints?
 
 - **Product / Role / Topic:** ACE / Admin / AI
 - **Difficulty:** easy
@@ -805,7 +745,7 @@ reading the preview label correctly.
 
 ---
 
-## 14. `ace-adm-051`, What is the MCP (Model Context Protocol) feature in ACE v13.0.7.0, and how does it expose REST APIs?
+## 13. `ace-adm-051`, What is the MCP (Model Context Protocol) feature in ACE v13.0.7.0, and how does it expose REST APIs?
 
 - **Product / Role / Topic:** ACE / Admin / AI
 - **Difficulty:** medium
@@ -862,7 +802,7 @@ reading the feature correctly.
 
 ---
 
-## 15. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
+## 14. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** medium
@@ -913,7 +853,7 @@ done the migration for real.
 
 ---
 
-## 16. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
+## 15. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy
@@ -972,7 +912,7 @@ not apply here.
 
 ---
 
-## 17. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
+## 16. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy
