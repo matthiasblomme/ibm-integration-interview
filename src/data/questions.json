@@ -2484,6 +2484,31 @@
     ]
   },
   {
+    "id": "ace-adm-046",
+    "product": "ACE",
+    "role": "Admin",
+    "topic": "Monitoring",
+    "level": "senior",
+    "question": "What is the global transaction correlator in BTM, and why must the first event set it explicitly?",
+    "answerBullets": [
+      "ACE monitoring events carry **three correlation attributes**: **local** (within one flow), **parent** (between flows in ACE), and **global** (across flows + external systems). BTM is built specifically on the **global** correlator: IBM's doc is explicit that 'a global correlator must be present if the event is to be used by the built-in business transaction monitoring capability'",
+      "The **global transaction correlator** is the field BTM uses to tie individual monitoring events together into a single business transaction. Every event in a transaction carries the same correlator value; without it, you have unrelated events, not a tracked flow",
+      "Configure it on each monitoring event under **Global transaction correlator**. Point it at a stable value from the message (business identifier like order number, customer ref, request id), never a random runtime field. Common pickup locations IBM lists as canonical: `$Root/MQMD/MsgId`, `$Root/MQMD/CorrelId`, JMS `Transport_Folders` headers, `$LocalEnvironment/Destination/HTTP/RequestIdentifier`",
+      "The **first event** of a flow has to set the global correlator **explicitly** (XPath into the message tree), because there is no prior event to inherit from. Later events in the same flow can be set to **Automatic**, which means 'reuse the value already saved in the Environment tree'. For the **global** correlator specifically, if `Automatic` runs with nothing upstream having set a value, no correlator is used at all (no fallback generation, unlike the local correlator which would auto-generate)",
+      "**Aggregation gotcha:** the **Collector** and **AggregateControl** nodes do **not** preserve the Environment tree for later nodes. If a flow crosses one of those, the first event source after the aggregator has to re-extract the correlator from the message tree (XPath again), or the Automatic chain breaks silently",
+      "Uniqueness matters: within a transaction definition the correlator must be unique per business-transaction instance, because BTM uses it both to group events and to deduplicate. A correlator that is not unique will split one transaction into several, or merge unrelated ones",
+      "In the BTM Dashboard, the correlator is the **only value you can search on** to find a transaction's events, so make it something a human can type and recognise. No UUIDs if you can help it",
+      "Practical pattern: pick a business-meaningful identifier (payment ref, order id), validate it exists on the first event, configure later events in the same flow to auto-pick. If flows are chained, propagate the identifier in the message or headers so the next flow's first event can set it from real message data"
+    ],
+    "answerExplanation": "BTM is driven entirely off one field, the global transaction correlator (one of three correlators an event can carry, the others being local and parent). It is also the only thing you can search on in the dashboard. The subtle rule is that the very first event in a flow has no predecessor, so 'reuse-the-saved-correlator' does not work for it; you must pick the source field explicitly with an XPath. The same is true after a Collector or AggregateControl node, because those drop the Environment tree. Candidates who pick the correlator from the message payload (business id) rather than a generated UUID or random runtime field, who explain why the first event is special, and who flag the aggregation reset, have actually used the product.",
+    "tags": ["btm", "correlator", "monitoring-event", "transaction-definition"],
+    "difficulty": "medium",
+    "references": [
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=management-monitoring-business-transactions",
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=events-correlation-monitoring"
+    ]
+  },
+  {
     "id": "cloud-001",
     "product": "Cloud",
     "role": "Any",

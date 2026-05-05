@@ -13,68 +13,8 @@ Fields are the same as in `questions.json`, rendered for readability.
 
 
 
-## 1. `ace-adm-046`, What is the global transaction correlator in BTM, and why must the first event set it explicitly?
 
-- **Product / Role / Topic:** ACE / Admin / Monitoring
-- **Difficulty:** medium
-- **Level:** senior
-- **Tags:** btm, correlator, monitoring-event, transaction-definition
-
-### Question
-In BTM, what is the role of the global transaction correlator,
-and why does the first event in a flow have to set it
-explicitly?
-
-### Answer, bullets
-- The **global transaction correlator** is the field BTM uses
-  to tie individual monitoring events together into a single
-  business transaction. Every event in a transaction carries
-  the same correlator value; without it, you have unrelated
-  events, not a tracked flow
-- Configure it on each monitoring event under **Global
-  transaction correlator**. Point it at a stable value from the
-  message (business identifier like order number, customer ref,
-  request id), never a random runtime field
-- The **first event** of a flow has to set the correlator
-  **explicitly**, because there is no prior event to inherit
-  from. Later events in the same flow can be set to
-  automatically select the correlator, which means "use the one
-  from the most recent event", that works only if something
-  upstream has already set it
-- Uniqueness matters: within a transaction definition the
-  correlator must be unique, because BTM uses it both to group
-  events and to deduplicate. A correlator that is not unique
-  will split one transaction into several, or merge unrelated
-  ones
-- In the BTM Dashboard, the correlator is the **only value you
-  can search on** to find a transaction's events, so make it
-  something a human can type and recognise. No UUIDs if you can
-  help it
-- Practical pattern: pick a business-meaningful identifier
-  (payment ref, order id), validate it exists on the first
-  event, configure later events in the same flow to auto-pick.
-  If flows are chained, propagate the identifier in the message
-  or headers so the next flow's first event can set it from
-  real message data
-
-### Explanation
-BTM is driven entirely off one field, the global transaction
-correlator, and it is also the only thing you can search on in
-the dashboard. The subtle rule is that the very first event in
-a flow has no predecessor, so "auto-pick the most recent
-correlator" does not work for it; you must pick the source
-field explicitly. Candidates who pick the correlator from the
-message payload (business id) rather than a generated UUID or
-random runtime field, and who explain why the first event is
-special, have actually used the product.
-
-### References
-- Blog: Business Transaction Monitoring (matthiasblomme)
-- https://www.ibm.com/docs/en/app-connect/13.0.x?topic=management-monitoring-business-transactions
-
----
-
-## 2. `ace-adm-047`, What is the ACE Log Analyzer, and what file types does it process?
+## 1. `ace-adm-047`, What is the ACE Log Analyzer, and what file types does it process?
 
 - **Product / Role / Topic:** ACE / Admin / Troubleshooting
 - **Difficulty:** easy
@@ -128,7 +68,7 @@ monitoring dashboard.
 
 ---
 
-## 3. `ace-dev-036`, How do you run Toolkit unit tests against a custom integration server with policies and shared classes?
+## 2. `ace-dev-036`, How do you run Toolkit unit tests against a custom integration server with policies and shared classes?
 
 - **Product / Role / Topic:** ACE / Dev / Testing
 - **Difficulty:** medium
@@ -189,7 +129,7 @@ tests are unreliable.
 
 ---
 
-## 4. `ace-dev-037`, What does `ignorePath()` do in ACE unit tests, and why is it essential?
+## 3. `ace-dev-037`, What does `ignorePath()` do in ACE unit tests, and why is it essential?
 
 - **Product / Role / Topic:** ACE / Dev / Testing
 - **Difficulty:** easy
@@ -247,7 +187,7 @@ passing tests for real flows.
 
 ---
 
-## 5. `ace-dev-038`, Compare `mqsicreatebar`, `mqsipackagebar`, and `ibmint package`. When do you pick each?
+## 4. `ace-dev-038`, Compare `mqsicreatebar`, `mqsipackagebar`, and `ibmint package`. When do you pick each?
 
 - **Product / Role / Topic:** ACE / Dev / Build
 - **Difficulty:** medium
@@ -315,7 +255,7 @@ comfortable with real build pipelines.
 
 ---
 
-## 6. `ace-dev-039`, What is the `Item` element in ACE's JSON-array representation, and why is it needed?
+## 5. `ace-dev-039`, What is the `Item` element in ACE's JSON-array representation, and why is it needed?
 
 - **Product / Role / Topic:** ACE / Dev / ESQL
 - **Difficulty:** easy
@@ -371,7 +311,7 @@ this with `IDENTITY(JSON.Array)` and either `CREATE LASTCHILD`
 
 ---
 
-## 7. `ace-dev-040`, Why is `CREATE FIELD ... IDENTITY(JSON.Array)` necessary when preparing JSON array output in ESQL?
+## 6. `ace-dev-040`, Why is `CREATE FIELD ... IDENTITY(JSON.Array)` necessary when preparing JSON array output in ESQL?
 
 - **Product / Role / Topic:** ACE / Dev / ESQL
 - **Difficulty:** easy
@@ -432,7 +372,7 @@ comfortable with ESQL-to-JSON serialisation.
 
 ---
 
-## 8. `ace-dev-041`, What are Discovery Request and Discovery Input nodes in ACE v13, and how do they differ from traditional transport nodes?
+## 7. `ace-dev-041`, What are Discovery Request and Discovery Input nodes in ACE v13, and how do they differ from traditional transport nodes?
 
 - **Product / Role / Topic:** ACE / Dev / Connectors
 - **Difficulty:** easy
@@ -498,7 +438,7 @@ hatch" show they understand the complementary positioning.
 
 ---
 
-## 9. `ace-dev-042`, What does the Kafka Schema Registry policy add in ACE v13, and what serialisation format does it unlock?
+## 8. `ace-dev-042`, What does the Kafka Schema Registry policy add in ACE v13, and what serialisation format does it unlock?
 
 - **Product / Role / Topic:** ACE / Dev / Kafka
 - **Difficulty:** medium
@@ -556,7 +496,7 @@ configuration" show they have been tracking the Kafka roadmap.
 
 ---
 
-## 10. `ace-dev-043`, Which authentication types can the v13 HTTPRequest / RESTRequest nodes use directly, and what does that replace?
+## 9. `ace-dev-043`, Which authentication types can the v13 HTTPRequest / RESTRequest nodes use directly, and what does that replace?
 
 - **Product / Role / Topic:** ACE / Dev / Nodes
 - **Difficulty:** medium
@@ -617,7 +557,7 @@ modern APIs.
 
 ---
 
-## 11. `ace-dev-044`, What is the JSONata Mapping node in ACE v13, and how does it differ from Graphical Data Maps?
+## 10. `ace-dev-044`, What is the JSONata Mapping node in ACE v13, and how does it differ from Graphical Data Maps?
 
 - **Product / Role / Topic:** ACE / Dev / Mapping
 - **Difficulty:** easy
@@ -676,7 +616,7 @@ picked between them on real flows.
 
 ---
 
-## 12. `ace-adm-048`, What does `mqsirestart` do, and why is it better than `mqsistop` + `mqsistart`?
+## 11. `ace-adm-048`, What does `mqsirestart` do, and why is it better than `mqsistop` + `mqsistart`?
 
 - **Product / Role / Topic:** ACE / Admin / Operations
 - **Difficulty:** easy
@@ -734,7 +674,7 @@ syntax, and who compare it to the absence of a built-in
 
 ---
 
-## 13. `ace-adm-049`, How does `mqsistopmsgflow` differ from `ibmint stop server`?
+## 12. `ace-adm-049`, How does `mqsistopmsgflow` differ from `ibmint stop server`?
 
 - **Product / Role / Topic:** ACE / Admin / Operations
 - **Difficulty:** medium
@@ -797,7 +737,7 @@ production, not just labs.
 
 ---
 
-## 14. `ace-dev-045`, What is Project Bob, and where does it fit compared with a generic Copilot for modernising ACE code?
+## 13. `ace-dev-045`, What is Project Bob, and where does it fit compared with a generic Copilot for modernising ACE code?
 
 - **Product / Role / Topic:** ACE / Dev / Tooling
 - **Difficulty:** easy
@@ -860,7 +800,7 @@ the subscription shape.
 
 ---
 
-## 15. `ace-adm-050`, What is the ACE Agent Preview in the Dashboard, and what are its constraints?
+## 14. `ace-adm-050`, What is the ACE Agent Preview in the Dashboard, and what are its constraints?
 
 - **Product / Role / Topic:** ACE / Admin / AI
 - **Difficulty:** easy
@@ -918,7 +858,7 @@ reading the preview label correctly.
 
 ---
 
-## 16. `ace-adm-051`, What is the MCP (Model Context Protocol) feature in ACE v13.0.7.0, and how does it expose REST APIs?
+## 15. `ace-adm-051`, What is the MCP (Model Context Protocol) feature in ACE v13.0.7.0, and how does it expose REST APIs?
 
 - **Product / Role / Topic:** ACE / Admin / AI
 - **Difficulty:** medium
@@ -975,7 +915,7 @@ reading the feature correctly.
 
 ---
 
-## 17. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
+## 16. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** medium
@@ -1026,7 +966,7 @@ done the migration for real.
 
 ---
 
-## 18. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
+## 17. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy
@@ -1085,7 +1025,7 @@ not apply here.
 
 ---
 
-## 19. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
+## 18. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy
