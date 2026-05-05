@@ -10,67 +10,8 @@ Fields are the same as in `questions.json`, rendered for readability.
 
 
 
-## 1. `ace-adm-043`, What are the three migration styles for moving to ACE v13, and which one preserves parallel testing?
 
-- **Product / Role / Topic:** ACE / Admin / Migration
-- **Difficulty:** medium
-- **Tags:** migration, v13, in-place, parallel, extract, ibmint
-
-### Question
-IBM documents three migration styles for moving an existing
-estate to ACE v13. What are they, how do they differ, and which
-one lets you test old and new side by side?
-
-### Answer, bullets
-- **In-place migration:** migrate the integration node on the
-  same machine, keeping the same name. Run `ibmint extract node
-  --overwrite-existing` and the old node is replaced by a v13
-  node in the same spot. Clients do not need reconfiguring.
-  Downside: the node is down during the switch and your rollback
-  story is "restore from backup"
-- **Parallel migration:** stand up a new v13 integration node
-  beside the old one and move application logic across at your
-  own pace. Both run side by side until you are happy to cut
-  over. This is the style that **preserves parallel testing** of
-  old and new. Costs: extra hardware / VM, and two nodes to
-  manage during the transition
-- **Extract migration:** use `ibmint extract node` or
-  `ibmint extract server` to pull configuration and resources
-  out as files, then redeploy them into a fresh v13 environment,
-  usually as independent integration servers. The flexible
-  option, the same command works for in-place swap, parallel, or
-  splitting a node-owned setup into independent servers
-- Framing: in-place and parallel answer "where does the new one
-  live", extract answers "how do I get the config out in a form
-  I can work with". Extract is the path of choice when you want
-  to version or review configuration before it lands in v13
-- Pick by source version too: ACE 12 to 13 is the easy one
-  (same artefact model, `ibmint extract` works directly). IIB 10
-  adds the configurable-services-to-policies delta. IIB 8 or 9
-  to 13 is not really a migration, it is a rebuild (v8 direct
-  migration is unsupported; v9 is painful enough that standing
-  up fresh v13 and moving services across one by one is usually
-  faster)
-
-### Explanation
-The three official styles all land on v13, but they differ in
-where the target lives, how long old and new coexist, and how
-much flexibility you have to review and version configuration
-on the way in. Parallel is the one that lets you test old-and-
-new side by side. Extract is the one that gives you
-config-as-files. In-place is the fastest and most brittle.
-Candidates who talk about parallel testing should mention the
-parallel style explicitly; candidates who frame the decision
-around source version (v12 easy, IIB v8 / v9 basically a
-rebuild) are showing real experience.
-
-### References
-- Blog: Migrating ACE to v13 (matthiasblomme)
-- https://www.ibm.com/docs/en/app-connect/13.0.x?topic=migrating-app-connect-enterprise-130
-
----
-
-## 2. `ace-adm-044`, Why is cert-manager required when installing the ACE Operator on plain Kubernetes, and what fails without it?
+## 1. `ace-adm-044`, Why is cert-manager required when installing the ACE Operator on plain Kubernetes, and what fails without it?
 
 - **Product / Role / Topic:** ACE / Admin / Operator
 - **Difficulty:** medium
@@ -127,7 +68,7 @@ tell-tale.
 
 ---
 
-## 3. `ace-adm-045`, What is Business Transaction Monitoring (BTM), and which databases does v13 support for the event store?
+## 2. `ace-adm-045`, What is Business Transaction Monitoring (BTM), and which databases does v13 support for the event store?
 
 - **Product / Role / Topic:** ACE / Admin / Monitoring
 - **Difficulty:** medium
@@ -185,7 +126,7 @@ experience.
 
 ---
 
-## 4. `ace-adm-046`, What is the global transaction correlator in BTM, and why must the first event set it explicitly?
+## 3. `ace-adm-046`, What is the global transaction correlator in BTM, and why must the first event set it explicitly?
 
 - **Product / Role / Topic:** ACE / Admin / Monitoring
 - **Difficulty:** medium
@@ -246,7 +187,7 @@ special, have actually used the product.
 
 ---
 
-## 5. `ace-adm-047`, What is the ACE Log Analyzer, and what file types does it process?
+## 4. `ace-adm-047`, What is the ACE Log Analyzer, and what file types does it process?
 
 - **Product / Role / Topic:** ACE / Admin / Troubleshooting
 - **Difficulty:** easy
@@ -300,7 +241,7 @@ monitoring dashboard.
 
 ---
 
-## 6. `ace-dev-036`, How do you run Toolkit unit tests against a custom integration server with policies and shared classes?
+## 5. `ace-dev-036`, How do you run Toolkit unit tests against a custom integration server with policies and shared classes?
 
 - **Product / Role / Topic:** ACE / Dev / Testing
 - **Difficulty:** medium
@@ -361,7 +302,7 @@ tests are unreliable.
 
 ---
 
-## 7. `ace-dev-037`, What does `ignorePath()` do in ACE unit tests, and why is it essential?
+## 6. `ace-dev-037`, What does `ignorePath()` do in ACE unit tests, and why is it essential?
 
 - **Product / Role / Topic:** ACE / Dev / Testing
 - **Difficulty:** easy
@@ -419,7 +360,7 @@ passing tests for real flows.
 
 ---
 
-## 8. `ace-dev-038`, Compare `mqsicreatebar`, `mqsipackagebar`, and `ibmint package`. When do you pick each?
+## 7. `ace-dev-038`, Compare `mqsicreatebar`, `mqsipackagebar`, and `ibmint package`. When do you pick each?
 
 - **Product / Role / Topic:** ACE / Dev / Build
 - **Difficulty:** medium
@@ -487,7 +428,7 @@ comfortable with real build pipelines.
 
 ---
 
-## 9. `ace-dev-039`, What is the `Item` element in ACE's JSON-array representation, and why is it needed?
+## 8. `ace-dev-039`, What is the `Item` element in ACE's JSON-array representation, and why is it needed?
 
 - **Product / Role / Topic:** ACE / Dev / ESQL
 - **Difficulty:** easy
@@ -543,7 +484,7 @@ this with `IDENTITY(JSON.Array)` and either `CREATE LASTCHILD`
 
 ---
 
-## 10. `ace-dev-040`, Why is `CREATE FIELD ... IDENTITY(JSON.Array)` necessary when preparing JSON array output in ESQL?
+## 9. `ace-dev-040`, Why is `CREATE FIELD ... IDENTITY(JSON.Array)` necessary when preparing JSON array output in ESQL?
 
 - **Product / Role / Topic:** ACE / Dev / ESQL
 - **Difficulty:** easy
@@ -604,7 +545,7 @@ comfortable with ESQL-to-JSON serialisation.
 
 ---
 
-## 11. `ace-dev-041`, What are Discovery Request and Discovery Input nodes in ACE v13, and how do they differ from traditional transport nodes?
+## 10. `ace-dev-041`, What are Discovery Request and Discovery Input nodes in ACE v13, and how do they differ from traditional transport nodes?
 
 - **Product / Role / Topic:** ACE / Dev / Connectors
 - **Difficulty:** easy
@@ -670,7 +611,7 @@ hatch" show they understand the complementary positioning.
 
 ---
 
-## 12. `ace-dev-042`, What does the Kafka Schema Registry policy add in ACE v13, and what serialisation format does it unlock?
+## 11. `ace-dev-042`, What does the Kafka Schema Registry policy add in ACE v13, and what serialisation format does it unlock?
 
 - **Product / Role / Topic:** ACE / Dev / Kafka
 - **Difficulty:** medium
@@ -728,7 +669,7 @@ configuration" show they have been tracking the Kafka roadmap.
 
 ---
 
-## 13. `ace-dev-043`, Which authentication types can the v13 HTTPRequest / RESTRequest nodes use directly, and what does that replace?
+## 12. `ace-dev-043`, Which authentication types can the v13 HTTPRequest / RESTRequest nodes use directly, and what does that replace?
 
 - **Product / Role / Topic:** ACE / Dev / Nodes
 - **Difficulty:** medium
@@ -789,7 +730,7 @@ modern APIs.
 
 ---
 
-## 14. `ace-dev-044`, What is the JSONata Mapping node in ACE v13, and how does it differ from Graphical Data Maps?
+## 13. `ace-dev-044`, What is the JSONata Mapping node in ACE v13, and how does it differ from Graphical Data Maps?
 
 - **Product / Role / Topic:** ACE / Dev / Mapping
 - **Difficulty:** easy
@@ -848,7 +789,7 @@ picked between them on real flows.
 
 ---
 
-## 15. `ace-adm-048`, What does `mqsirestart` do, and why is it better than `mqsistop` + `mqsistart`?
+## 14. `ace-adm-048`, What does `mqsirestart` do, and why is it better than `mqsistop` + `mqsistart`?
 
 - **Product / Role / Topic:** ACE / Admin / Operations
 - **Difficulty:** easy
@@ -906,7 +847,7 @@ syntax, and who compare it to the absence of a built-in
 
 ---
 
-## 16. `ace-adm-049`, How does `mqsistopmsgflow` differ from `ibmint stop server`?
+## 15. `ace-adm-049`, How does `mqsistopmsgflow` differ from `ibmint stop server`?
 
 - **Product / Role / Topic:** ACE / Admin / Operations
 - **Difficulty:** medium
@@ -969,7 +910,7 @@ production, not just labs.
 
 ---
 
-## 17. `ace-dev-045`, What is Project Bob, and where does it fit compared with a generic Copilot for modernising ACE code?
+## 16. `ace-dev-045`, What is Project Bob, and where does it fit compared with a generic Copilot for modernising ACE code?
 
 - **Product / Role / Topic:** ACE / Dev / Tooling
 - **Difficulty:** easy
@@ -1032,7 +973,7 @@ the subscription shape.
 
 ---
 
-## 18. `ace-adm-050`, What is the ACE Agent Preview in the Dashboard, and what are its constraints?
+## 17. `ace-adm-050`, What is the ACE Agent Preview in the Dashboard, and what are its constraints?
 
 - **Product / Role / Topic:** ACE / Admin / AI
 - **Difficulty:** easy
@@ -1090,7 +1031,7 @@ reading the preview label correctly.
 
 ---
 
-## 19. `ace-adm-051`, What is the MCP (Model Context Protocol) feature in ACE v13.0.7.0, and how does it expose REST APIs?
+## 18. `ace-adm-051`, What is the MCP (Model Context Protocol) feature in ACE v13.0.7.0, and how does it expose REST APIs?
 
 - **Product / Role / Topic:** ACE / Admin / AI
 - **Difficulty:** medium
@@ -1147,7 +1088,7 @@ reading the feature correctly.
 
 ---
 
-## 20. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
+## 19. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** medium
@@ -1198,7 +1139,7 @@ done the migration for real.
 
 ---
 
-## 21. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
+## 20. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy
@@ -1257,7 +1198,7 @@ not apply here.
 
 ---
 
-## 22. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
+## 21. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy

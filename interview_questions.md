@@ -2,13 +2,13 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 130
+**Total questions:** 131
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (14)](#mq-dev)
-- [ACE, Admin (42)](#ace-admin)
+- [ACE, Admin (43)](#ace-admin)
 - [ACE, Dev (36)](#ace-dev)
 - [Cloud (5)](#cloud)
 
@@ -1246,6 +1246,21 @@ An estate rarely moves to v13 at 100% Java 17 on day one. `ibmint specify jre` l
 _References:_
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=commands-ibmint-specify-jre-command>
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=java-limitations-jre-versions-app-connect-enterprise>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=migrating-app-connect-enterprise-130>
+
+**Q: What are the three migration styles for moving to ACE v13, and which one preserves parallel testing?**
+
+- **In-place migration:** migrate the integration node on the same machine, keeping the same name. Run `ibmint extract node --overwrite-existing` and the old node is replaced by a v13 node in the same spot. Clients do not need reconfiguring. Downside: the node is down during the switch and your rollback story is 'restore from backup'
+- **Parallel migration:** stand up a new v13 integration node beside the old one and move application logic across at your own pace. Both run side by side until you are happy to cut over. This is the style that **preserves parallel testing** of old and new. Costs: extra hardware / VM, and two nodes to manage during the transition
+- **Extract migration:** use `ibmint extract node` or `ibmint extract server` to pull configuration and resources out as files, then redeploy them into a fresh v13 environment, usually as independent integration servers. The flexible option, the same command works for in-place swap, parallel, or splitting a node-owned setup into independent servers
+- **Phased per-server migration (a sub-mode of extract):** the `ibmint extract server` half of the extract style enables a real phased rollout: stand up a clean v13 environment, then migrate servers across one at a time. You control the cadence, you can pause and resume between servers, and rollback per server is just 'do not cut traffic over yet'. The most controlled option for risk-averse cutovers
+- Framing: in-place and parallel answer 'where does the new one live', extract answers 'how do I get the config out in a form I can work with'. Extract is the path of choice when you want to version or review configuration before it lands in v13
+- **Source-version reality:** the supported path is **IIB 10 / ACE 11 / ACE 12 -> v13** (and target must be Production-Advanced or Production-Standard, not Evaluation). IIB 8 and IIB 9 are NOT in the supported migration path, but unsupported does not mean infeasible: realistic options are (a) migrate v8 / v9 to IIB 10 first (which IS supported as a path to v13), then v10 -> v13, or (b) if you have the sources, rebuild and redeploy applications / libraries / services on a fresh v13 install one at a time. v9 was a transitional release between v8 and v10 and gets the same treatment in this story
+
+The three official styles all land on v13, but they differ in where the target lives, how long old and new coexist, and how much flexibility you have to review and version configuration on the way in. Parallel is the one that lets you test old-and-new side by side. Extract is the one that gives you config-as-files, and its `ibmint extract server` form unlocks a phased per-server rollout that is the most controlled option for risk-averse cutovers. In-place is the fastest and most brittle. Candidates who talk about parallel testing should mention the parallel style explicitly; candidates who frame the decision around source version (v12 -> v13 easy and direct; IIB 8 / 9 not officially supported, so via v10 or app-by-app rebuild) and who mention the per-server phased option within extract migration are showing real experience.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=migration-supported-migration-paths>
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=migrating-app-connect-enterprise-130>
 
 ### Flow lifecycle
