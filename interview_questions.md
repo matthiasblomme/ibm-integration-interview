@@ -2,14 +2,14 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 139
+**Total questions:** 140
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (14)](#mq-dev)
 - [ACE, Admin (47)](#ace-admin)
-- [ACE, Dev (40)](#ace-dev)
+- [ACE, Dev (41)](#ace-dev)
 - [Cloud (5)](#cloud)
 
 ## General
@@ -1890,6 +1890,24 @@ _References:_
 - <https://github.com/trevor-dolby-at-ibm-com/ace-user-variable-examples>
 - <https://github.com/trevor-dolby-at-ibm-com/ace-esql-read-env-var>
 - <https://community.ibm.com/community/user/discussion/environmentvariables-in-serverconfyaml-file>
+
+### Build
+
+**Q: Compare `mqsicreatebar`, `mqsipackagebar`, and `ibmint package`. When do you pick each?**
+
+- **`mqsipackagebar`**: lightweight, ships with the runtime (no Toolkit install needed). Packages **already-compiled** deployable objects; does **not** compile Java or message sets. Good when something upstream (Toolkit 'Build for mqsipackagebar', or a CI compile step) has already produced the binaries. Flags `-c` (precompile XMLNSC / DFDL schema and graphical data maps to binaries) and `-i` (include both deployable and non-deployable resources, i.e. files outside the default extension allowlist) partially bridge the gap
+- **`mqsicreatebar`**: ships with the Toolkit install. Starts a headless Eclipse and a runtime, validates, compiles Java and message sets, writes the BAR. Single command, fully self-contained, but you need a Toolkit on the build machine and it is the slowest / most resource-hungry option. On Linux CI you need a display: `xvfb-run mqsicreatebar -data ...` is the standard wrapper. Useful escape valve: `-skipWSErrorCheck` forces the build to run even when unrelated workspace errors exist
+- **`ibmint package`** (and its cousin `ibmint deploy`): the modern, recommended option from ACE 12.0.1.0 onwards. Ships with the runtime, no Toolkit needed, much faster than `mqsicreatebar` because there is no headless Eclipse to start. Compiles Java automatically **for self-contained Java projects**; cross-project Java references are NOT compiled by `ibmint package` and need to be built separately, then passed with `--do-not-compile-java`. For MRM message sets you have to run `ibmint compile msgset` first (or use `ibmint deploy` which chains compile + package). Maps and schemas are not compiled by default either; opt in with `--compile-maps-and-schemas`. Cross-version JVM target via `--java-version 17|8` (default 17)
+- Decision tree: greenfield CI / CD -> **`ibmint`** (fast, toolkit-free, modern). Need a BAR from pre-built binaries -> **`mqsipackagebar`**. Stuck with a Toolkit-based build box and want one-shot build -> **`mqsicreatebar`**
+- 'Build for mqsipackagebar' as a developer step is an anti-pattern: you either end up committing generated binaries, or the binaries drift when the developer forgets to re-run it after changing Java / msgset. Shift that compile step to `mqsicreatebar` with `-compileOnly`, or to `ibmint`, both avoid the problem
+- Workspace hygiene applies to `mqsicreatebar` and `ibmint` alike: a clean, small workspace with only the projects you are packaging. Unrelated errors elsewhere in the workspace can block an otherwise fine build
+
+The three commands solve the same problem (produce a BAR) with very different trade-offs on speed, compile capability, and dependencies. `mqsipackagebar` is the oldest and most limited, `mqsicreatebar` is the 'big hammer' that also needs a Toolkit, `ibmint` is the modern toolkit-free pipeline-friendly choice. Candidates who recommend `ibmint` by default, know `mqsipackagebar`'s 'no compile' limitation, can explain why the headless Eclipse of `mqsicreatebar` hurts CI throughput, and remember that `ibmint package` does not compile cross-project Java refs or maps / schemas without explicit opt-in flags are comfortable with real build pipelines.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=commands-ibmint-package-command>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=commands-mqsipackagebar-command>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=commands-mqsicreatebar-command>
 
 ### Troubleshooting
 

@@ -17,75 +17,8 @@ Fields are the same as in `questions.json`, rendered for readability.
 
 
 
-## 1. `ace-dev-040`, Compare `mqsicreatebar`, `mqsipackagebar`, and `ibmint package`. When do you pick each?
 
-- **Product / Role / Topic:** ACE / Dev / Build
-- **Difficulty:** medium
-- **Tags:** bar, mqsipackagebar, mqsicreatebar, ibmint, cicd, compile
-
-### Question
-ACE ships three ways to produce a BAR: `mqsicreatebar`,
-`mqsipackagebar`, and `ibmint package`. What are the strengths,
-weaknesses, and the right pick for CI / CD?
-
-### Answer, bullets
-- **`mqsipackagebar`**: lightweight, ships with the runtime (no
-  Toolkit install needed). Packages **already-compiled**
-  deployable objects; does **not** compile Java or message sets.
-  Good when something upstream (Toolkit "Build for
-  mqsipackagebar", or a CI compile step) has already produced
-  the binaries. Flags `-c` (compile XMLNSC / DFDL / data maps to
-  binaries) and `-i` (include unsupported element types)
-  partially bridge the gap
-- **`mqsicreatebar`**: ships with the Toolkit install. Starts a
-  headless Eclipse and a runtime, validates, compiles Java and
-  message sets, writes the BAR. Single command, fully
-  self-contained, but you need a Toolkit on the build machine
-  and it is the slowest / most resource-hungry option. On Linux
-  CI you need a display: `xvfb-run mqsicreatebar -data ...` is
-  the standard wrapper
-- **`ibmint package`** (and its cousin `ibmint deploy`): the
-  modern, recommended option from ACE 12.0.1.0 onwards. Ships
-  with the runtime, no Toolkit needed, much faster than
-  `mqsicreatebar` because there is no headless Eclipse to
-  start. Compiles Java automatically; for MRM message sets you
-  have to run `ibmint compile msgset` first (or use
-  `ibmint deploy` which chains compile + package)
-- Decision tree: greenfield CI / CD -> **`ibmint`** (fast,
-  toolkit-free, modern). Need a BAR from pre-built binaries ->
-  **`mqsipackagebar`**. Stuck with a Toolkit-based build box
-  and want one-shot build -> **`mqsicreatebar`**
-- "Build for mqsipackagebar" as a developer step is an
-  anti-pattern: you either end up committing generated binaries,
-  or the binaries drift when the developer forgets to re-run it
-  after changing Java / msgset. Shift that compile step to
-  `mqsicreatebar` with `CompileOnly`, or to `ibmint`, both
-  avoid the problem
-- Workspace hygiene applies to `mqsicreatebar` and `ibmint`
-  alike: a clean, small workspace with only the projects you
-  are packaging. Unrelated errors elsewhere in the workspace
-  can block an otherwise fine build
-
-### Explanation
-The three commands solve the same problem (produce a BAR) with
-very different trade-offs on speed, compile capability, and
-dependencies. `mqsipackagebar` is the oldest and most limited,
-`mqsicreatebar` is the "big hammer" that also needs a Toolkit,
-`ibmint` is the modern toolkit-free pipeline-friendly choice.
-Candidates who recommend `ibmint` by default, know
-`mqsipackagebar`'s "no compile" limitation, and can explain why
-the headless Eclipse of `mqsicreatebar` hurts CI throughput are
-comfortable with real build pipelines.
-
-### References
-- Blog: Bar Build Commands, Unraveling the Differences (matthiasblomme)
-- https://www.ibm.com/docs/en/app-connect/13.0.x?topic=commands-ibmint-command
-- https://www.ibm.com/docs/en/app-connect/11.0.0?topic=commands-mqsipackagebar-command
-- https://www.ibm.com/docs/en/app-connect/11.0.0?topic=commands-mqsicreatebar-command
-
----
-
-## 2. `ace-dev-041`, What is the `Item` element in ACE's JSON-array representation, and why is it needed?
+## 1. `ace-dev-041`, What is the `Item` element in ACE's JSON-array representation, and why is it needed?
 
 - **Product / Role / Topic:** ACE / Dev / ESQL
 - **Difficulty:** easy
@@ -141,7 +74,7 @@ this with `IDENTITY(JSON.Array)` and either `CREATE LASTCHILD`
 
 ---
 
-## 3. `ace-dev-042`, Why is `CREATE FIELD ... IDENTITY(JSON.Array)` necessary when preparing JSON array output in ESQL?
+## 2. `ace-dev-042`, Why is `CREATE FIELD ... IDENTITY(JSON.Array)` necessary when preparing JSON array output in ESQL?
 
 - **Product / Role / Topic:** ACE / Dev / ESQL
 - **Difficulty:** easy
@@ -202,7 +135,7 @@ comfortable with ESQL-to-JSON serialisation.
 
 ---
 
-## 4. `ace-dev-043`, What are Discovery Request and Discovery Input nodes in ACE v13, and how do they differ from traditional transport nodes?
+## 3. `ace-dev-043`, What are Discovery Request and Discovery Input nodes in ACE v13, and how do they differ from traditional transport nodes?
 
 - **Product / Role / Topic:** ACE / Dev / Connectors
 - **Difficulty:** easy
@@ -268,7 +201,7 @@ hatch" show they understand the complementary positioning.
 
 ---
 
-## 5. `ace-dev-044`, What does the Kafka Schema Registry policy add in ACE v13, and what serialisation format does it unlock?
+## 4. `ace-dev-044`, What does the Kafka Schema Registry policy add in ACE v13, and what serialisation format does it unlock?
 
 - **Product / Role / Topic:** ACE / Dev / Kafka
 - **Difficulty:** medium
@@ -326,7 +259,7 @@ configuration" show they have been tracking the Kafka roadmap.
 
 ---
 
-## 6. `ace-dev-045`, Which authentication types can the v13 HTTPRequest / RESTRequest nodes use directly, and what does that replace?
+## 5. `ace-dev-045`, Which authentication types can the v13 HTTPRequest / RESTRequest nodes use directly, and what does that replace?
 
 - **Product / Role / Topic:** ACE / Dev / Nodes
 - **Difficulty:** medium
@@ -387,7 +320,7 @@ modern APIs.
 
 ---
 
-## 7. `ace-dev-046`, What is the JSONata Mapping node in ACE v13, and how does it differ from Graphical Data Maps?
+## 6. `ace-dev-046`, What is the JSONata Mapping node in ACE v13, and how does it differ from Graphical Data Maps?
 
 - **Product / Role / Topic:** ACE / Dev / Mapping
 - **Difficulty:** easy
@@ -446,7 +379,7 @@ picked between them on real flows.
 
 ---
 
-## 8. `ace-adm-048`, What does `mqsirestart` do, and why is it better than `mqsistop` + `mqsistart`?
+## 7. `ace-adm-048`, What does `mqsirestart` do, and why is it better than `mqsistop` + `mqsistart`?
 
 - **Product / Role / Topic:** ACE / Admin / Operations
 - **Difficulty:** easy
@@ -504,7 +437,7 @@ syntax, and who compare it to the absence of a built-in
 
 ---
 
-## 9. `ace-adm-049`, How does `mqsistopmsgflow` differ from `ibmint stop server`?
+## 8. `ace-adm-049`, How does `mqsistopmsgflow` differ from `ibmint stop server`?
 
 - **Product / Role / Topic:** ACE / Admin / Operations
 - **Difficulty:** medium
@@ -567,7 +500,7 @@ production, not just labs.
 
 ---
 
-## 10. `ace-dev-047`, What is Project Bob, and where does it fit compared with a generic Copilot for modernising ACE code?
+## 9. `ace-dev-047`, What is Project Bob, and where does it fit compared with a generic Copilot for modernising ACE code?
 
 - **Product / Role / Topic:** ACE / Dev / Tooling
 - **Difficulty:** easy
@@ -630,7 +563,7 @@ the subscription shape.
 
 ---
 
-## 11. `ace-adm-050`, What is the ACE Agent Preview in the Dashboard, and what are its constraints?
+## 10. `ace-adm-050`, What is the ACE Agent Preview in the Dashboard, and what are its constraints?
 
 - **Product / Role / Topic:** ACE / Admin / AI
 - **Difficulty:** easy
@@ -688,7 +621,7 @@ reading the preview label correctly.
 
 ---
 
-## 12. `ace-adm-051`, What is the MCP (Model Context Protocol) feature in ACE v13.0.7.0, and how does it expose REST APIs?
+## 11. `ace-adm-051`, What is the MCP (Model Context Protocol) feature in ACE v13.0.7.0, and how does it expose REST APIs?
 
 - **Product / Role / Topic:** ACE / Admin / AI
 - **Difficulty:** medium
@@ -745,7 +678,7 @@ reading the feature correctly.
 
 ---
 
-## 13. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
+## 12. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** medium
@@ -796,7 +729,7 @@ done the migration for real.
 
 ---
 
-## 14. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
+## 13. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy
@@ -855,7 +788,7 @@ not apply here.
 
 ---
 
-## 15. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
+## 14. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy
