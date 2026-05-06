@@ -16,65 +16,8 @@ Fields are the same as in `questions.json`, rendered for readability.
 
 
 
-## 1. `ace-dev-037`, What does `ignorePath()` do in ACE unit tests, and why is it essential?
 
-- **Product / Role / Topic:** ACE / Dev / Testing
-- **Difficulty:** easy
-- **Tags:** unit-test, ignorepath, ignoretimestamps, ignoredatetime, assertion, toolkit
-
-### Question
-In ACE unit tests, what does `ignorePath()` do, which
-companions does it have for common cases, and why is it
-essential?
-
-### Answer, bullets
-- `ignorePath()` is a method on the Integration Test framework's
-  `equalsMessage(...)` assertion that excludes a specific tree
-  path from the expected-vs-actual comparison. Signature:
-  `.ignorePath(String path, boolean ignoreSubpaths)`
-- Used as a chain:
-  `assertThat(actualMessageAssembly.equalsMessage(expectedMessageAssembly)
-  .ignorePath("/Message/JSON/Data/requestSession", false));`.
-  The boolean controls whether descendants of the path are
-  ignored too
-- Essential for fields whose value changes on every run:
-  **UUIDs**, generated IDs, **timestamps**, session tokens,
-  signatures, anything keyed off `CURRENT_TIMESTAMP` or a random
-  source. Without it, a passing test becomes a failing test the
-  moment it runs again with a fresh runtime-generated value
-- Two convenience methods for the common cases:
-  **`.ignoreTimeStamps()`** covers all TIMESTAMP-typed fields in
-  one call, **`.ignoreDateTime()`** covers DATE and TIME fields.
-  Chain them with `ignorePath` for targeted exclusions
-- Apply selectively: `ignorePath("/Message", true)` makes every
-  assertion pass, which defeats the purpose. Pick the tightest
-  path that covers the volatile field, and set
-  `ignoreSubpaths: false` unless the whole subtree is
-  legitimately volatile
-- PGP, encrypted payloads, and signed bodies are another
-  classic case: the encrypted / signed bytes change every run
-  even for identical input. Ignore the encrypted subtree, assert
-  on the plaintext surround, or test the round-trip (encrypt
-  then decrypt) rather than the encrypted wire value
-
-### Explanation
-The test framework compares the actual message tree against a
-recorded expected tree, field by field. Any field with a
-non-deterministic value makes every run a failure even when the
-flow is correct. `ignorePath` (plus the two convenience methods
-for timestamp and datetime) is the surgical tool for excluding
-those fields. Candidates who name the three methods, describe
-when to use which, or mention testing the encrypt-decrypt
-round-trip instead of ignoring ciphertext, have actually written
-passing tests for real flows.
-
-### References
-- Blog: Ignoring fields in ACE integration testing (matthiasblomme)
-- https://www.ibm.com/docs/en/app-connect/13.0.x?topic=dit-developing-integration-tests-by-using-app-connect-enterprise-toolkit
-
----
-
-## 2. `ace-dev-038`, Compare `mqsicreatebar`, `mqsipackagebar`, and `ibmint package`. When do you pick each?
+## 1. `ace-dev-040`, Compare `mqsicreatebar`, `mqsipackagebar`, and `ibmint package`. When do you pick each?
 
 - **Product / Role / Topic:** ACE / Dev / Build
 - **Difficulty:** medium
@@ -142,7 +85,7 @@ comfortable with real build pipelines.
 
 ---
 
-## 3. `ace-dev-039`, What is the `Item` element in ACE's JSON-array representation, and why is it needed?
+## 2. `ace-dev-041`, What is the `Item` element in ACE's JSON-array representation, and why is it needed?
 
 - **Product / Role / Topic:** ACE / Dev / ESQL
 - **Difficulty:** easy
@@ -198,7 +141,7 @@ this with `IDENTITY(JSON.Array)` and either `CREATE LASTCHILD`
 
 ---
 
-## 4. `ace-dev-040`, Why is `CREATE FIELD ... IDENTITY(JSON.Array)` necessary when preparing JSON array output in ESQL?
+## 3. `ace-dev-042`, Why is `CREATE FIELD ... IDENTITY(JSON.Array)` necessary when preparing JSON array output in ESQL?
 
 - **Product / Role / Topic:** ACE / Dev / ESQL
 - **Difficulty:** easy
@@ -259,7 +202,7 @@ comfortable with ESQL-to-JSON serialisation.
 
 ---
 
-## 5. `ace-dev-041`, What are Discovery Request and Discovery Input nodes in ACE v13, and how do they differ from traditional transport nodes?
+## 4. `ace-dev-043`, What are Discovery Request and Discovery Input nodes in ACE v13, and how do they differ from traditional transport nodes?
 
 - **Product / Role / Topic:** ACE / Dev / Connectors
 - **Difficulty:** easy
@@ -325,7 +268,7 @@ hatch" show they understand the complementary positioning.
 
 ---
 
-## 6. `ace-dev-042`, What does the Kafka Schema Registry policy add in ACE v13, and what serialisation format does it unlock?
+## 5. `ace-dev-044`, What does the Kafka Schema Registry policy add in ACE v13, and what serialisation format does it unlock?
 
 - **Product / Role / Topic:** ACE / Dev / Kafka
 - **Difficulty:** medium
@@ -383,7 +326,7 @@ configuration" show they have been tracking the Kafka roadmap.
 
 ---
 
-## 7. `ace-dev-043`, Which authentication types can the v13 HTTPRequest / RESTRequest nodes use directly, and what does that replace?
+## 6. `ace-dev-045`, Which authentication types can the v13 HTTPRequest / RESTRequest nodes use directly, and what does that replace?
 
 - **Product / Role / Topic:** ACE / Dev / Nodes
 - **Difficulty:** medium
@@ -444,7 +387,7 @@ modern APIs.
 
 ---
 
-## 8. `ace-dev-044`, What is the JSONata Mapping node in ACE v13, and how does it differ from Graphical Data Maps?
+## 7. `ace-dev-046`, What is the JSONata Mapping node in ACE v13, and how does it differ from Graphical Data Maps?
 
 - **Product / Role / Topic:** ACE / Dev / Mapping
 - **Difficulty:** easy
@@ -503,7 +446,7 @@ picked between them on real flows.
 
 ---
 
-## 9. `ace-adm-048`, What does `mqsirestart` do, and why is it better than `mqsistop` + `mqsistart`?
+## 8. `ace-adm-048`, What does `mqsirestart` do, and why is it better than `mqsistop` + `mqsistart`?
 
 - **Product / Role / Topic:** ACE / Admin / Operations
 - **Difficulty:** easy
@@ -561,7 +504,7 @@ syntax, and who compare it to the absence of a built-in
 
 ---
 
-## 10. `ace-adm-049`, How does `mqsistopmsgflow` differ from `ibmint stop server`?
+## 9. `ace-adm-049`, How does `mqsistopmsgflow` differ from `ibmint stop server`?
 
 - **Product / Role / Topic:** ACE / Admin / Operations
 - **Difficulty:** medium
@@ -624,7 +567,7 @@ production, not just labs.
 
 ---
 
-## 11. `ace-dev-045`, What is Project Bob, and where does it fit compared with a generic Copilot for modernising ACE code?
+## 10. `ace-dev-047`, What is Project Bob, and where does it fit compared with a generic Copilot for modernising ACE code?
 
 - **Product / Role / Topic:** ACE / Dev / Tooling
 - **Difficulty:** easy
@@ -687,7 +630,7 @@ the subscription shape.
 
 ---
 
-## 12. `ace-adm-050`, What is the ACE Agent Preview in the Dashboard, and what are its constraints?
+## 11. `ace-adm-050`, What is the ACE Agent Preview in the Dashboard, and what are its constraints?
 
 - **Product / Role / Topic:** ACE / Admin / AI
 - **Difficulty:** easy
@@ -745,7 +688,7 @@ reading the preview label correctly.
 
 ---
 
-## 13. `ace-adm-051`, What is the MCP (Model Context Protocol) feature in ACE v13.0.7.0, and how does it expose REST APIs?
+## 12. `ace-adm-051`, What is the MCP (Model Context Protocol) feature in ACE v13.0.7.0, and how does it expose REST APIs?
 
 - **Product / Role / Topic:** ACE / Admin / AI
 - **Difficulty:** medium
@@ -802,7 +745,7 @@ reading the feature correctly.
 
 ---
 
-## 14. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
+## 13. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** medium
@@ -853,7 +796,7 @@ done the migration for real.
 
 ---
 
-## 15. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
+## 14. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy
@@ -912,7 +855,7 @@ not apply here.
 
 ---
 
-## 16. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
+## 15. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy

@@ -2,14 +2,14 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 136
+**Total questions:** 139
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (14)](#mq-dev)
 - [ACE, Admin (47)](#ace-admin)
-- [ACE, Dev (37)](#ace-dev)
+- [ACE, Dev (40)](#ace-dev)
 - [Cloud (5)](#cloud)
 
 ## General
@@ -1837,6 +1837,59 @@ This is the setup that turns 'my flow works when I deploy it, why does my test f
 _References:_
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=dit-developing-integration-tests-by-using-app-connect-enterprise-toolkit>
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=tests-configuring-integration-server-run-test-case>
+
+**Q: What does `ignorePath()` do in ACE unit tests, and why is it essential?**
+
+- `ignorePath()` is a method on the **ACE message-assembly matcher** (which sits alongside JUnit, Hamcrest, JSONAssert, and XMLUnit support in the test framework). It chains off `equalsMessage(...)` and excludes a specific tree path from the expected-vs-actual comparison. Signature: `.ignorePath(String path, boolean ignoreSubpaths)`
+- Used as a chain: `assertThat(actualMessageAssembly.equalsMessage(expectedMessageAssembly).ignorePath("/Message/JSON/Data/requestSession", false));`. The boolean controls whether descendants of the path are ignored too
+- Essential for fields whose value changes on every run: **UUIDs**, generated IDs, **timestamps**, session tokens, signatures, anything keyed off `CURRENT_TIMESTAMP` or a random source. Without it, a passing test becomes a failing test the moment it runs again with a fresh runtime-generated value
+- Two convenience methods for the common cases: **`.ignoreTimeStamps()`** covers all TIMESTAMP-typed fields in one call, **`.ignoreDateTime()`** covers DATE and TIME fields. Chain them with `ignorePath` for targeted exclusions
+- Apply selectively: `ignorePath("/Message", true)` makes every assertion pass, which defeats the purpose. Pick the tightest path that covers the volatile field, and set `ignoreSubpaths: false` unless the whole subtree is legitimately volatile
+- PGP, encrypted payloads, and signed bodies are another classic case: the encrypted / signed bytes change every run even for identical input. Ignore the encrypted subtree, assert on the plaintext surround, or test the round-trip (encrypt then decrypt) rather than the encrypted wire value
+
+The test framework compares the actual message tree against a recorded expected tree, field by field. Any field with a non-deterministic value makes every run a failure even when the flow is correct. `ignorePath` (plus the two convenience methods for timestamp and datetime) is the surgical tool for excluding those fields. Candidates who name the three methods, describe when to use which, or mention testing the encrypt-decrypt round-trip instead of ignoring ciphertext, have actually written passing tests for real flows.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=dit-developing-integration-tests-by-using-app-connect-enterprise-toolkit>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=tests-integration-testing-overview>
+
+### Monitoring
+
+**Q: Can you include custom data from a message in an ACE monitoring event, and how is it added?**
+
+- Yes. Configure one or more **Data Location** XPath expressions in the **Event Payload** of the monitoring event, either in the Flow Editor (Monitoring tab on a node terminal) or in a Monitoring profile
+- XPath that resolves to a simple element produces an `applicationData.simpleContent` entry (`elementName`, `elementValue`, `elementDataType`); XPath to a subtree produces `applicationData.complexContent` with the subtree under `elementValue`
+- Repeating elements emit one entry per instance; a wildcard XPath emits one entry per matched element/attribute, each in its own folder
+- Data Location can target anything reachable from the message assembly, not just `$Body` / `$Root`: `$LocalEnvironment`, `$Environment`, `$ExceptionList`, MQMD headers, etc. Set values on `LocalEnvironment` upstream when you need flow-computed data (correlation keys, lookup results) without polluting the message body
+- The bitstream is a separate option, the **Include bitstream data in payload** checkbox, and is emitted as hex / CDATA alongside the application data
+- Cross-domain payloads are allowed (e.g. XPath into `$Root/XML/...` with a JSON event format), but watch the rules: element names must be valid in the target format, an element cannot have an attribute and child with the same name, and repeating children can produce JSON `duplicate key` errors
+- Gotcha: if constructing the event payload triggers a parser exception (forced parse of a malformed body, or bitstream inclusion when parsing fails), the event is **not** emitted, the parser exception is rethrown, and the message rolls back. Treat expensive or forced parses inside an event payload as a real cost
+
+The interviewer wants to hear that monitoring events are not fixed-shape; the payload is XPath-driven and can carry arbitrary message or environment data into `applicationData`. A strong answer mentions both `simpleContent` and `complexContent`, knows the bitstream is a separate option, and flags the practical traps around cross-domain naming and the fact that a failing payload XPath can roll the message back. Bonus points for reaching for `$LocalEnvironment` as the place to surface flow-computed values into the event without changing the business message.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=event-including-complex-content-in-payload-monitoring>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=basics-monitoring-events>
+
+### Configuration
+
+**Q: How do you use an environment variable in a node property inside a flow?**
+
+- Define the value in `server.conf.yaml` under `UserVariables:`, e.g. `UserVariables:` then `encodedvar: 'someValue'`. UserVariables are the canonical injection point for deploy-time values that flows can pick up without a Compute node
+- To pull the value from an OS environment variable, write the UserVariable as `'${ENV_VAR_ONE}'` and set `resolveUserVariableEnvVars: true` at the top level of `server.conf.yaml`. Use `${VAR}` syntax even on Windows, `%VAR%` does not work. Available from ACE 12.0.4+
+- **Reference it from a node property as `[iib.user-<varname>]`** (square brackets, `iib.user-` prefix, name matches the YAML key). Example: a UserVariable `encodedvar` is referenced in an MQInput **Match correlation ID** field as `[iib.user-encodedvar]`. Available from ACE 12.0.5.0+, and support is per-field per-version, verify per node
+- **Toolkit gotcha:** the design-time editor validates the literal placeholder against the field's expected type, so type-strict fields (e.g. correlation ID expects hex) will show a red 'Invalid hexadecimal number' error on `[iib.user-...]`. The runtime resolves the placeholder before the value is used, so the warning is cosmetic, do not let it block deployment
+- From ESQL: declare the UserVariable as a UDP, `DECLARE encodedvar EXTERNAL CHARACTER 'default';` then read the variable directly. Same UDP API in JavaCompute (`getUserDefinedAttribute`), .NETCompute (`GetUserDefinedProperty`), Mapping (`iib:getUserDefinedProperty(...)`)
+- For raw OS env vars without going through UserVariables, use `System.getenv(...)` from JavaCompute, or wrap it in ESQL once: `CREATE FUNCTION javaLangSystemGetenv(IN name CHARACTER) RETURNS CHARACTER LANGUAGE JAVA EXTERNAL NAME "java.lang.System.getenv";`
+- For container deploys, use `StartupScripts:` in `server.conf.yaml` to run a script at boot whose stdout returns YAML (`UserVariables:` / `EnvironmentVariables:` / Kubernetes-style `env:` stanzas). The server reads the script output back when `readVariablesFromOutput` is `auto` (default) or `true`, useful for pulling secrets from a vault or k8s mounted file at start
+
+Two questions in one: where does the value live, and how does the flow read it. The cleanest answer uses `UserVariables` in `server.conf.yaml` (optionally hydrated from OS env via `${VAR}` + `resolveUserVariableEnvVars: true`) and reads it either as `[iib.user-<name>]` directly in the node property, or as a UDP from ESQL/Java/Mapping. A weak answer stops at `System.getenv` in JavaCompute and misses that ACE has a first-class substitution path on the property fields themselves. A strong answer also flags the toolkit's cosmetic validation error on type-strict fields and the version gates (12.0.4 for `${VAR}` substitution, 12.0.5 for `[iib.user-...]` placeholders) because both are easy traps for someone debugging 'why does my placeholder not work in this property'.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=resources-integration-server-reference>
+- <https://github.com/trevor-dolby-at-ibm-com/ace-user-variable-examples>
+- <https://github.com/trevor-dolby-at-ibm-com/ace-esql-read-env-var>
+- <https://community.ibm.com/community/user/discussion/environmentvariables-in-serverconfyaml-file>
 
 ### Troubleshooting
 
