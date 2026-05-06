@@ -2,14 +2,14 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 140
+**Total questions:** 141
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (14)](#mq-dev)
 - [ACE, Admin (47)](#ace-admin)
-- [ACE, Dev (41)](#ace-dev)
+- [ACE, Dev (42)](#ace-dev)
 - [Cloud (5)](#cloud)
 
 ## General
@@ -1688,6 +1688,20 @@ Second-to-last = `[<2]`. Mnemonic: `>` counts forward from the start, `<` counts
 - See also the MCQ sibling (`ace-dev-026`) that tests second-to-last specifically with `Array.Item[<2]`
 
 The mnemonic to keep them straight: `>` points forward from the start, `<` points back from the end. `Field[>]` = first, `Field[<]` = last, and you can extend either with a number (`[>2]` second from start, `[<2]` second from end / penultimate). Together with `CREATE LASTCHILD` they're the idiomatic way to build up an output array without hand-rolling an index counter. Candidates who use `[<]` and `[<2]` fluently have written non-trivial ESQL transforms; beginners tend to increment their own counters or end up with malformed arrays.
+
+**Q: What is the `Item` element in ACE's JSON-array representation, and why is it needed?**
+
+- JSON array entries are **anonymous** in the wire format (no name, only an ordinal position), but ACE's message tree is a **named-element** model. The trigger that makes a parent serialise as a JSON array is **`IDENTITY(JSON.Array)`** on that parent (the parser sets the element type to `JSON.Array`); the children sit under it as `NameValue` elements
+- IBM's strong convention is to name those children **`Item`**, matching the name the JSON parser uses on input. The JSON serializer ignores the names on output (array items are anonymous), but the convention is what every IBM example uses, every Toolkit-generated tree shows, and every downstream tool expects when inspecting the message
+- Canonical append pattern: `CREATE FIELD OutputRoot.JSON.Data.myArray IDENTITY(JSON.Array)myArray;` then `CREATE LASTCHILD OF OutputRoot.JSON.Data.myArray NAME 'Item' VALUE 'v1';` (or `TYPE NameValue NAME 'Item' VALUE 42`). Repeat per element, order is preserved
+- Direct-index pattern works too: `SET OutputRoot.JSON.Data.myArray.Item[1] = 'v1';` etc. Gaps in the indices cause an array-subscript error; use `CREATE LASTCHILD` to avoid worrying about numbering
+- For an array of **objects** (not scalars), create the `Item` first, then its children: `CREATE LASTCHILD OF ... NAME 'Item';` then `CREATE LASTCHILD OF ....Item[<] NAME 'key' VALUE 'v'`. The `[<]` refers to the just-created last item
+- Common slip: forgetting the `IDENTITY(JSON.Array)` on the parent. The names of the children do not flip the shape; the parent's element type does. Without `IDENTITY(JSON.Array)`, even children named `Item` will serialise as an object with repeated keys rather than as a JSON array
+
+The `Item` element is the tell-tale that someone has actually built JSON arrays in ESQL the way IBM models them: an `IDENTITY(JSON.Array)` parent with `Item`-named children. The parent type triggers array serialization; the `Item` name is the convention everyone follows for consistency with the parser, even though the serializer ignores names on output. Pair this with `IDENTITY(JSON.Array)` and either `CREATE LASTCHILD` (clean) or `Item[N]` with contiguous indices (error-prone).
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=domain-creating-json-message>
 
 ### Hybrid connectivity
 

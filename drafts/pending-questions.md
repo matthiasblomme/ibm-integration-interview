@@ -18,63 +18,8 @@ Fields are the same as in `questions.json`, rendered for readability.
 
 
 
-## 1. `ace-dev-041`, What is the `Item` element in ACE's JSON-array representation, and why is it needed?
 
-- **Product / Role / Topic:** ACE / Dev / ESQL
-- **Difficulty:** easy
-- **Tags:** esql, json, array, item, identity, message-tree
-
-### Question
-Why does ACE use a special `Item` element when representing
-JSON arrays in the message tree, and what happens on the wire?
-
-### Answer, bullets
-- JSON array entries are **anonymous** in the wire format (no
-  name, only an ordinal position), but ACE's message tree is a
-  **named-element** model. To bridge that, ACE requires each
-  array entry to have the special name **`Item`** under an
-  `IDENTITY(JSON.Array)` parent
-- The JSON serializer **ignores** the `Item` names on output:
-  the wire format comes out as a normal JSON array. It is
-  purely an internal convention for the tree, not something
-  that leaks into the payload
-- Canonical append pattern:
-  `CREATE FIELD OutputRoot.JSON.Data.myArray IDENTITY(JSON.Array)myArray;`
-  then
-  `CREATE LASTCHILD OF OutputRoot.JSON.Data.myArray NAME 'Item' VALUE 'v1';`
-  (or `TYPE NameValue NAME 'Item' VALUE 42`). Repeat per
-  element, order is preserved
-- Direct-index pattern works too:
-  `SET OutputRoot.JSON.Data.myArray.Item[1] = 'v1';` etc. Gaps
-  in the indices cause an array-subscript error; use
-  `CREATE LASTCHILD` to avoid worrying about numbering
-- For an array of **objects** (not scalars), create the `Item`
-  first, then its children:
-  `CREATE LASTCHILD OF ... NAME 'Item';` then
-  `CREATE LASTCHILD OF ....Item[<] NAME 'key' VALUE 'v'`. The
-  `[<]` refers to the just-created last item
-- Common mistake: naming the array entries after the data
-  (e.g. `order`, `row`) instead of `Item`. The tree accepts
-  it, but the JSON serializer emits an object (not an array)
-  because the `IDENTITY(JSON.Array)` + `Item` pair is what
-  triggers array formatting
-
-### Explanation
-The `Item` element is the tell-tale that someone has actually
-built JSON arrays in ESQL: the message tree is named so array
-entries need a name, but wire JSON arrays are anonymous so ACE
-strips the name on output. Once you know the convention,
-building arrays is routine; miss it and your output looks like
-an object of one key or fails to serialise as an array. Pair
-this with `IDENTITY(JSON.Array)` and either `CREATE LASTCHILD`
-(clean) or `Item[N]` with contiguous indices (error-prone).
-
-### References
-- Blog: Create JSON Arrays in ESQL and Java (matthiasblomme)
-
----
-
-## 2. `ace-dev-042`, Why is `CREATE FIELD ... IDENTITY(JSON.Array)` necessary when preparing JSON array output in ESQL?
+## 1. `ace-dev-042`, Why is `CREATE FIELD ... IDENTITY(JSON.Array)` necessary when preparing JSON array output in ESQL?
 
 - **Product / Role / Topic:** ACE / Dev / ESQL
 - **Difficulty:** easy
@@ -135,7 +80,7 @@ comfortable with ESQL-to-JSON serialisation.
 
 ---
 
-## 3. `ace-dev-043`, What are Discovery Request and Discovery Input nodes in ACE v13, and how do they differ from traditional transport nodes?
+## 2. `ace-dev-043`, What are Discovery Request and Discovery Input nodes in ACE v13, and how do they differ from traditional transport nodes?
 
 - **Product / Role / Topic:** ACE / Dev / Connectors
 - **Difficulty:** easy
@@ -201,7 +146,7 @@ hatch" show they understand the complementary positioning.
 
 ---
 
-## 4. `ace-dev-044`, What does the Kafka Schema Registry policy add in ACE v13, and what serialisation format does it unlock?
+## 3. `ace-dev-044`, What does the Kafka Schema Registry policy add in ACE v13, and what serialisation format does it unlock?
 
 - **Product / Role / Topic:** ACE / Dev / Kafka
 - **Difficulty:** medium
@@ -259,7 +204,7 @@ configuration" show they have been tracking the Kafka roadmap.
 
 ---
 
-## 5. `ace-dev-045`, Which authentication types can the v13 HTTPRequest / RESTRequest nodes use directly, and what does that replace?
+## 4. `ace-dev-045`, Which authentication types can the v13 HTTPRequest / RESTRequest nodes use directly, and what does that replace?
 
 - **Product / Role / Topic:** ACE / Dev / Nodes
 - **Difficulty:** medium
@@ -320,7 +265,7 @@ modern APIs.
 
 ---
 
-## 6. `ace-dev-046`, What is the JSONata Mapping node in ACE v13, and how does it differ from Graphical Data Maps?
+## 5. `ace-dev-046`, What is the JSONata Mapping node in ACE v13, and how does it differ from Graphical Data Maps?
 
 - **Product / Role / Topic:** ACE / Dev / Mapping
 - **Difficulty:** easy
@@ -379,7 +324,7 @@ picked between them on real flows.
 
 ---
 
-## 7. `ace-adm-048`, What does `mqsirestart` do, and why is it better than `mqsistop` + `mqsistart`?
+## 6. `ace-adm-048`, What does `mqsirestart` do, and why is it better than `mqsistop` + `mqsistart`?
 
 - **Product / Role / Topic:** ACE / Admin / Operations
 - **Difficulty:** easy
@@ -437,7 +382,7 @@ syntax, and who compare it to the absence of a built-in
 
 ---
 
-## 8. `ace-adm-049`, How does `mqsistopmsgflow` differ from `ibmint stop server`?
+## 7. `ace-adm-049`, How does `mqsistopmsgflow` differ from `ibmint stop server`?
 
 - **Product / Role / Topic:** ACE / Admin / Operations
 - **Difficulty:** medium
@@ -500,7 +445,7 @@ production, not just labs.
 
 ---
 
-## 9. `ace-dev-047`, What is Project Bob, and where does it fit compared with a generic Copilot for modernising ACE code?
+## 8. `ace-dev-047`, What is Project Bob, and where does it fit compared with a generic Copilot for modernising ACE code?
 
 - **Product / Role / Topic:** ACE / Dev / Tooling
 - **Difficulty:** easy
@@ -563,7 +508,7 @@ the subscription shape.
 
 ---
 
-## 10. `ace-adm-050`, What is the ACE Agent Preview in the Dashboard, and what are its constraints?
+## 9. `ace-adm-050`, What is the ACE Agent Preview in the Dashboard, and what are its constraints?
 
 - **Product / Role / Topic:** ACE / Admin / AI
 - **Difficulty:** easy
@@ -621,7 +566,7 @@ reading the preview label correctly.
 
 ---
 
-## 11. `ace-adm-051`, What is the MCP (Model Context Protocol) feature in ACE v13.0.7.0, and how does it expose REST APIs?
+## 10. `ace-adm-051`, What is the MCP (Model Context Protocol) feature in ACE v13.0.7.0, and how does it expose REST APIs?
 
 - **Product / Role / Topic:** ACE / Admin / AI
 - **Difficulty:** medium
@@ -678,7 +623,7 @@ reading the feature correctly.
 
 ---
 
-## 12. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
+## 11. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** medium
@@ -729,7 +674,7 @@ done the migration for real.
 
 ---
 
-## 13. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
+## 12. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy
@@ -788,7 +733,7 @@ not apply here.
 
 ---
 
-## 14. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
+## 13. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy
