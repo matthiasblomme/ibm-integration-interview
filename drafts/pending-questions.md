@@ -19,68 +19,8 @@ Fields are the same as in `questions.json`, rendered for readability.
 
 
 
-## 1. `ace-dev-042`, Why is `CREATE FIELD ... IDENTITY(JSON.Array)` necessary when preparing JSON array output in ESQL?
 
-- **Product / Role / Topic:** ACE / Dev / ESQL
-- **Difficulty:** easy
-- **Tags:** esql, json, identity, array, select, row, the
-
-### Question
-What does `IDENTITY(JSON.Array)` do when preparing a JSON array
-output in ESQL, and how does it combine with `SELECT`, `ROW`
-and `THE`?
-
-### Answer, bullets
-- Without `IDENTITY(JSON.Array)` on the parent element, the
-  JSON serializer has no way to distinguish "a single object
-  with repeated keys" from "a JSON array". It defaults to object
-  shape and either emits strange output (one key repeated, or
-  the last value winning) or raises a serialisation error
-- The `IDENTITY(JSON.Array)` identifier marks the element as an
-  array container in the tree, so downstream
-  `CREATE LASTCHILD` calls with `NAME 'Item'` or
-  `SET ...Item[N] = ...` assignments are formatted as a real
-  JSON array on output
-- Canonical prep + populate:
-  `CREATE FIELD OutputRoot.JSON.Data.emailList IDENTITY(JSON.Array);`
-  then either
-  `SET OutputRoot.JSON.Data.emailList.Item[] = (SELECT U.address FROM ... AS U);`
-  for a plain SELECT, or
-  `SET OutputRoot.JSON.Data.emailList = ROW (SELECT U.address FROM ... AS U);`
-  for a single structured row
-- Pairs naturally with the `SELECT` family: **SELECT** returns
-  a tree fragment of matching rows (good for building an
-  array), **ROW** wraps a SELECT into a single structured array,
-  **THE** pulls out exactly one value (useful when you expect
-  zero or one matches)
-- Forgetting the `IDENTITY(JSON.Array)` step is a classic
-  time-sink: the flow runs, the output "looks almost right",
-  and a downstream consumer rejects it because it received an
-  object where it expected an array. Easier to catch upfront
-  than to debug from a JSON diff
-- Same concept in Java via the `JsonArray` parser type (mapping
-  nodes, JavaCompute): the tree needs to be typed as array
-  before you start appending to it
-
-### Explanation
-The ACE message tree does not have a built-in "this element is
-an array" marker; you have to opt in with
-`IDENTITY(JSON.Array)`. Everything JSON-array-shaped on the
-output side (arrays of scalars, arrays of objects, results of
-SELECT / ROW expressions) starts with that one-line prep, and
-the common bug is skipping it and getting an object-shaped
-output that mostly works until one specific downstream call
-fails. Candidates who mention `IDENTITY(JSON.Array)` as the
-first line they write when building array output are
-comfortable with ESQL-to-JSON serialisation.
-
-### References
-- Blog: Select The Row (matthiasblomme)
-- Blog: Create JSON Arrays in ESQL and Java (matthiasblomme)
-
----
-
-## 2. `ace-dev-043`, What are Discovery Request and Discovery Input nodes in ACE v13, and how do they differ from traditional transport nodes?
+## 1. `ace-dev-043`, What are Discovery Request and Discovery Input nodes in ACE v13, and how do they differ from traditional transport nodes?
 
 - **Product / Role / Topic:** ACE / Dev / Connectors
 - **Difficulty:** easy
@@ -146,7 +86,7 @@ hatch" show they understand the complementary positioning.
 
 ---
 
-## 3. `ace-dev-044`, What does the Kafka Schema Registry policy add in ACE v13, and what serialisation format does it unlock?
+## 2. `ace-dev-044`, What does the Kafka Schema Registry policy add in ACE v13, and what serialisation format does it unlock?
 
 - **Product / Role / Topic:** ACE / Dev / Kafka
 - **Difficulty:** medium
@@ -204,7 +144,7 @@ configuration" show they have been tracking the Kafka roadmap.
 
 ---
 
-## 4. `ace-dev-045`, Which authentication types can the v13 HTTPRequest / RESTRequest nodes use directly, and what does that replace?
+## 3. `ace-dev-045`, Which authentication types can the v13 HTTPRequest / RESTRequest nodes use directly, and what does that replace?
 
 - **Product / Role / Topic:** ACE / Dev / Nodes
 - **Difficulty:** medium
@@ -265,7 +205,7 @@ modern APIs.
 
 ---
 
-## 5. `ace-dev-046`, What is the JSONata Mapping node in ACE v13, and how does it differ from Graphical Data Maps?
+## 4. `ace-dev-046`, What is the JSONata Mapping node in ACE v13, and how does it differ from Graphical Data Maps?
 
 - **Product / Role / Topic:** ACE / Dev / Mapping
 - **Difficulty:** easy
@@ -324,7 +264,7 @@ picked between them on real flows.
 
 ---
 
-## 6. `ace-adm-048`, What does `mqsirestart` do, and why is it better than `mqsistop` + `mqsistart`?
+## 5. `ace-adm-048`, What does `mqsirestart` do, and why is it better than `mqsistop` + `mqsistart`?
 
 - **Product / Role / Topic:** ACE / Admin / Operations
 - **Difficulty:** easy
@@ -382,7 +322,7 @@ syntax, and who compare it to the absence of a built-in
 
 ---
 
-## 7. `ace-adm-049`, How does `mqsistopmsgflow` differ from `ibmint stop server`?
+## 6. `ace-adm-049`, How does `mqsistopmsgflow` differ from `ibmint stop server`?
 
 - **Product / Role / Topic:** ACE / Admin / Operations
 - **Difficulty:** medium
@@ -445,7 +385,7 @@ production, not just labs.
 
 ---
 
-## 8. `ace-dev-047`, What is Project Bob, and where does it fit compared with a generic Copilot for modernising ACE code?
+## 7. `ace-dev-047`, What is Project Bob, and where does it fit compared with a generic Copilot for modernising ACE code?
 
 - **Product / Role / Topic:** ACE / Dev / Tooling
 - **Difficulty:** easy
@@ -508,7 +448,7 @@ the subscription shape.
 
 ---
 
-## 9. `ace-adm-050`, What is the ACE Agent Preview in the Dashboard, and what are its constraints?
+## 8. `ace-adm-050`, What is the ACE Agent Preview in the Dashboard, and what are its constraints?
 
 - **Product / Role / Topic:** ACE / Admin / AI
 - **Difficulty:** easy
@@ -566,7 +506,7 @@ reading the preview label correctly.
 
 ---
 
-## 10. `ace-adm-051`, What is the MCP (Model Context Protocol) feature in ACE v13.0.7.0, and how does it expose REST APIs?
+## 9. `ace-adm-051`, What is the MCP (Model Context Protocol) feature in ACE v13.0.7.0, and how does it expose REST APIs?
 
 - **Product / Role / Topic:** ACE / Admin / AI
 - **Difficulty:** medium
@@ -623,7 +563,7 @@ reading the feature correctly.
 
 ---
 
-## 11. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
+## 10. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** medium
@@ -674,7 +614,7 @@ done the migration for real.
 
 ---
 
-## 12. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
+## 11. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy
@@ -733,7 +673,7 @@ not apply here.
 
 ---
 
-## 13. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
+## 12. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy

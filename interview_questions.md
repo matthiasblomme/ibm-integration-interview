@@ -2,14 +2,14 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 141
+**Total questions:** 142
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (14)](#mq-dev)
 - [ACE, Admin (47)](#ace-admin)
-- [ACE, Dev (42)](#ace-dev)
+- [ACE, Dev (43)](#ace-dev)
 - [Cloud (5)](#cloud)
 
 ## General
@@ -1701,6 +1701,21 @@ The mnemonic to keep them straight: `>` points forward from the start, `<` point
 The `Item` element is the tell-tale that someone has actually built JSON arrays in ESQL the way IBM models them: an `IDENTITY(JSON.Array)` parent with `Item`-named children. The parent type triggers array serialization; the `Item` name is the convention everyone follows for consistency with the parser, even though the serializer ignores names on output. Pair this with `IDENTITY(JSON.Array)` and either `CREATE LASTCHILD` (clean) or `Item[N]` with contiguous indices (error-prone).
 
 _References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=domain-creating-json-message>
+
+**Q: Why is `CREATE FIELD ... IDENTITY(JSON.Array)` necessary when preparing JSON array output in ESQL?**
+
+- Without `IDENTITY(JSON.Array)` on the parent element, the JSON serializer has no way to distinguish 'a single object with repeated keys' from 'a JSON array'. It defaults to object shape and either emits strange output (one key repeated, or the last value winning) or raises a serialisation error
+- The `IDENTITY(JSON.Array)` identifier marks the element as an array container in the tree, so downstream `CREATE LASTCHILD` calls with `NAME 'Item'` or `SET ...Item[N] = ...` assignments are formatted as a real JSON array on output
+- Canonical prep + populate: `CREATE FIELD OutputRoot.JSON.Data.emailList IDENTITY(JSON.Array);` then either `SET OutputRoot.JSON.Data.emailList.Item[] = (SELECT U.address FROM ... AS U);` for a plain SELECT, or `SET OutputRoot.JSON.Data.emailList = ROW (SELECT U.address FROM ... AS U);` for a single structured row
+- Pairs naturally with the `SELECT` family: **SELECT** returns a tree fragment of matching rows (good for building an array), **ROW** is a row constructor that builds a structured row literal, often paired with a SELECT to wrap the select result as a single composite row, **THE** pulls out exactly one value (returns the first element of a list, useful when you expect zero or one matches)
+- Forgetting the `IDENTITY(JSON.Array)` step is a classic time-sink: the flow runs, the output 'looks almost right', and a downstream consumer rejects it because it received an object where it expected an array. Easier to catch upfront than to debug from a JSON diff
+- Same concept in Java via the `MbJSON.ARRAY` element type (mapping nodes, JavaCompute): `outRoot.createElementAsLastChild(MbJSON.ARRAY, "Data", null)` produces the same array-typed parent that `IDENTITY(JSON.Array)` does in ESQL; the tree needs to be typed as array before you start appending to it
+
+The ACE message tree does not have a built-in 'this element is an array' marker; you have to opt in with `IDENTITY(JSON.Array)`. Everything JSON-array-shaped on the output side (arrays of scalars, arrays of objects, results of SELECT / ROW expressions) starts with that one-line prep, and the common bug is skipping it and getting an object-shaped output that mostly works until one specific downstream call fails. Candidates who mention `IDENTITY(JSON.Array)` as the first line they write when building array output are comfortable with ESQL-to-JSON serialisation.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=functions-select-function>
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=domain-creating-json-message>
 
 ### Hybrid connectivity
