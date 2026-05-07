@@ -23,66 +23,8 @@ Fields are the same as in `questions.json`, rendered for readability.
 
 
 
-## 1. `ace-dev-046`, What is the JSONata Mapping node in ACE v13, and how does it differ from Graphical Data Maps?
 
-- **Product / Role / Topic:** ACE / Dev / Mapping
-- **Difficulty:** easy
-- **Tags:** jsonata, mapping, data-map, json, transformation, v13
-
-### Question
-What is the JSONata Mapping node in v13, when would you reach
-for it instead of a Graphical Data Map, and how do they relate
-to the new Data Assist / Mapping Assist tooling?
-
-### Answer, bullets
-- **JSONata** is a lightweight query and transformation
-  language for JSON data, analogous in purpose to XSLT for XML:
-  declare what the output shape looks like, and the engine does
-  the tree walk
-- The v13 **JSONata Mapping node** is a dedicated node that
-  takes a JSON input, applies a JSONata expression, and emits
-  the transformed JSON as output. Before v13 you could write
-  JSONata, but it lived embedded in other processing logic or
-  inside mapping expressions
-- Compared with **Graphical Data Maps** (`.map`): Graphical
-  Data Maps are a visual mapping tool with a schema-based
-  source and target, drag-and-drop connections, built-in type
-  coercion. JSONata is a **text-based expression language** you
-  write by hand, more compact, more expressive on deeply nested
-  or computed transforms
-- Pick by shape of the problem: visual, schema-heavy, mostly
-  linear mappings -> Graphical Data Map. Dynamic output shape,
-  heavy filtering / grouping / computed fields, or JSON in /
-  JSON out with an already-known JSONata expression -> JSONata
-  node
-- Both are complementary, not exclusive. Many v13 flows use
-  Graphical Data Maps for the bulk of message transformation
-  and slot in a JSONata node for the one bit that would be
-  ugly as a drag-and-drop diagram
-- v13 also adds **Data Assist** and **Mapping Assist** in the
-  Toolkit that generate JSONata expressions from natural
-  language prompts (watsonx-backed, separate subscription),
-  which turns "I do not know JSONata" into less of a blocker
-
-### Explanation
-The JSONata node is v13's answer to "JSON transforms are
-clumsy in Graphical Data Maps for anything non-trivial".
-JSONata is concise, expressive, and designed for JSON; having
-it as a first-class node means you can stop embedding
-expressions in other nodes or routing through JavaCompute just
-to reshape a payload. Candidates who position JSONata and
-Graphical Data Maps as complementary tools (JSONata for
-dynamic or deeply-nested JSON, maps for visual or
-schema-heavy work) rather than competitors show they have
-picked between them on real flows.
-
-### References
-- Blog: ACE v13 new features overview (matthiasblomme)
-- https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-jsonata-mapping-node
-
----
-
-## 2. `ace-adm-048`, What does `mqsirestart` do, and why is it better than `mqsistop` + `mqsistart`?
+## 1. `ace-adm-048`, What does `mqsirestart` do, and why is it better than `mqsistop` + `mqsistart`?
 
 - **Product / Role / Topic:** ACE / Admin / Operations
 - **Difficulty:** easy
@@ -140,7 +82,7 @@ syntax, and who compare it to the absence of a built-in
 
 ---
 
-## 3. `ace-adm-049`, How does `mqsistopmsgflow` differ from `ibmint stop server`?
+## 2. `ace-adm-049`, How does `mqsistopmsgflow` differ from `ibmint stop server`?
 
 - **Product / Role / Topic:** ACE / Admin / Operations
 - **Difficulty:** medium
@@ -203,7 +145,7 @@ production, not just labs.
 
 ---
 
-## 4. `ace-dev-047`, What is Project Bob, and where does it fit compared with a generic Copilot for modernising ACE code?
+## 3. `ace-dev-047`, What is Project Bob, and where does it fit compared with a generic Copilot for modernising ACE code?
 
 - **Product / Role / Topic:** ACE / Dev / Tooling
 - **Difficulty:** easy
@@ -266,7 +208,7 @@ the subscription shape.
 
 ---
 
-## 5. `ace-adm-050`, What is the ACE Agent Preview in the Dashboard, and what are its constraints?
+## 4. `ace-adm-050`, What is the ACE Agent Preview in the Dashboard, and what are its constraints?
 
 - **Product / Role / Topic:** ACE / Admin / AI
 - **Difficulty:** easy
@@ -324,7 +266,7 @@ reading the preview label correctly.
 
 ---
 
-## 6. `ace-adm-051`, What is the MCP (Model Context Protocol) feature in ACE v13.0.7.0, and how does it expose REST APIs?
+## 5. `ace-adm-051`, What is the MCP (Model Context Protocol) feature in ACE v13.0.7.0, and how does it expose REST APIs?
 
 - **Product / Role / Topic:** ACE / Admin / AI
 - **Difficulty:** medium
@@ -381,7 +323,7 @@ reading the feature correctly.
 
 ---
 
-## 7. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
+## 6. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** medium
@@ -432,7 +374,7 @@ done the migration for real.
 
 ---
 
-## 8. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
+## 7. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy
@@ -491,7 +433,7 @@ not apply here.
 
 ---
 
-## 9. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
+## 8. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy
@@ -548,7 +490,7 @@ safe answer.
 
 ---
 
-## 10. `ace-dev-048`, How do you do 2-phase commit with Kafka in ACE?
+## 9. `ace-dev-048`, How do you do 2-phase commit with Kafka in ACE?
 
 - **Product / Role / Topic:** ACE / Dev / Kafka
 - **Difficulty:** medium
@@ -624,7 +566,7 @@ limitation have not hit a partial-outcome incident yet.
 
 ---
 
-## 11. `ace-dev-049`, What is the default read mode (isolation level) for KafkaConsumer in ACE?
+## 10. `ace-dev-049`, What is the default read mode (isolation level) for KafkaConsumer in ACE?
 
 - **Product / Role / Topic:** ACE / Dev / Kafka
 - **Difficulty:** easy

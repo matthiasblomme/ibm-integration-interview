@@ -2,14 +2,14 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 145
+**Total questions:** 146
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (14)](#mq-dev)
 - [ACE, Admin (47)](#ace-admin)
-- [ACE, Dev (46)](#ace-dev)
+- [ACE, Dev (47)](#ace-dev)
 - [Cloud (5)](#cloud)
 
 ## General
@@ -1999,6 +1999,26 @@ _References:_
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-restrequest-node>
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=policies-http-request-policy>
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=security-credential-types>
+
+### Mapping
+
+**Q: What is the JSONata Mapping node in ACE v13, and how does it differ from Graphical Data Maps?**
+
+- **JSONata** is a lightweight query and transformation language for JSON data, analogous in purpose to XSLT for XML: declare what the output shape looks like, and the engine does the tree walk
+- The v13 **JSONata Mapping node** is a dedicated node that takes a JSON input, applies a JSONata expression, and emits the transformed JSON as output. Before v13 you could write JSONata, but it lived embedded in other processing logic or inside mapping expressions
+- Compared with **Graphical Data Maps** (`.map`): Graphical Data Maps are a visual mapping tool with a schema-based source and target, drag-and-drop connections, built-in type coercion. JSONata is a **text-based expression language** you write by hand, more compact, more expressive on deeply nested or computed transforms
+- Pick by shape of the problem: visual, schema-heavy, mostly linear mappings -> Graphical Data Map. Dynamic output shape, heavy filtering / grouping / computed fields, or JSON in / JSON out with an already-known JSONata expression -> JSONata node
+- Both are complementary, not exclusive. Many v13 flows use Graphical Data Maps for the bulk of message transformation and slot in a JSONata node for the one bit that would be ugly as a drag-and-drop diagram
+- **Configured via the JSONata Mapping wizard** (Configure button on the Basic tab), not raw JSONata authoring. The wizard scaffolds the message structure and mapping; you still drop into JSONata expressions for the computed bits
+- **Auto-generated output JSON schema:** the node produces a JSON schema representation of its output (controlled by the **Schema base name** property), which downstream nodes can consume. Same schema-driven pattern as Discovery Request nodes (see `ace-dev-043`), so it integrates cleanly with the rest of the v13 mapping ecosystem
+- **Map inputs table** lets you combine multiple input sources in one JSONata expression: each input gets a name, location in the message tree (e.g. `$Body`, `$LocalEnvironment`), message domain, schema location, and schema root. JSONata references them by name, no upstream Compute / Mapping node needed to pre-merge inputs
+- v13 also adds **Data Assist** and **Mapping Assist** in the Toolkit that generate JSONata expressions from natural language prompts (watsonx-backed, separate subscription), which turns 'I do not know JSONata' into less of a blocker
+
+The JSONata node is v13's answer to 'JSON transforms are clumsy in Graphical Data Maps for anything non-trivial'. JSONata is concise, expressive, and designed for JSON; having it as a first-class node, scaffolded by a wizard and producing its own output JSON schema for downstream consumption, means you can stop embedding expressions in other nodes or routing through JavaCompute just to reshape a payload. Candidates who position JSONata and Graphical Data Maps as complementary tools (JSONata for dynamic or deeply-nested JSON, maps for visual or schema-heavy work), and mention the wizard + auto-generated schema + Map inputs table, have picked between them on real flows.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=new-whats-app-connect-enterprise>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-jsonata-mapping-node>
 
 ### Troubleshooting
 
