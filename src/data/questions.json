@@ -2797,6 +2797,27 @@
     ]
   },
   {
+    "id": "ace-adm-048",
+    "product": "ACE",
+    "role": "Admin",
+    "topic": "Operations",
+    "question": "What does `mqsirestart` do, and why is it better than `mqsistop` + `mqsistart`?",
+    "answerBullets": [
+      "`mqsirestart` is a community-contributed wrapper script (it is **not shipped** with ACE; drop the `.cmd` into `%MQSI_FILEPATH%/bin` alongside the built-in scripts) that runs `mqsistop` followed by `mqsistart` against the same target in one invocation",
+      "Targets both integration **servers** (`mqsirestart.cmd <NodeName> --integration-server <IS>`) and integration **nodes** (`mqsirestart.cmd <NodeName>`). Same flags and syntax as the built-in commands",
+      "Why it beats running the two commands yourself: closes the **gap between stop and start** that reliably gets interrupted by Slack, an incident, or the reflex to grab a coffee, leaving a node stopped longer than intended; removes the **typo surface** (`mqsistpo`, `mqsisart`); keeps both halves as a single auditable action in logs and scripts",
+      "It is not a substitute for `mqsichangeproperties` or `mqsichangeflowstats` that do NOT require a restart. Use restart only when a restart is the actual requirement",
+      "Check behaviour before using in production: the script issues `mqsistop` without special flags; if you rely on `mqsistop -i` (immediate) or a custom timeout in your ops procedure, either pass those flags or keep doing the two commands by hand",
+      "Built-in `ibmint restart server` does **not exist** at the time of writing; the modern ibmint pattern is `ibmint stop server` + `ibmint start server` separately, so a wrapper script fills the same gap on the ibmint side too"
+    ],
+    "answerExplanation": "`mqsirestart` is a pragmatic operator workaround for the fact that 'stop then start' is two commands you run in sequence a dozen times a day. It removes the gap, the typos, and the forgotten-Friday scenario by making the pair atomic from the operator's point of view. Candidates who know it is a community script (not shipped), who know the node / server syntax, and who compare it to the absence of a built-in `ibmint restart server` understand the ergonomic gap it fills.",
+    "tags": ["mqsirestart", "mqsistop", "mqsistart", "operations", "ibmint", "wrapper"],
+    "difficulty": "easy",
+    "references": [
+      "https://github.com/matthiasblomme/ACE_MQ_Tooling"
+    ]
+  },
+  {
     "id": "cloud-001",
     "product": "Cloud",
     "role": "Any",

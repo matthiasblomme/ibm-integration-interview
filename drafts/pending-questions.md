@@ -24,65 +24,8 @@ Fields are the same as in `questions.json`, rendered for readability.
 
 
 
-## 1. `ace-adm-048`, What does `mqsirestart` do, and why is it better than `mqsistop` + `mqsistart`?
 
-- **Product / Role / Topic:** ACE / Admin / Operations
-- **Difficulty:** easy
-- **Tags:** mqsirestart, mqsistop, mqsistart, operations, ibmint, wrapper
-
-### Question
-What is `mqsirestart`, where does it come from, and why is it
-worth using instead of `mqsistop` followed by `mqsistart`?
-
-### Answer, bullets
-- `mqsirestart` is a community-contributed wrapper script (it
-  is **not shipped** with ACE; drop the `.cmd` into
-  `%MQSI_FILEPATH%/bin` alongside the built-in scripts) that
-  runs `mqsistop` followed by `mqsistart` against the same
-  target in one invocation
-- Targets both integration **servers**
-  (`mqsirestart.cmd <NodeName> --integration-server <IS>`) and
-  integration **nodes** (`mqsirestart.cmd <NodeName>`). Same
-  flags and syntax as the built-in commands
-- Why it beats running the two commands yourself:
-  - Closes the **gap between stop and start**, a gap that
-    reliably gets interrupted by Slack, an incident, or the
-    reflex to grab a coffee, leaving a node stopped longer than
-    intended (or worse, forgotten entirely)
-  - Removes the **typo surface** (`mqsistpo`, `mqsisart`) that
-    costs real minutes on a Friday afternoon
-  - Keeps both halves as a single auditable action in logs and
-    scripts
-- It is not a substitute for `mqsichangeproperties` or
-  `mqsichangeflowstats` that do NOT require a restart. Use
-  restart only when a restart is the actual requirement
-- Check behaviour before using in production: the script
-  issues `mqsistop` without special flags; if you rely on
-  `mqsistop -i` (immediate) or a custom timeout in your ops
-  procedure, either pass those flags or keep doing the two
-  commands by hand
-- Built-in `ibmint restart server` does **not exist** at the
-  time of writing; the modern ibmint pattern is
-  `ibmint stop server` + `ibmint start server` separately, so
-  a wrapper script fills the same gap on the ibmint side too
-
-### Explanation
-`mqsirestart` is a pragmatic operator workaround for the fact
-that "stop then start" is two commands you run in sequence a
-dozen times a day. It removes the gap, the typos, and the
-forgotten-Friday scenario by making the pair atomic from the
-operator's point of view. Candidates who know it is a
-community script (not shipped), who know the node / server
-syntax, and who compare it to the absence of a built-in
-`ibmint restart server` understand the ergonomic gap it fills.
-
-### References
-- Blog: mqsirestart (matthiasblomme)
-- https://github.com/matthiasblomme/ACE_MQ_Tooling
-
----
-
-## 2. `ace-adm-049`, How does `mqsistopmsgflow` differ from `ibmint stop server`?
+## 1. `ace-adm-049`, How does `mqsistopmsgflow` differ from `ibmint stop server`?
 
 - **Product / Role / Topic:** ACE / Admin / Operations
 - **Difficulty:** medium
@@ -145,7 +88,7 @@ production, not just labs.
 
 ---
 
-## 3. `ace-dev-047`, What is Project Bob, and where does it fit compared with a generic Copilot for modernising ACE code?
+## 2. `ace-dev-047`, What is Project Bob, and where does it fit compared with a generic Copilot for modernising ACE code?
 
 - **Product / Role / Topic:** ACE / Dev / Tooling
 - **Difficulty:** easy
@@ -208,7 +151,7 @@ the subscription shape.
 
 ---
 
-## 4. `ace-adm-050`, What is the ACE Agent Preview in the Dashboard, and what are its constraints?
+## 3. `ace-adm-050`, What is the ACE Agent Preview in the Dashboard, and what are its constraints?
 
 - **Product / Role / Topic:** ACE / Admin / AI
 - **Difficulty:** easy
@@ -266,7 +209,7 @@ reading the preview label correctly.
 
 ---
 
-## 5. `ace-adm-051`, What is the MCP (Model Context Protocol) feature in ACE v13.0.7.0, and how does it expose REST APIs?
+## 4. `ace-adm-051`, What is the MCP (Model Context Protocol) feature in ACE v13.0.7.0, and how does it expose REST APIs?
 
 - **Product / Role / Topic:** ACE / Admin / AI
 - **Difficulty:** medium
@@ -323,7 +266,7 @@ reading the feature correctly.
 
 ---
 
-## 6. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
+## 5. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** medium
@@ -374,7 +317,7 @@ done the migration for real.
 
 ---
 
-## 7. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
+## 6. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy
@@ -433,7 +376,7 @@ not apply here.
 
 ---
 
-## 8. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
+## 7. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy
@@ -490,7 +433,7 @@ safe answer.
 
 ---
 
-## 9. `ace-dev-048`, How do you do 2-phase commit with Kafka in ACE?
+## 8. `ace-dev-048`, How do you do 2-phase commit with Kafka in ACE?
 
 - **Product / Role / Topic:** ACE / Dev / Kafka
 - **Difficulty:** medium
@@ -566,7 +509,7 @@ limitation have not hit a partial-outcome incident yet.
 
 ---
 
-## 10. `ace-dev-049`, What is the default read mode (isolation level) for KafkaConsumer in ACE?
+## 9. `ace-dev-049`, What is the default read mode (isolation level) for KafkaConsumer in ACE?
 
 - **Product / Role / Topic:** ACE / Dev / Kafka
 - **Difficulty:** easy

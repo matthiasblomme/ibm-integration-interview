@@ -2,13 +2,13 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 146
+**Total questions:** 147
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (14)](#mq-dev)
-- [ACE, Admin (47)](#ace-admin)
+- [ACE, Admin (48)](#ace-admin)
 - [ACE, Dev (47)](#ace-dev)
 - [Cloud (5)](#cloud)
 
@@ -1352,6 +1352,22 @@ _References:_
 - Check the OS: CPU saturation, IO wait, network retransmits
 
 Sudden changes usually have a cause you can pin to a timeline: a change, an external dependency, a resource exhaustion. Stats + backend + OS covers those three lanes.
+
+### Operations
+
+**Q: What does `mqsirestart` do, and why is it better than `mqsistop` + `mqsistart`?**
+
+- `mqsirestart` is a community-contributed wrapper script (it is **not shipped** with ACE; drop the `.cmd` into `%MQSI_FILEPATH%/bin` alongside the built-in scripts) that runs `mqsistop` followed by `mqsistart` against the same target in one invocation
+- Targets both integration **servers** (`mqsirestart.cmd <NodeName> --integration-server <IS>`) and integration **nodes** (`mqsirestart.cmd <NodeName>`). Same flags and syntax as the built-in commands
+- Why it beats running the two commands yourself: closes the **gap between stop and start** that reliably gets interrupted by Slack, an incident, or the reflex to grab a coffee, leaving a node stopped longer than intended; removes the **typo surface** (`mqsistpo`, `mqsisart`); keeps both halves as a single auditable action in logs and scripts
+- It is not a substitute for `mqsichangeproperties` or `mqsichangeflowstats` that do NOT require a restart. Use restart only when a restart is the actual requirement
+- Check behaviour before using in production: the script issues `mqsistop` without special flags; if you rely on `mqsistop -i` (immediate) or a custom timeout in your ops procedure, either pass those flags or keep doing the two commands by hand
+- Built-in `ibmint restart server` does **not exist** at the time of writing; the modern ibmint pattern is `ibmint stop server` + `ibmint start server` separately, so a wrapper script fills the same gap on the ibmint side too
+
+`mqsirestart` is a pragmatic operator workaround for the fact that 'stop then start' is two commands you run in sequence a dozen times a day. It removes the gap, the typos, and the forgotten-Friday scenario by making the pair atomic from the operator's point of view. Candidates who know it is a community script (not shipped), who know the node / server syntax, and who compare it to the absence of a built-in `ibmint restart server` understand the ergonomic gap it fills.
+
+_References:_
+- <https://github.com/matthiasblomme/ACE_MQ_Tooling>
 
 ## ACE, Dev
 
