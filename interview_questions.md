@@ -2,14 +2,14 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 144
+**Total questions:** 145
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (14)](#mq-dev)
 - [ACE, Admin (47)](#ace-admin)
-- [ACE, Dev (45)](#ace-dev)
+- [ACE, Dev (46)](#ace-dev)
 - [Cloud (5)](#cloud)
 
 ## General
@@ -1978,6 +1978,27 @@ _References:_
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=kafka-using-avro-serialization>
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-kafkaproducer-node>
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-kafkaconsumer-node>
+
+### Nodes
+
+**Q: Which authentication types can the v13 HTTPRequest / RESTRequest nodes use directly, and what does that replace?**
+
+- v13 (specifically **13.0.6.0+**) modernised the outbound HTTP / REST auth surface across both the HTTPRequest node and Designer's REST request capability, so flows can speak modern SaaS auth without a JavaCompute token-fetch helper in front of the call
+- **HTTPRequest node (Toolkit)** classical set, via attached HTTP Request policy: **`basic`**, **`apiKey`**, **`basicApiKey`**. Plus **`client`** (mTLS) configured on the SSL tab via the **SSL client authentication key alias** property, not the policy
+- **RESTRequest node and Designer's outbound REST (13.0.6.0+)** add the OAuth-rich set: **`bearerToken`**; **`oauth`** OAuth 2.0 client credentials grant (client id + secret only); **`oauthPassword`** OAuth 2.0 password grant (username, password, client id, client secret); **basic OAuth** (basic credentials combined with access / refresh tokens)
+- For OAuth 2.0, the policy / credential carries the six parameters that handle token acquisition: **token endpoint, client id, client secret, username, password, access token, refresh token**. The node does the token lifecycle for you, no scripted fetch
+- The `ibmint set credential` CLI accepts these credential types too. The `http` credential type (HTTPRequest / HTTPAsyncRequest) supports `--auth-type basic | apiKey | basicApiKey`; the `rest` credential type (external REST API) adds `--auth-type bearerToken`. External Directory Vault workflows and Toolkit credential editing align with these
+- What it replaces: the pre-v13 pattern of `HTTPRequest -> JavaCompute that fetches a token -> HTTPRequest`, with all the caching, retry and error handling that implied. Now it is one node and a policy / credential reference
+- Companion v13 feature: built-in **HTTPRequest retry configuration** (`Retry Mechanism: No retry | Short retry`, `Retry threshold` default 1, `Short retry interval` default 5s, `Retry condition` defaults to 502, 503, ECONNRESET, ECONNREFUSED, ESOCKETTIMEDOUT). 13.0.6.0 mirrored the same Retry tab onto the **REST Request** node. Covers straightforward transient-failure retries without a custom wrapper flow
+
+13.0.6.0 turned HTTPRequest / RESTRequest from 'HTTP transport' into 'HTTP client that understands modern auth'. The killer addition is the OAuth 2.0 set on Designer's outbound REST and the RESTRequest node: BASIC / apiKey / bearer were fine for simple APIs, but every SaaS now expects OAuth, and before this you were writing a token-fetch helper in JavaCompute. The HTTPRequest node's HTTP Request policy remains focused on basic + apiKey credentials per IBM's policy doc, with mTLS via the SSL tab; the OAuth flavours arrived through the REST Request side. Candidates who name the OAuth grant flavours (client credentials vs password vs basic OAuth), mention the HTTP / REST split for where each auth type lives, and bring up the retry tab as the companion v13 feature have written real outbound integrations against modern APIs.
+
+_References:_
+- <https://community.ibm.com/community/user/blogs/ben-thompson1/2025/12/11/ace-13-0-6-0>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-httprequest-node>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-restrequest-node>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=policies-http-request-policy>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=security-credential-types>
 
 ### Troubleshooting
 

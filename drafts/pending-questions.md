@@ -22,68 +22,8 @@ Fields are the same as in `questions.json`, rendered for readability.
 
 
 
-## 1. `ace-dev-045`, Which authentication types can the v13 HTTPRequest / RESTRequest nodes use directly, and what does that replace?
 
-- **Product / Role / Topic:** ACE / Dev / Nodes
-- **Difficulty:** medium
-- **Tags:** httprequest, restrequest, oauth, oauth2, apikey, basic, bearertoken, client, retry, v13
-
-### Question
-What auth types does the v13 HTTPRequest node support directly,
-what companion features arrived alongside, and what does this
-replace in pre-v13 flows?
-
-### Answer, bullets
-- The v13 HTTPRequest node supports these auth types
-  **directly on the node** (or via an attached HTTP policy),
-  no custom preprocessing needed:
-  - `apiKey`
-  - `basic`
-  - `basicApiKey`
-  - `bearerToken`
-  - `client` (mTLS)
-  - `oauth` (OAuth 2.0 client credentials / authorization code)
-  - `oauthPassword` (OAuth 2.0 password grant)
-- RESTRequest mirrors the list, and the v13 Designer exposes
-  the same options in the low-code UI
-- For OAuth 2.0, the HTTP policy gains **six additional
-  properties** that handle token acquisition: token endpoint,
-  client id / secret, scope, grant-type specifics, token
-  caching. The node does the token lifecycle for you, no
-  scripted token fetch in front of the call
-- The `ibmint set credential` CLI now accepts these credential
-  types too, which means External Directory Vault workflows
-  and Toolkit credential editing align with node-level support
-- What it replaces: the pre-v13 pattern of
-  `HTTPRequest -> JavaCompute that fetches a token ->
-  HTTPRequest`, with all the caching, retry and error handling
-  that implied. Now it is one node and a policy reference
-- Companion v13 feature: built-in **HTTPRequest retry
-  configuration** (`Retry Mechanism: no|short`,
-  `Retry Threshold`, `Short Retry Interval`). Covers
-  straightforward transient-failure retries without a custom
-  wrapper flow
-
-### Explanation
-v13 finally turned HTTPRequest / RESTRequest from "HTTP
-transport" into "HTTP client that understands modern auth".
-The killer is OAuth 2.0 support: Basic / apiKey / bearer were
-fine for simple APIs, but every SaaS now expects OAuth, and
-before v13 that meant writing a token-fetch helper in
-JavaCompute. Candidates who list all seven auth types (or at
-least name OAuth 2.0 password and client), mention the HTTP
-policy where OAuth lives, and bring up the six OAuth policy
-properties have written real outbound integrations against
-modern APIs.
-
-### References
-- Blog: ACE v13 new features overview (matthiasblomme)
-- https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-httprequest-node
-- https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-restrequest-node
-
----
-
-## 2. `ace-dev-046`, What is the JSONata Mapping node in ACE v13, and how does it differ from Graphical Data Maps?
+## 1. `ace-dev-046`, What is the JSONata Mapping node in ACE v13, and how does it differ from Graphical Data Maps?
 
 - **Product / Role / Topic:** ACE / Dev / Mapping
 - **Difficulty:** easy
@@ -142,7 +82,7 @@ picked between them on real flows.
 
 ---
 
-## 3. `ace-adm-048`, What does `mqsirestart` do, and why is it better than `mqsistop` + `mqsistart`?
+## 2. `ace-adm-048`, What does `mqsirestart` do, and why is it better than `mqsistop` + `mqsistart`?
 
 - **Product / Role / Topic:** ACE / Admin / Operations
 - **Difficulty:** easy
@@ -200,7 +140,7 @@ syntax, and who compare it to the absence of a built-in
 
 ---
 
-## 4. `ace-adm-049`, How does `mqsistopmsgflow` differ from `ibmint stop server`?
+## 3. `ace-adm-049`, How does `mqsistopmsgflow` differ from `ibmint stop server`?
 
 - **Product / Role / Topic:** ACE / Admin / Operations
 - **Difficulty:** medium
@@ -263,7 +203,7 @@ production, not just labs.
 
 ---
 
-## 5. `ace-dev-047`, What is Project Bob, and where does it fit compared with a generic Copilot for modernising ACE code?
+## 4. `ace-dev-047`, What is Project Bob, and where does it fit compared with a generic Copilot for modernising ACE code?
 
 - **Product / Role / Topic:** ACE / Dev / Tooling
 - **Difficulty:** easy
@@ -326,7 +266,7 @@ the subscription shape.
 
 ---
 
-## 6. `ace-adm-050`, What is the ACE Agent Preview in the Dashboard, and what are its constraints?
+## 5. `ace-adm-050`, What is the ACE Agent Preview in the Dashboard, and what are its constraints?
 
 - **Product / Role / Topic:** ACE / Admin / AI
 - **Difficulty:** easy
@@ -384,7 +324,7 @@ reading the preview label correctly.
 
 ---
 
-## 7. `ace-adm-051`, What is the MCP (Model Context Protocol) feature in ACE v13.0.7.0, and how does it expose REST APIs?
+## 6. `ace-adm-051`, What is the MCP (Model Context Protocol) feature in ACE v13.0.7.0, and how does it expose REST APIs?
 
 - **Product / Role / Topic:** ACE / Admin / AI
 - **Difficulty:** medium
@@ -441,7 +381,7 @@ reading the feature correctly.
 
 ---
 
-## 8. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
+## 7. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** medium
@@ -492,7 +432,7 @@ done the migration for real.
 
 ---
 
-## 9. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
+## 8. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy
@@ -551,7 +491,7 @@ not apply here.
 
 ---
 
-## 10. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
+## 9. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy
@@ -608,7 +548,7 @@ safe answer.
 
 ---
 
-## 24. `ace-dev-048`, How do you do 2-phase commit with Kafka in ACE?
+## 10. `ace-dev-048`, How do you do 2-phase commit with Kafka in ACE?
 
 - **Product / Role / Topic:** ACE / Dev / Kafka
 - **Difficulty:** medium
@@ -684,7 +624,7 @@ limitation have not hit a partial-outcome incident yet.
 
 ---
 
-## 25. `ace-dev-049`, What is the default read mode (isolation level) for KafkaConsumer in ACE?
+## 11. `ace-dev-049`, What is the default read mode (isolation level) for KafkaConsumer in ACE?
 
 - **Product / Role / Topic:** ACE / Dev / Kafka
 - **Difficulty:** easy
