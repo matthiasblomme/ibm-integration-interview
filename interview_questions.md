@@ -2,14 +2,14 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 143
+**Total questions:** 144
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (14)](#mq-dev)
 - [ACE, Admin (47)](#ace-admin)
-- [ACE, Dev (44)](#ace-dev)
+- [ACE, Dev (45)](#ace-dev)
 - [Cloud (5)](#cloud)
 
 ## General
@@ -1959,6 +1959,25 @@ _References:_
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=new-whats-app-connect-enterprise>
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-discovery-connector-nodes>
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=connector-discovery-connector-request-nodes>
+
+### Kafka
+
+**Q: What does the Kafka Schema Registry policy add in ACE v13, and what serialisation format does it unlock?**
+
+- ACE v13 adds **Avro serialisation with Schema Registry integration** for the `KafkaProducer`, `KafkaConsumer`, and `KafkaRead` nodes. Before v13 you had to hand-roll Avro handling in JavaCompute or pre / post-process in external apps
+- Configuration is driven by a new **Schema Registry policy** that tells the Kafka nodes where the registry lives, how to authenticate to it, and which serializer / deserializer to use. Reference the policy from the Kafka node properties as `{policyProjectName}:policyName`. Two registry types are supported: **`File`** (default, for file-based schema registries via `file://` URLs) and **`Confluent API`** (for REST-accessible Confluent / Apicurio-compatible registries via `http(s)://` URLs). Cache TTL defaults to 3600s
+- Benefits over custom Avro handling: schema is fetched and cached by the runtime; producers register new schema versions automatically if configured; consumers validate against the registry; schema evolution rules (BACKWARD / FORWARD / FULL) are enforced by the registry itself
+- v13 also adds **transactional support** for `KafkaProducer` and `KafkaConsumer` (Kafka-native exactly-once semantics within a transaction boundary), and a set of properties to configure **parallel consumer scaling** that previously required architectural changes
+- Kafka authentication in v13 also gained **SASL/OAUTHBEARER** support for all three Kafka nodes, via a policy and credential type, so OAuth-secured brokers (Confluent Cloud, OAuth-fronted on-prem) are now native
+- If you implemented custom Avro or external transaction coordination in v12, parts of that logic can move into native node configuration in v13; consider this during v13 migrations
+
+The v13 Kafka story is 'raise the Kafka nodes to parity with modern broker features', and the three pieces that matter most are Schema Registry / Avro, transactions, and OAuth. The Schema Registry + Avro combo is what shops running Confluent or Apicurio have been waiting for; before v13 they were stuck on JSON or on custom Avro code. Candidates who mention all three (Avro + registry, transactional support, OAuth bearer) and position them as 'less custom code, more declarative configuration' show they have been tracking the Kafka roadmap.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=policies-schema-registry-policy>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=kafka-using-avro-serialization>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-kafkaproducer-node>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-kafkaconsumer-node>
 
 ### Troubleshooting
 
