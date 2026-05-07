@@ -2695,6 +2695,33 @@
     ]
   },
   {
+    "id": "ace-dev-043",
+    "product": "ACE",
+    "role": "Dev",
+    "topic": "Connectors",
+    "question": "What are Discovery Request and Discovery Input nodes in ACE v13, and how do they differ from traditional transport nodes?",
+    "answerBullets": [
+      "**Discovery Request nodes** are outbound, connector-style nodes that call a SaaS / platform endpoint (Salesforce, ServiceNow, Azure Service Bus, Pinecone, Databricks, Apache Pulsar, Freshservice, Google Gemini, IBM Aspera, and many more, **~80+ added across 13.x modification packs**). They wrap connector SDKs that IBM ships with ACE",
+      "**Discovery Input nodes** are the event-driven counterpart: they subscribe to a SaaS / platform stream (Azure Event Hubs, Amazon Event Bridge, Eventbrite, Apache Pulsar, AstraDB, Databricks, Amazon SQS) and emit one message per event into the flow",
+      "Difference vs traditional transport nodes (HTTPRequest, MQInput, KafkaProducer): transport nodes model the **protocol** (send HTTP, put an MQ message) and leave payload format, auth and semantics up to you. Discovery nodes model the **specific SaaS resource**, handle connector-specific auth, pagination, schema, and expose the operation set of the target service as node properties. Less code, more declarative",
+      "Connector catalogue lands piecemeal per modification pack: 13.0.1.0 first batch, 13.0.3.0 added vector DBs (Milvus, Pinecone), 13.0.4.0 added Azure Service Bus, 13.0.5.0 added Azure Event Hubs / Google Gemini / IBM Aspera, 13.0.6.0 added Apache Pulsar / AstraDB / Databricks, 13.0.7.0 added Freshservice / Azure DevOps / Google Analytics and more",
+      "Development model: start with a connector-oriented flow in Designer (low-code), optionally move it to the Toolkit for advanced logic (ESQL, Java, complex transformations). Designer and Toolkit both expose the same catalogue",
+      "Practical consequence for architects: v13 shifts 'how do I call service X from ACE' from 'write an HTTPRequest, handle auth, parse response' to 'drop the right Discovery node and configure it'. Where Discovery does not cover your case, you fall back to HTTPRequest / RESTRequest with OAuth 2.0 (also now native in v13)",
+      "**Connector Discovery wizard workflow:** launch from the node's property editor in the Toolkit, connect to your account for the endpoint application, discover and set properties. The wizard stores the credential in the **vault**, the other connection details in a **policy project**, and generates **`request.schema.json`** + **`response.schema.json`** under the project (controlled by the **Schema base name** node property). Mapping nodes can consume those schemas directly",
+      "**JSONata mapping built into Discovery Request nodes:** the Map Inputs table on the Request tab lets you populate request payload fields with static values or **JSONata expressions** without inserting a separate Mapping node. Same expression language as the standalone JSONata Mapping node",
+      "**Operational limits + claim check:** the per-request file size cap is **10 MB**. A subset of Request nodes (Salesforce, Box, S3, etc.) supports **claim check** for memory-efficient large-data transfers, streaming binary data only when required and capping size limits on the stream",
+      "**Trusted CA gotcha:** when going through TCP proxies (e.g. DataPower) or hitting endpoints with internal-CA certs, the Node.js runtime under the connector nodes ignores the OS trust store. Set **`NODE_EXTRA_CA_CERTS`** to a `.pem` with the extra CAs; applies to HTTPS via Node.js-based connector request nodes"
+    ],
+    "answerExplanation": "Discovery nodes are v13's answer to 'ACE is behind on SaaS connectivity vs cloud iPaaS'. The ~80+ connectors let you talk to modern SaaS, vector DBs and cloud event streams declaratively, without hand-rolling an HTTP call per service. The trade-off is that Discovery nodes only cover the operations IBM has packaged; edge cases still fall back to HTTPRequest. Candidates who frame this as 'low-code connector catalogue, with HTTPRequest / RESTRequest as the escape hatch', who mention the Connector Discovery wizard's vault + policy project + schema generation, and who know the JSONata-mapping / claim-check / `NODE_EXTRA_CA_CERTS` operational details show they understand the complementary positioning and have configured these in real flows.",
+    "tags": ["discovery-nodes", "discovery-request", "discovery-input", "connectors", "v13", "designer", "saas"],
+    "difficulty": "easy",
+    "references": [
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=new-whats-app-connect-enterprise",
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-discovery-connector-nodes",
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=connector-discovery-connector-request-nodes"
+    ]
+  },
+  {
     "id": "cloud-001",
     "product": "Cloud",
     "role": "Any",

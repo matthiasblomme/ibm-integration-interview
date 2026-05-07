@@ -20,73 +20,8 @@ Fields are the same as in `questions.json`, rendered for readability.
 
 
 
-## 1. `ace-dev-043`, What are Discovery Request and Discovery Input nodes in ACE v13, and how do they differ from traditional transport nodes?
 
-- **Product / Role / Topic:** ACE / Dev / Connectors
-- **Difficulty:** easy
-- **Tags:** discovery-nodes, discovery-request, discovery-input, connectors, v13, designer, saas
-
-### Question
-What are Discovery Request / Input nodes in ACE v13, roughly
-how many have been added, and how do they differ from
-traditional transport nodes like HTTPRequest or MQInput?
-
-### Answer, bullets
-- **Discovery Request nodes** are outbound, connector-style
-  nodes that call a SaaS / platform endpoint (Salesforce,
-  ServiceNow, Azure Service Bus, Pinecone, Databricks, Apache
-  Pulsar, Freshservice, Google Gemini, IBM Aspera, and many
-  more, **~80+ added across 13.x modification packs**). They
-  wrap connector SDKs that IBM ships with ACE
-- **Discovery Input nodes** are the event-driven counterpart:
-  they subscribe to a SaaS / platform stream (Azure Event
-  Hubs, Amazon Event Bridge, Eventbrite, Apache Pulsar,
-  AstraDB, Databricks, Amazon SQS) and emit one message per
-  event into the flow
-- Difference vs traditional transport nodes (HTTPRequest,
-  MQInput, KafkaProducer): transport nodes model the
-  **protocol** (send HTTP, put an MQ message) and leave
-  payload format, auth and semantics up to you. Discovery
-  nodes model the **specific SaaS resource**, handle
-  connector-specific auth, pagination, schema, and expose the
-  operation set of the target service as node properties. Less
-  code, more declarative
-- Connector catalogue lands piecemeal per modification pack:
-  13.0.1.0 first batch, 13.0.3.0 added vector DBs (Milvus,
-  Pinecone), 13.0.4.0 added Azure Service Bus, 13.0.5.0
-  added Azure Event Hubs / Google Gemini / IBM Aspera,
-  13.0.6.0 added Apache Pulsar / AstraDB / Databricks,
-  13.0.7.0 added Freshservice / Azure DevOps / Google
-  Analytics and more
-- Development model: start with a connector-oriented flow in
-  Designer (low-code), optionally move it to the Toolkit for
-  advanced logic (ESQL, Java, complex transformations).
-  Designer and Toolkit both expose the same catalogue
-- Practical consequence for architects: v13 shifts "how do I
-  call service X from ACE" from "write an HTTPRequest, handle
-  auth, parse response" to "drop the right Discovery node and
-  configure it". Where Discovery does not cover your case, you
-  fall back to HTTPRequest / RESTRequest with OAuth 2.0 (also
-  now native in v13)
-
-### Explanation
-Discovery nodes are v13's answer to "ACE is behind on SaaS
-connectivity vs cloud iPaaS". The ~80+ connectors let you
-talk to modern SaaS, vector DBs and cloud event streams
-declaratively, without hand-rolling an HTTP call per service.
-The trade-off is that Discovery nodes only cover the
-operations IBM has packaged; edge cases still fall back to
-HTTPRequest. Candidates who frame this as "low-code connector
-catalogue, with HTTPRequest / RESTRequest as the escape
-hatch" show they understand the complementary positioning.
-
-### References
-- Blog: ACE v13 new features overview (matthiasblomme)
-- https://www.ibm.com/docs/en/app-connect/13.0.x?topic=new-whats-app-connect-enterprise
-
----
-
-## 2. `ace-dev-044`, What does the Kafka Schema Registry policy add in ACE v13, and what serialisation format does it unlock?
+## 1. `ace-dev-044`, What does the Kafka Schema Registry policy add in ACE v13, and what serialisation format does it unlock?
 
 - **Product / Role / Topic:** ACE / Dev / Kafka
 - **Difficulty:** medium
@@ -144,7 +79,7 @@ configuration" show they have been tracking the Kafka roadmap.
 
 ---
 
-## 3. `ace-dev-045`, Which authentication types can the v13 HTTPRequest / RESTRequest nodes use directly, and what does that replace?
+## 2. `ace-dev-045`, Which authentication types can the v13 HTTPRequest / RESTRequest nodes use directly, and what does that replace?
 
 - **Product / Role / Topic:** ACE / Dev / Nodes
 - **Difficulty:** medium
@@ -205,7 +140,7 @@ modern APIs.
 
 ---
 
-## 4. `ace-dev-046`, What is the JSONata Mapping node in ACE v13, and how does it differ from Graphical Data Maps?
+## 3. `ace-dev-046`, What is the JSONata Mapping node in ACE v13, and how does it differ from Graphical Data Maps?
 
 - **Product / Role / Topic:** ACE / Dev / Mapping
 - **Difficulty:** easy
@@ -264,7 +199,7 @@ picked between them on real flows.
 
 ---
 
-## 5. `ace-adm-048`, What does `mqsirestart` do, and why is it better than `mqsistop` + `mqsistart`?
+## 4. `ace-adm-048`, What does `mqsirestart` do, and why is it better than `mqsistop` + `mqsistart`?
 
 - **Product / Role / Topic:** ACE / Admin / Operations
 - **Difficulty:** easy
@@ -322,7 +257,7 @@ syntax, and who compare it to the absence of a built-in
 
 ---
 
-## 6. `ace-adm-049`, How does `mqsistopmsgflow` differ from `ibmint stop server`?
+## 5. `ace-adm-049`, How does `mqsistopmsgflow` differ from `ibmint stop server`?
 
 - **Product / Role / Topic:** ACE / Admin / Operations
 - **Difficulty:** medium
@@ -385,7 +320,7 @@ production, not just labs.
 
 ---
 
-## 7. `ace-dev-047`, What is Project Bob, and where does it fit compared with a generic Copilot for modernising ACE code?
+## 6. `ace-dev-047`, What is Project Bob, and where does it fit compared with a generic Copilot for modernising ACE code?
 
 - **Product / Role / Topic:** ACE / Dev / Tooling
 - **Difficulty:** easy
@@ -448,7 +383,7 @@ the subscription shape.
 
 ---
 
-## 8. `ace-adm-050`, What is the ACE Agent Preview in the Dashboard, and what are its constraints?
+## 7. `ace-adm-050`, What is the ACE Agent Preview in the Dashboard, and what are its constraints?
 
 - **Product / Role / Topic:** ACE / Admin / AI
 - **Difficulty:** easy
@@ -506,7 +441,7 @@ reading the preview label correctly.
 
 ---
 
-## 9. `ace-adm-051`, What is the MCP (Model Context Protocol) feature in ACE v13.0.7.0, and how does it expose REST APIs?
+## 8. `ace-adm-051`, What is the MCP (Model Context Protocol) feature in ACE v13.0.7.0, and how does it expose REST APIs?
 
 - **Product / Role / Topic:** ACE / Admin / AI
 - **Difficulty:** medium
@@ -563,7 +498,7 @@ reading the feature correctly.
 
 ---
 
-## 10. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
+## 9. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** medium
@@ -614,7 +549,7 @@ done the migration for real.
 
 ---
 
-## 11. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
+## 10. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy
@@ -673,7 +608,7 @@ not apply here.
 
 ---
 
-## 12. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
+## 11. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy
