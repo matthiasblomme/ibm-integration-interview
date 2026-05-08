@@ -25,70 +25,8 @@ Fields are the same as in `questions.json`, rendered for readability.
 
 
 
-## 1. `ace-adm-049`, How does `mqsistopmsgflow` differ from `ibmint stop server`?
 
-- **Product / Role / Topic:** ACE / Admin / Operations
-- **Difficulty:** medium
-- **Tags:** mqsistopmsgflow, ibmint-stop-server, startmode, stopped-file, operations, lifecycle
-
-### Question
-How do `mqsistopmsgflow` and `ibmint stop server` differ, and
-what are the deploy-time / restart-time follow-up pieces
-needed to make a stop stick?
-
-### Answer, bullets
-- **`mqsistopmsgflow`** stops **what runs inside** a running
-  integration server (applications, message flows, or all of
-  them at once), without stopping the server itself. The
-  server keeps running; the flow just stops processing
-- Scopes:
-  `mqsistopmsgflow <node> --integration-server <is>` stops
-  the server; add `--application <app>` for a single app, or
-  `--all-applications` for every app in that server; or go
-  wider with `--all-integration-servers --all-applications`
-  across the node
-- **`ibmint stop server <serverName>`** stops the
-  **integration server itself**. It shuts the whole process
-  down (managed integration servers only, plus the required
-  `integrationNodeSpec`). It is NOT an equivalent for stopping
-  a single flow
-- There is **no `ibmint` equivalent** for stopping an
-  application or flow inside a running server; if you need
-  that, `mqsistopmsgflow` is the only in-place tool. For
-  declarative control at deploy time, set
-  `startMode: manual|maintained` on the app / flow, or use a
-  `.stopped` file
-- Gotcha on re-deploy: stopping a flow with `mqsistopmsgflow`
-  is not durable. The next deploy ignores your runtime stop
-  and starts the flow again if its `startMode` is `automatic`.
-  To keep a flow stopped across deploys, set
-  `startMode: maintained` or `manual`, or drop a `.stopped`
-  file in the flow's `overrides/<app>/<flow>/` directory
-- Summary axis: `mqsistopmsgflow` = runtime state of something
-  running inside a server; `ibmint stop server` = lifecycle of
-  the server process itself; `.stopped` and `startMode` =
-  deploy-time configuration. Different tools for different
-  levels of the stack
-
-### Explanation
-The two commands live at different levels and are often
-confused. `mqsistopmsgflow` is a runtime surgical tool for
-stopping apps / flows in place without restarting the server;
-`ibmint stop server` is a lifecycle tool for the server
-process. Neither is durable across deploys without also using
-`startMode` or a `.stopped` file. Candidates who can
-articulate the three levels (in-flight runtime state vs
-server lifecycle vs deploy-time config) and mention the
-`.stopped` file fallback show they have operated ACE in
-production, not just labs.
-
-### References
-- Blog: Keeping stuff stopped in IBM ACE (matthiasblomme)
-- https://www.ibm.com/docs/en/app-connect/13.0.x?topic=commands-mqsistopmsgflow-command
-
----
-
-## 2. `ace-dev-047`, What is Project Bob, and where does it fit compared with a generic Copilot for modernising ACE code?
+## 1. `ace-dev-047`, What is Project Bob, and where does it fit compared with a generic Copilot for modernising ACE code?
 
 - **Product / Role / Topic:** ACE / Dev / Tooling
 - **Difficulty:** easy
@@ -151,7 +89,7 @@ the subscription shape.
 
 ---
 
-## 3. `ace-adm-050`, What is the ACE Agent Preview in the Dashboard, and what are its constraints?
+## 2. `ace-adm-050`, What is the ACE Agent Preview in the Dashboard, and what are its constraints?
 
 - **Product / Role / Topic:** ACE / Admin / AI
 - **Difficulty:** easy
@@ -209,7 +147,7 @@ reading the preview label correctly.
 
 ---
 
-## 4. `ace-adm-051`, What is the MCP (Model Context Protocol) feature in ACE v13.0.7.0, and how does it expose REST APIs?
+## 3. `ace-adm-051`, What is the MCP (Model Context Protocol) feature in ACE v13.0.7.0, and how does it expose REST APIs?
 
 - **Product / Role / Topic:** ACE / Admin / AI
 - **Difficulty:** medium
@@ -266,7 +204,7 @@ reading the feature correctly.
 
 ---
 
-## 5. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
+## 4. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** medium
@@ -317,7 +255,7 @@ done the migration for real.
 
 ---
 
-## 6. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
+## 5. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy
@@ -376,7 +314,7 @@ not apply here.
 
 ---
 
-## 7. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
+## 6. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy
@@ -433,7 +371,7 @@ safe answer.
 
 ---
 
-## 8. `ace-dev-048`, How do you do 2-phase commit with Kafka in ACE?
+## 7. `ace-dev-048`, How do you do 2-phase commit with Kafka in ACE?
 
 - **Product / Role / Topic:** ACE / Dev / Kafka
 - **Difficulty:** medium
@@ -509,7 +447,7 @@ limitation have not hit a partial-outcome incident yet.
 
 ---
 
-## 9. `ace-dev-049`, What is the default read mode (isolation level) for KafkaConsumer in ACE?
+## 8. `ace-dev-049`, What is the default read mode (isolation level) for KafkaConsumer in ACE?
 
 - **Product / Role / Topic:** ACE / Dev / Kafka
 - **Difficulty:** easy

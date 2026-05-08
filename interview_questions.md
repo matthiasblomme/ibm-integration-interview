@@ -2,13 +2,13 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 147
+**Total questions:** 148
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (14)](#mq-dev)
-- [ACE, Admin (48)](#ace-admin)
+- [ACE, Admin (49)](#ace-admin)
 - [ACE, Dev (47)](#ace-dev)
 - [Cloud (5)](#cloud)
 
@@ -1368,6 +1368,22 @@ Sudden changes usually have a cause you can pin to a timeline: a change, an exte
 
 _References:_
 - <https://github.com/matthiasblomme/ACE_MQ_Tooling>
+
+**Q: How does `mqsistopmsgflow` differ from `ibmint stop server`?**
+
+- **`mqsistopmsgflow`** is a **multi-scope stop**: depending on the args, it can stop an integration node, an integration server, all applications in a server, a specific application or library, a single named message flow, or all flows across the node. The server keeps running only when you target a flow or an application; without flow / application args, `--integration-server <is>` stops the server itself and preserves each flow's per-flow state for the next start
+- **Scope by arg combination:** `mqsistopmsgflow <node> --integration-server <is>` stops the server; add `--application <app>` for a single app or `--all-applications` for every app in that server; add `--flow <name>` (or `-m`) inside an application or library for a specific flow; or go wider with `--all-integration-servers --all-applications` across the node
+- **`mqsistop` is IBM's preferred command for the node / server scope** (its own doc names `mqsistopmsgflow` as 'an alternative' and `mqsistop` as 'the preferred method for stopping components'). But `mqsistop` cannot reach inside a server to stop an app or a flow; for that scope, `mqsistopmsgflow` is the only option
+- **`ibmint stop server <serverName>`** stops the integration server itself. **Managed integration servers only**, IBM's doc is explicit that `ibmint stop server` cannot be used on an independent integration server. Pair with one of `--integration-node`, `--integration-node-file`, `--admin-host`+`--admin-port`, or `--admin-uri` to identify the target. `--immediate` forces an immediate shutdown; `--timeout-seconds` defaults to 60. Not an equivalent for stopping a single flow
+- There is **no `ibmint` equivalent** for stopping an application or flow inside a running server; if you need that, `mqsistopmsgflow` is the only in-place tool. For declarative control at deploy time, set `startMode: manual | maintained` on the app / flow, or use a `.stopped` file
+- **Gotcha on re-deploy:** stopping a flow with `mqsistopmsgflow` is not durable. The next deploy ignores your runtime stop and starts the flow again if its `startMode` is `automatic`. To keep a flow stopped across deploys, set `startMode: maintained` or `manual`, or drop a `.stopped` file in the flow's `overrides/<app>/<flow>/` directory
+- **Summary axis:** node / server scope -> prefer `mqsistop` (or `ibmint stop server` for managed servers); app / flow scope inside a running server -> only `mqsistopmsgflow`; durable across deploys -> `startMode` or `.stopped` file at deploy time. Different tools for different levels of the stack
+
+Three commands and one config knob live at different levels and are often confused. `mqsistop` is IBM's preferred node/server stop. `mqsistopmsgflow` is the alternative at node/server scope and the only tool for the app/flow scope inside a running server. `ibmint stop server` covers managed integration servers (not independent ones). None of them are durable across deploys without also using `startMode` or a `.stopped` file. Candidates who can articulate the four levels (preferred node/server stop vs in-place app/flow stop vs ibmint server lifecycle vs deploy-time config), mention the `.stopped` file fallback, and know `ibmint stop server` does not work on independent integration servers show they have operated ACE in production, not just labs.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=commands-mqsistopmsgflow-command>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=commands-ibmint-stop-server-command>
 
 ## ACE, Dev
 
