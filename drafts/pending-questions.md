@@ -26,70 +26,8 @@ Fields are the same as in `questions.json`, rendered for readability.
 
 
 
-## 1. `ace-dev-047`, What is Project Bob, and where does it fit compared with a generic Copilot for modernising ACE code?
 
-- **Product / Role / Topic:** ACE / Dev / Tooling
-- **Difficulty:** easy
-- **Tags:** project-bob, ai, modernization, java-17, watsonx, toolkit
-
-### Question
-What is Project Bob, when is it a better fit than a generic
-Copilot for ACE modernisation, and how does it relate to
-Watsonx Code Assistant in the Toolkit?
-
-### Answer, bullets
-- **Project Bob** is IBM's AI-first IDE, launched publicly at
-  TechXchange 2025, aimed at **code modernisation**: refactor,
-  test, document, and deploy existing codebases rather than
-  greenfield scaffolding
-- Treats Java as a first-class citizen, which maps directly
-  onto the v13 migration story: Java 17 cleanup
-  (`javax.xml.bind.*` removals, `DatatypeConverter`, JNA
-  version bumps, old JSoup / Jackson / Auth0 JWT / PDFBox),
-  per-project trackers, first-pass identification of the
-  usual suspects
-- Where Bob beats a generic Copilot for ACE work:
-  - Opinionated on **modernisation workflows** (upgrade paths,
-    deprecation sweeps, test-coverage fill-in) rather than just
-    "complete this function"
-  - **Integrated with ACE tooling** rather than being a
-    language-only assistant; understands project layouts like
-    shared libraries, policies and BAR structure
-  - Produces **trackers and diffs** you can hand to a
-    reviewer, not just inline suggestions
-- What it does not try to replace: the human pass at the end,
-  a candidate who has seen the code. Bob is a force multiplier
-  on the repetitive Java 17 cleanup and test backfill, not a
-  one-click migration button
-- Compare with embedded **Watsonx Code Assistant** in the
-  Toolkit (v13): WCA lives inside the Toolkit for in-flow
-  assistance (explain ESQL, generate Java snippets, produce
-  schema sample data, write unit tests). Bob is a standalone
-  IDE for larger modernisation projects. They overlap but do
-  not conflict
-- Both require extra subscriptions; Bob is the external
-  modernisation-focused tool, WCA is the embedded Toolkit
-  assistant
-
-### Explanation
-Project Bob is the IBM-branded answer to "there is a lot of
-old Java and ESQL in our ACE estate, can AI help with the
-first pass of modernisation". Generic Copilot is good at
-autocomplete but does not understand ACE's project layout or
-its Java 17 migration list; Bob does. The interview signal is
-whether the candidate frames Bob as "force multiplier for
-modernisation, not a magic button", knows it is separate from
-the Toolkit-embedded Watsonx Code Assistant, and understands
-the subscription shape.
-
-### References
-- Blog: IBM TechXchange 2025, Orlando (matthiasblomme)
-- Blog: Migrating ACE to v13 (matthiasblomme)
-- https://bob.ibm.com/
-
----
-
-## 2. `ace-adm-050`, What is the ACE Agent Preview in the Dashboard, and what are its constraints?
+## 1. `ace-adm-050`, What is the ACE Agent Preview in the Dashboard, and what are its constraints?
 
 - **Product / Role / Topic:** ACE / Admin / AI
 - **Difficulty:** easy
@@ -147,7 +85,7 @@ reading the preview label correctly.
 
 ---
 
-## 3. `ace-adm-051`, What is the MCP (Model Context Protocol) feature in ACE v13.0.7.0, and how does it expose REST APIs?
+## 2. `ace-adm-051`, What is the MCP (Model Context Protocol) feature in ACE v13.0.7.0, and how does it expose REST APIs?
 
 - **Product / Role / Topic:** ACE / Admin / AI
 - **Difficulty:** medium
@@ -204,7 +142,7 @@ reading the feature correctly.
 
 ---
 
-## 4. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
+## 3. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** medium
@@ -255,7 +193,7 @@ done the migration for real.
 
 ---
 
-## 5. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
+## 4. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy
@@ -314,7 +252,7 @@ not apply here.
 
 ---
 
-## 6. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
+## 5. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy
@@ -371,7 +309,7 @@ safe answer.
 
 ---
 
-## 7. `ace-dev-048`, How do you do 2-phase commit with Kafka in ACE?
+## 6. `ace-dev-048`, How do you do 2-phase commit with Kafka in ACE?
 
 - **Product / Role / Topic:** ACE / Dev / Kafka
 - **Difficulty:** medium
@@ -447,7 +385,7 @@ limitation have not hit a partial-outcome incident yet.
 
 ---
 
-## 8. `ace-dev-049`, What is the default read mode (isolation level) for KafkaConsumer in ACE?
+## 7. `ace-dev-049`, What is the default read mode (isolation level) for KafkaConsumer in ACE?
 
 - **Product / Role / Topic:** ACE / Dev / Kafka
 - **Difficulty:** easy

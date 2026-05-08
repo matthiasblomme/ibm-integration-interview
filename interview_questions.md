@@ -2,14 +2,14 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 148
+**Total questions:** 149
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (14)](#mq-dev)
 - [ACE, Admin (49)](#ace-admin)
-- [ACE, Dev (47)](#ace-dev)
+- [ACE, Dev (48)](#ace-dev)
 - [Cloud (5)](#cloud)
 
 ## General
@@ -2051,6 +2051,22 @@ The JSONata node is v13's answer to 'JSON transforms are clumsy in Graphical Dat
 _References:_
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=new-whats-app-connect-enterprise>
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-jsonata-mapping-node>
+
+### Tooling
+
+**Q: What is Project Bob, and where does it fit compared with a generic Copilot for modernising ACE code?**
+
+- **Project Bob** is IBM's AI-first IDE, launched publicly at TechXchange 2025, aimed at **code modernisation**: refactor, test, document, and deploy existing codebases rather than greenfield scaffolding
+- Treats Java as a first-class citizen, which maps directly onto the v13 migration story: Java 17 cleanup (`javax.xml.bind.*` removals, `DatatypeConverter`, JNA version bumps, old JSoup / Jackson / Auth0 JWT / PDFBox), per-project trackers, first-pass identification of the usual suspects
+- Where Bob beats a generic Copilot for ACE work: opinionated on **modernisation workflows** (upgrade paths, deprecation sweeps, test-coverage fill-in) rather than just 'complete this function'; **integrated with ACE tooling** rather than being a language-only assistant; understands project layouts like shared libraries, policies and BAR structure; produces **trackers and diffs** you can hand to a reviewer, not just inline suggestions
+- What it does not try to replace: the human pass at the end, a candidate who has seen the code. Bob is a force multiplier on the repetitive Java 17 cleanup and test backfill, not a one-click migration button
+- Compare with embedded **Watsonx Code Assistant** in the Toolkit (v13): WCA lives inside the Toolkit for in-flow assistance (explain ESQL, generate Java snippets, produce schema sample data, write unit tests). Bob is a standalone IDE for larger modernisation projects. They overlap but do not conflict
+- Both require extra subscriptions; Bob is the external modernisation-focused tool, WCA is the embedded Toolkit assistant
+
+Project Bob is the IBM-branded answer to 'there is a lot of old Java and ESQL in our ACE estate, can AI help with the first pass of modernisation'. Generic Copilot is good at autocomplete but does not understand ACE's project layout or its Java 17 migration list; Bob does. The interview signal is whether the candidate frames Bob as 'force multiplier for modernisation, not a magic button', knows it is separate from the Toolkit-embedded Watsonx Code Assistant, and understands the subscription shape.
+
+_References:_
+- <https://bob.ibm.com/>
 
 ### Troubleshooting
 
