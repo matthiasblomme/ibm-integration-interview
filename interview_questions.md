@@ -2,14 +2,14 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 158
+**Total questions:** 159
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (15)](#mq-dev)
 - [ACE, Admin (54)](#ace-admin)
-- [ACE, Dev (51)](#ace-dev)
+- [ACE, Dev (52)](#ace-dev)
 - [Cloud (5)](#cloud)
 
 ## General
@@ -2071,6 +2071,23 @@ _References:_
 A hardcoded IP is the signal that says 'this BAR was tested in one environment, not built for promotion'. The two production-grade alternatives address two different problems: hostnames move the env-to-IP mapping into DNS where it belongs; promoted properties move the env-to-endpoint mapping into the deploy pipeline. Candidates who name only one alternative get half the story; candidates who explain why you want both layers understand environment promotion.
 
 _References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=files-overriding-properties-bar>
+
+**Q: What is the naming convention for promoted-property overrides, and what's wrong with `port=7800`?**
+
+- **Qualified key format** (from the IBM doc, note the **dot** before the property name): node properties use `FlowName#NodeName.PropertyName=NewValue` (e.g. `sampleFlow#MQInput.queueName=PROD_Q`); flow-level promoted properties use `FlowName#PromotedName=NewValue`; application-level configurable properties use a bare property name (e.g. `startMode=auto`) *plus* the `-k applicationName` parameter on `mqsiapplybaroverride` to scope it. The app name is **not** embedded in the key
+- **What is wrong with `port=7800`:** it is not a qualified key. There is no property literally named `port` in any deployment descriptor; the real property is something like `myFlow#HTTPInput.port`. The IBM-doc-defined `OldValue=NewValue` syntax would interpret this as 'find any property whose value is literally `port` and replace with `7800`', practically a no-op because nothing has that value
+- **The silent-failure trap (the real footgun):** `mqsiapplybaroverride` does **not validate that the key matches a real property**. If the key is malformed, unqualified, or misspelled, the line is simply ignored. **No warning, no error, exit code 0**. You think you set `port`; the BAR ships with the default. Build pipelines see green and push to prod, where the original value is still baked in
+- **The first sign of trouble** is usually a wrong-endpoint connection or auth failure in a higher environment, hours after the change supposedly landed, because the override never applied
+- **Verification step** (mandatory in any production override pipeline): run `mqsireadbar` (or `ibmint read bar`) on the output BAR and confirm the overridden value actually landed. Or unzip the BAR, open `META-INF/broker.xml`, grep for the expected value. **Trust nothing about exit codes**
+- **Two override-file dialects in the same file format:** per-property (precise, recommended) `FlowName#NodeName.PropertyName=NewValue`; value-replacement (global search-and-replace on the value column, fragile, easy to over-match) `OldValue=NewValue`. Avoid value-replacement in production unless you understand exactly what it touches
+- **v13 equivalent:** `ibmint apply overrides` is the modern command, same key syntax, same silent-failure behaviour when the key does not match. Switching command does not switch the trap
+
+Promoted-property overrides use `FlowName#NodeName.PropertyName` for node-level properties; the application name is supplied via `-k`, not embedded in the key. The real footgun is silent: `mqsiapplybaroverride` (and `ibmint apply overrides`) do not validate keys against the deployment descriptor, so a malformed or unqualified key is ignored and the override exits successfully. The BAR ships with the original value, the pipeline looks green, and the first incident lands in a higher environment when traffic hits the wrong endpoint. Candidates who add `mqsireadbar` verification to their pipeline have been burned by this; candidates who say 'the build passed so the override worked' have not.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=commands-mqsiapplybaroverride-command>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=commands-mqsireadbar-command>
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=files-overriding-properties-bar>
 
 ### Build
