@@ -23,9 +23,9 @@ covers the same ground.
 | 3 | K (graduated as `mq-dev-015`) | If a queue defines BOQNAME but the backout queue does not exist, what happens to messages that reach the retry threshold? | config_guidelines.md § 2.2 | Messages end up on the DLQ without context, silent data-loss risk |
 | 4 | K (graduated as `ace-dev-051`) | What's the correct naming convention for promoted properties, and what's wrong with a property named `port=7800`? | config_guidelines.md § 1.2 | `FlowName#NodeName.PropertyName`; bare `port=7800` silently fails to apply (mqsiapplybaroverride does not validate keys) |
 | 5 | K (graduated as `ace-dev-052`) | In ACE v13, which JSON Schema version is supported, and which draft-6/7 keywords are silently ignored? | config_guidelines.md § 4.2 | Corrected against IBM doc: Draft 04 + Draft 05 supported; unsupported drafts throw BIP5754 (not silent); the actually-silently-ignored keywords are `default`/`format`/`discriminator` |
-| 6 |         | What's the safest way to store database credentials in an ACE credential policy file? | config_guidelines.md § 3.3 | Never plaintext; reference vault/env via `{env:VAR_NAME}` |
-| 7 |         | Name the four severity categories used to classify configuration findings in ACE reviews. | config_guidelines.md § 5 | CF-01 … CF-10 (e.g. CF-01 = hardcoded credentials, CF-05 = TLS not configured) |
-| 8 |         | How should environment-specific override files be named, and what command applies them to a BAR file? | config_guidelines.md § 1.3 | `dev/test/uat/prod.properties`; `ibmint apply overrides` |
+| 6 | S (broad credential question covered by `ace-adm-006` + vault-API question; carved out the `{env:VAR_NAME}` syntax angle as #80 below) | What's the safest way to store database credentials in an ACE credential policy file? | config_guidelines.md § 3.3 | Never plaintext; reference vault/env via `{env:VAR_NAME}` |
+| 7 | S (internal Bob/Expert-Labs taxonomy, not an external standard) | Name the four severity categories used to classify configuration findings in ACE reviews. | config_guidelines.md § 5 | CF-01 … CF-10 (e.g. CF-01 = hardcoded credentials, CF-05 = TLS not configured) |
+| 8 | K (graduated as `ace-dev-053`) | How should environment-specific override files be named, and what command applies them to a BAR file? | config_guidelines.md § 1.3 | Reframed as a trick question: no IBM-mandated convention, principle is self-documenting names (env-based or `<app>-<env>` patterns) |
 
 ## Error handling and resilience (error_handling_guidelines.md)
 
@@ -132,6 +132,12 @@ covers the same ground.
 | 77 | (possible overlap) | Name the danger of unconnected output terminals, and why testing often misses the data-loss bug this creates. | ten_ace_message_flow_mistakes.md § Unconnected Output Terminals | Terminals can silently drop messages on edge cases; happy-path tests won't hit them |
 | 78 |        | What must you add to guarantee order of execution when a terminal has multiple output connections? | ten_ace_message_flow_mistakes.md § Multiple Output Connections | FlowOrder node, without it, order is non-deterministic |
 | 79 | (possible overlap) | `CARDINALITY` in a loop condition, explain the degradation with large arrays and the correct fix. | ten_ace_message_flow_mistakes.md § Cardinality in Loops | Evaluated every iteration → O(n²) for large arrays; cache in a variable before the loop |
+
+## User-added candidates (carved out during Bob review)
+
+| # | Verdict | Question | Source file | Hook |
+|---|---------|----------|-------------|------|
+| 80 |         | How does ACE substitute environment variable values into a credential policy file, and what is the `{env:VAR_NAME}` syntax actually do at runtime? | carved from Bob #6 | `{env:VAR_NAME}` pulls a value from a container / OS env var at policy-load time. Verify against ACE docs before drafting, may need to confirm the exact syntax (`{env:VAR}` vs `{env-var:VAR}` vs other) and whether secret rotation needs a reload |
 
 ---
 

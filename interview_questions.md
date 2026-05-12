@@ -2,14 +2,14 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 160
+**Total questions:** 161
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (15)](#mq-dev)
 - [ACE, Admin (54)](#ace-admin)
-- [ACE, Dev (53)](#ace-dev)
+- [ACE, Dev (54)](#ace-dev)
 - [Cloud (5)](#cloud)
 
 ## General
@@ -2088,6 +2088,20 @@ Promoted-property overrides use `FlowName#NodeName.PropertyName` for node-level 
 _References:_
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=commands-mqsiapplybaroverride-command>
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=commands-mqsireadbar-command>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=files-overriding-properties-bar>
+
+**Q: How should you name environment-specific BAR override files in ACE?**
+
+- **Trick answer first: there is no IBM-mandated naming convention.** The override file is just a properties file passed via `mqsiapplybaroverride -p <file>` (or `ibmint apply overrides`). IBM's docs do not prescribe a filename pattern. Anyone who quotes a hard rule is repeating their team's convention as if it were a standard
+- **Good naming is self-documenting.** The filename should make it obvious from one glance which environment (and / or which application) the file targets, so a reviewer reading a pipeline log instantly knows whether the right file landed in the right place
+- **Two conventions that work in practice:** environment-based (most common) `dev.properties`, `test.properties`, `uat.properties`, `prod.properties`, simple and scales when one BAR is the same across all envs; endpoint / integration-based (better when multiple apps share a pipeline) `payments-prod.properties`, `orders-uat.properties`, `inventory-dev.properties`, makes the 'which app, which env' pair obvious; combined directory hierarchy `overrides/<env>/<app>.properties` (e.g. `overrides/prod/payments.properties`), which lets the env be picked from the path and the app from the filename
+- **Anti-patterns:** `override.properties` (no environment context, useless in a multi-env pipeline); `myproperties.txt` (no convention at all, every reviewer has to open the file to know what it is); hardcoded version numbers (`override-1.2.3.properties`, they drift from the BAR version and lie within a release); environment encoded as a comment inside the file rather than the filename (comments are not visible in a `ls`, the filename is)
+- **Verification still matters.** Whichever convention you pick, pair it with `mqsireadbar` after `mqsiapplybaroverride` to confirm the values landed (see `ace-dev-051`). A good filename plus a verified BAR is the production-grade combination
+
+The trick is that ACE does not care what you name the override file, IBM never set the rule. So the right answer is not a specific filename but a principle: pick a convention that is self-documenting on the env and / or integration axis, and apply it consistently across the team. Candidates who name `dev/test/uat/prod` or `<app>-<env>` patterns and explain *why* (reviewability, multi-app safety) understand the goal; candidates who insist there is a mandated name are repeating their team's convention as if it were an IBM rule.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=commands-mqsiapplybaroverride-command>
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=files-overriding-properties-bar>
 
 ### Build
