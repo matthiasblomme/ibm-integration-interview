@@ -2,14 +2,14 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 154
+**Total questions:** 155
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (14)](#mq-dev)
 - [ACE, Admin (54)](#ace-admin)
-- [ACE, Dev (48)](#ace-dev)
+- [ACE, Dev (49)](#ace-dev)
 - [Cloud (5)](#cloud)
 
 ## General
@@ -2099,6 +2099,24 @@ The v13 Kafka story is 'raise the Kafka nodes to parity with modern broker featu
 _References:_
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=policies-schema-registry-policy>
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=kafka-using-avro-serialization>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-kafkaproducer-node>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-kafkaconsumer-node>
+
+**Q: How do you do 2-phase commit with Kafka in ACE?**
+
+- **Short answer: you cannot.** IBM's Transactional messaging with Kafka doc is explicit that 'the IBM App Connect Enterprise Kafka nodes do not support 2-phase commit'. Kafka is not an XA resource manager; ACE does not coordinate it with MQ or database transactions
+- **What you get instead in a mixed flow:** each resource manager runs its own independent transaction. Kafka commits / rolls back at end-of-flow; MQ commits / rolls back at end-of-flow; the database commits / rolls back at end-of-flow. Each commits or rolls back independently. If one fails after others have committed, you have a partial outcome to clean up
+- **Kafka-internal transactions are real, just not XA-bridged.** Set `Transaction Mode: Yes` and a non-empty `Transactional Id` on the KafkaProducer to publish transactionally. Multiple KafkaProducer nodes in the same flow with the same `Transactional Id` join the same Kafka transaction; different Ids = different transactions, each committed independently. `Transaction Mode: Automatic` reads the `Transactional` property from the message Properties folder
+- **Same-Id consumer + producer = atomic Kafka request/reply.** Setting the same `Transactional Id` on a KafkaConsumer + a KafkaProducer in the same flow makes the consume + produce occur or both not occur, the canonical Kafka request/reply atomicity pattern. Validation throws an exception if the two nodes have incompatible config (bootstrap servers, client Id, etc.)
+- **Multi-instance gotcha:** if a flow with `Transactional Id` set runs additional instances, ACE suffixes the Id with a thread identifier per thread to keep transactions distinct. You do not have to do this yourself. But you cannot reuse the same `Transactional Id` across different message flow instances; the transaction is scoped within the flow instance
+- **Transaction timeout** is a Kafka-side timeout: if commit takes longer than this from the start of the transaction, Kafka rolls it back automatically. Tune to match the longest realistic flow execution
+- **Design pattern when you need cross-RM atomicity:** use the transactional outbox pattern, idempotent consumers with deduplication, or saga-style compensations. ACE itself cannot give you Kafka + MQ + DB in a single 2PC; the application has to design around it
+
+The honest answer to 'how do I do 2PC with Kafka in ACE?' is 'you do not'. Kafka is not an XA resource manager and ACE is explicit about not coordinating Kafka with MQ or database transactions. Within Kafka itself you do get transactional producers + consumers, including the same-`Transactional Id` pattern that makes consumer + producer atomic in a request/reply flow, and that is the right answer to 'atomicity within Kafka'. Across resource managers, you design around it (outbox, idempotent consumers, sagas). Candidates who confidently say 'yes, set the transaction node' without flagging the no-2PC limitation have not hit a partial-outcome incident yet.
+
+_References:_
+- <https://matthiasblomme.github.io/blogs/posts/ace-v13-new-features-overview/v13-new-features/>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=kafka-transactional-messaging>
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-kafkaproducer-node>
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-kafkaconsumer-node>
 
