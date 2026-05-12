@@ -31,7 +31,7 @@ covers the same ground.
 
 | # | Verdict | Question | Source file | Hook |
 |---|---------|----------|-------------|------|
-| 9 | (possible overlap) | Describe the three-tier error handling hierarchy in ACE, with an example per tier. | error_handling_guidelines.md § 1 | Flow / application / integration-server, each tier has its own scope |
+| 9 | T (graduated as `ace-dev-054`) | Describe the three-tier error handling hierarchy in ACE, with an example per tier. | error_handling_guidelines.md § 1 | Reframed against IBM docs: node Failure terminal -> flow TryCatch + input-node Catch -> input-node protocol-dependent default. Bob's "flow / app / server" framing is a team convention, not IBM model |
 | 10 |        | What's the danger of `PROPAGATE TO LABEL` without `FINALIZE NONE DELETE NONE` when code follows? | error_handling_guidelines.md § PROPAGATE Finalization | Output trees can be finalized and deleted after propagation, leaving downstream code with stale/empty trees |
 | 11 |        | Write ESQL to safely navigate `InputExceptionList` using references instead of subscripts. | error_handling_guidelines.md § Exception List Handling | `REFERENCE TO InputExceptionList.*[1]` + `MOVE exRef NEXTSIBLING` avoids array overhead |
 | 12 |        | Which SQLSTATE indicates a DB deadlock, and how should its handling differ from a connection error? | error_handling_guidelines.md § Database Error Handling | SQLSTATE `40001` = deadlock (retry); `08%` = connection (different retry strategy) |

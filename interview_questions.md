@@ -2,14 +2,14 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 161
+**Total questions:** 162
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (15)](#mq-dev)
 - [ACE, Admin (54)](#ace-admin)
-- [ACE, Dev (54)](#ace-dev)
+- [ACE, Dev (55)](#ace-dev)
 - [Cloud (5)](#cloud)
 
 ## General
@@ -1621,6 +1621,20 @@ Transactionality is a per-node setting that has to be consistent across the flow
 - Mitigation for the no-threshold case: configure BOTHRESH + BOQNAME on every input queue as a standard (even BOTHRESH=3 with a named backout queue prevents the infinite loop), or add a Failure terminal that handles the error explicitly
 
 With no error handling attached, the flow relies entirely on the MQ backout mechanism, which is valid only if BOTHRESH is actually configured. The often-missed trap is that BOTHRESH defaults to 0, which means 'no threshold' → the poison message loops forever. A senior answer will call out both the normal case and the no-threshold case, and recommend setting BOTHRESH + BOQNAME as queue standards regardless of flow-level error handling.
+
+**Q: Describe the layered error handling in ACE: where do exceptions go, and what is the default cascade?**
+
+- **Tier 1, node-level Failure terminal.** Every node has an optional **Failure terminal**. When that node throws, the exception (with the in-flight message) is routed to the connected Failure terminal. This is the most precise catch: 'this specific node failed, do this specific thing'
+- **Tier 2, flow-level catch via TryCatch + input-node Catch terminal.** A **TryCatch node** wraps a sub-region of the flow: anything unhandled inside the `Try` branch flows to the `Catch` branch. The **MQInput / HTTPInput / FileInput Catch terminal** is the same idea applied to the whole flow: anything unhandled downstream lands here
+- **Tier 3, input-node default (no explicit handler).** If neither a Failure terminal nor a Catch terminal is wired, the exception propagates *upstream* until it reaches the input node. The input node's default behaviour is **protocol-dependent**: MQInput rolls back the UOW, message restored to the queue, `BackoutCount` incremented (then BOTHRESH/BOQNAME kick in); HTTPInput returns an error response to the client; FileInput moves the file to the configured error directory
+- **Parallel dimension: transactional rollback.** Independently of the catch tier, if the flow is transactional, any unhandled exception triggers rollback of all participating resource managers (MQ + DB). This is **not a catch**, it is the *consequence* when no catch took the exception. Catch terminals and TryCatch handlers can re-throw to keep the rollback semantics intact, or swallow the exception to commit a partial-success state, the choice is explicit
+- **`ExceptionList` is how you read the failure inside a handler.** Once an exception reaches a Failure / Catch / TryCatch branch, the message tree has an `ExceptionList` subtree containing the BIP code, label, text, and insertion strings. Walking it with references (see `ace-dev-024`) is the standard pattern, do not subscript into it
+
+The IBM-documented cascade is **per-node Failure terminal -> upstream propagation -> input-node default**, with TryCatch nodes carving sub-regions in the middle. There is no first-class 'application-tier' error handler in the IBM model; people who claim one are describing a team pattern (e.g. a shared error-handling subflow that every input node Catch wires into). Candidates who name the three real tiers (node, flow-region via TryCatch, input-node default), name the parallel transactional rollback, and recall that the input-node default is protocol-dependent are reading the model correctly.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=rfgw-default-error-handling>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=ovr-handling-errors-in-message-flows>
 
 ### HTTPS
 
