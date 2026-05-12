@@ -2,14 +2,14 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 159
+**Total questions:** 160
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (15)](#mq-dev)
 - [ACE, Admin (54)](#ace-admin)
-- [ACE, Dev (52)](#ace-dev)
+- [ACE, Dev (53)](#ace-dev)
 - [Cloud (5)](#cloud)
 
 ## General
@@ -2239,6 +2239,23 @@ Project Bob is the IBM-branded answer to 'there is a lot of old Java and ESQL in
 
 _References:_
 - <https://bob.ibm.com/>
+
+### JSON Schema
+
+**Q: Which JSON Schema drafts does ACE v13 support, and which keywords are silently ignored?**
+
+- **Supported specifications** (from the IBM 'JSON validation' doc): JSON Schema **Draft 04**, JSON Schema **Draft 05** (Wright), Swagger 2.0, OpenAPI 3.0.x
+- **Unsupported drafts (Draft 06, 07, 2019-09, 2020-12) are NOT silently dropped.** If you declare an unsupported draft via `$schema` (e.g. `"$schema": "http://json-schema.org/draft-07/schema#"`), ACE throws **`BIP5754`** at first use of the deployed schema. The loud failure is by design
+- **Draft-07-only keywords inside a Draft-04 declared schema** also fail loudly: deployed schemas are validated against their meta-schema at first use, so an `if` / `then` / `else` / `$defs` / `contains` inside a `$schema: draft-04` file fails meta-schema validation and throws. Same loud-fail story, different trigger
+- **What IS silently ignored, across all supported drafts:** `default`, `format`, and `discriminator`. The IBM doc states this explicitly. They are accepted in the schema, they pass meta-validation, but they have **no effect on the validation result**
+- **The real footgun is `format`.** Schemas commonly use `"format": "email"` / `"format": "uri"` / `"format": "date-time"` to express shape constraints. ACE accepts the schema, validation reports success, and **malformed values pass through** because `format` was never applied. Authors assume 'schema validated -> email is well-formed'; ACE never made that promise
+- **Pair `additionalProperties: false` with explicit `pattern` regexes** when you need email / URI / date-time shape enforcement. Do not rely on `format` as a validator; treat it as documentation
+- **Schemas-correctness check happens at first use, not at deploy.** Bad schemas (unsupported draft, meta-schema violation) do not block deployment; they block the first message-flow invocation. Test the validation path before promoting
+
+ACE v13's JSON parser supports Draft 04 and Draft 05, plus Swagger 2.0 and OpenAPI 3.0.x, not the modern Draft 07 / 2019-09 / 2020-12 that most public tooling defaults to. An unsupported draft is not silently ignored; ACE raises `BIP5754` at first use. The real silent trap is the `default` / `format` / `discriminator` triplet, which is accepted in the schema and ignored at validation time. The `format` case is especially dangerous because authors write `"format": "email"` and assume ACE enforces email-shape; it does not, and bad data passes through validators that look green. Candidates who name both the loud BIP5754 path and the silent `format` ignore understand the two failure modes; candidates who say 'JSON Schema just works in ACE' have not deployed a Draft-07 schema yet.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=files-json-validation>
 
 ### Troubleshooting
 
