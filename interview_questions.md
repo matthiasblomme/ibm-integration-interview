@@ -2,12 +2,12 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 157
+**Total questions:** 158
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
-- [MQ, Dev (14)](#mq-dev)
+- [MQ, Dev (15)](#mq-dev)
 - [ACE, Admin (54)](#ace-admin)
 - [ACE, Dev (51)](#ace-dev)
 - [Cloud (5)](#cloud)
@@ -744,6 +744,22 @@ _References:_
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=multiplatforms-get-sample-programs>
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.dev.doc/q101830_.html>
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q026320_.html>
+
+### Poison messages
+
+**Q: A queue defines BOQNAME but the backout queue does not exist, what happens to messages that reach BOTHRESH?**
+
+- The consumer (or framework wrapping it) compares `MQMD.BackoutCount` to the queue's `BOTHRESH`. Once the threshold is hit, the framework tries to **put the message to the queue named by `BOQNAME`**
+- **If `BOQNAME` does not exist** (or is full, has wrong put permissions, or is put-inhibited): the put fails. The fallback is the **queue manager's dead-letter queue (DLQ)**. The message lands on the DLQ instead of the configured backout queue
+- **Why this is a silent data-loss risk:** the DLQ is a shared catch-all, the message arrives without app context, so it is hard to identify which app it came from or why. For non-persistent messages (especially via XMS / IBM MQ classes for JMS), the docs explicitly say the message **may be discarded entirely** if the DLQ put also fails, or if no DLQ is configured on the queue manager. Nothing alerts. The flow keeps running. The message just disappears from view
+- The trap is configuring `BOQNAME` correctly but never verifying that the backout queue actually exists. MQ does not validate the target queue at config-time, so 'BOQNAME is set, we're safe' is a false sense of security
+- **Defensive checklist:** (a) ensure the backout queue exists *before* deploying the consumer, (b) monitor `BOQNAME` depth (does anything ever land there?), (c) monitor DLQ depth (anything unexpected?), (d) alert on both. The pair of metrics catches misconfiguration early
+
+Setting `BOQNAME` tells MQ where poisoned messages should go, but MQ does not validate that the target queue actually exists when `BOQNAME` is set. If the backout put fails for any reason (missing queue, full, no permission, inhibited), the message falls through to the queue manager's DLQ. For non-persistent messages MQ may silently discard the message altogether. Either way, the application loses visibility. Candidates who name both the DLQ fallback and the non-persistent discard case understand the failure modes; candidates who say 'messages go to BOQNAME, end of story' have not seen this in production.
+
+_References:_
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=developing-handling-poison-messages>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=introduction-dead-letter-queues>
 
 ## ACE, Admin
 

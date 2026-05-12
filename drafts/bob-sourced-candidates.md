@@ -19,8 +19,8 @@ covers the same ground.
 | # | Verdict | Question | Source file | Hook |
 |---|---------|----------|-------------|------|
 | 1 | K (graduated as `ace-dev-050`) | Why is hardcoding IP addresses in ACE properties files unsafe, and what are the two correct alternatives? | config_guidelines.md § 1.1 | Use hostnames or promoted properties instead of literals |
-| 2 |         | What three properties must every application input queue define, and why is BOQNAME critical? | config_guidelines.md § 2.1 | BOQNAME / MAXDEPTH / DEFPSIST; backout queue must exist before the first message |
-| 3 |         | If a queue defines BOQNAME but the backout queue does not exist, what happens to messages that reach the retry threshold? | config_guidelines.md § 2.2 | Messages end up on the DLQ without context, silent data-loss risk |
+| 2 | S | What three properties must every application input queue define, and why is BOQNAME critical? | config_guidelines.md § 2.1 | BOQNAME / MAXDEPTH / DEFPSIST; backout queue must exist before the first message |
+| 3 | K (graduated as `mq-dev-015`) | If a queue defines BOQNAME but the backout queue does not exist, what happens to messages that reach the retry threshold? | config_guidelines.md § 2.2 | Messages end up on the DLQ without context, silent data-loss risk |
 | 4 |         | What's the correct naming convention for promoted properties, and what's wrong with a property named `port=7800`? | config_guidelines.md § 1.2 | `[AppName]#[NodeLabel]/[PropertyName]`, `port=7800` alone collides across flows |
 | 5 |         | In ACE v13, which JSON Schema version is supported, and which draft-6/7 keywords are silently ignored? | config_guidelines.md § 4.2 | Draft 4 only, `contains`, `if`/`then`/`else`, `$defs` are silently ignored |
 | 6 |         | What's the safest way to store database credentials in an ACE credential policy file? | config_guidelines.md § 3.3 | Never plaintext; reference vault/env via `{env:VAR_NAME}` |
