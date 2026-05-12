@@ -28,66 +28,7 @@ Fields are the same as in `questions.json`, rendered for readability.
 
 
 
-## 1. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
-
-- **Product / Role / Topic:** ACE / Admin / Migration
-- **Difficulty:** easy
-- **Tags:** migration, java-8, java-17, ibmint, specify-jre, mcq
-- **answerType:** single
-
-### Question
-Which command pins an integration server to a specific JRE
-version (Java 8 or Java 17) in ACE v13?
-
-### Choices
-
-- `mqsispecifyjre`, **wrong.** No such `mqsi*` command exists.
-  The `mqsi*` family never had a per-server JRE selector; Java
-  selection in older versions was via `mqsichangebroker` flags
-  or `MQSI_FORCE_JVM` style environment variables, not a
-  dedicated command
-- `ibmint set java`, **wrong.** `ibmint set` is a real
-  subcommand family (`ibmint set credential`,
-  `ibmint set webuser-password`, etc.), but there is no
-  `set java` variant. Plausible-sounding distractor for
-  candidates who know `ibmint set credential` exists
-- `ibmint specify jre`, **correct.** Syntax:
-  `ibmint specify jre --version 8|17 --integration-node <n> --integration-server <s>`
-  (node-managed) or `--work-directory <d>` (independent).
-  Writes `server.java.yaml` next to the server config; change
-  takes effect on the next server start. Revert with the same
-  command plus `--default`
-- `mqsirevertjava`, **wrong.** Invented name. The revert
-  mechanism is `ibmint specify jre --default`, not a separate
-  command, and the `mqsi*` family never had a paired-revert
-  command for JVM selection
-
-### Answer, bullets
-- `ibmint specify jre` is the only supported way to pin an
-  integration server's JRE in v13
-- Writes the choice into `server.java.yaml` next to the server
-  config; takes effect on the next server start
-- Supports `--version 8|17`, or `--default` to revert to the
-  shipped default
-- Scope is per-server (or per-work-directory for independent
-  servers), not node-wide
-
-### Explanation
-The `ibmint` command family replaced the old `mqsi*`-style
-broker admin commands for most v12+ operations, and
-`specify jre` is the one that sets per-server JVM selection.
-Candidates who pick `ibmint specify jre` have used the command;
-candidates picking `mqsispecifyjre` or `mqsirevertjava` are
-pattern-matching on the old `mqsi*` naming scheme that does
-not apply here.
-
-### References
-- Blog: Migrating ACE to v13 (matthiasblomme)
-- https://www.ibm.com/docs/en/app-connect/13.0.x?topic=migrating-app-connect-enterprise-130
-
----
-
-## 2. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
+## 1. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy
@@ -144,7 +85,7 @@ safe answer.
 
 ---
 
-## 3. `ace-dev-048`, How do you do 2-phase commit with Kafka in ACE?
+## 2. `ace-dev-048`, How do you do 2-phase commit with Kafka in ACE?
 
 - **Product / Role / Topic:** ACE / Dev / Kafka
 - **Difficulty:** medium
@@ -220,7 +161,7 @@ limitation have not hit a partial-outcome incident yet.
 
 ---
 
-## 4. `ace-dev-049`, What is the default read mode (isolation level) for KafkaConsumer in ACE?
+## 3. `ace-dev-049`, What is the default read mode (isolation level) for KafkaConsumer in ACE?
 
 - **Product / Role / Topic:** ACE / Dev / Kafka
 - **Difficulty:** easy

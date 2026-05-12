@@ -2932,6 +2932,35 @@
     ]
   },
   {
+    "id": "ace-adm-053",
+    "product": "ACE",
+    "role": "Admin",
+    "topic": "Migration",
+    "question": "Which command pins an integration server to a specific JRE version in ACE v13?",
+    "answerType": "single",
+    "choices": [
+      { "text": "`mqsispecifyjre`", "correct": false, "explanation": "No such `mqsi*` command exists. The `mqsi*` family never had a per-server JRE selector; Java selection in older versions was via `mqsichangebroker` flags or `MQSI_FORCE_JVM` style environment variables, not a dedicated command." },
+      { "text": "`ibmint set java`", "correct": false, "explanation": "`ibmint set` is a real subcommand family (`ibmint set credential`, `ibmint set webuser-password`, etc.), but there is no `set java` variant. Plausible-sounding distractor for candidates who know `ibmint set credential` exists." },
+      { "text": "`ibmint specify jre`", "correct": true, "explanation": "Syntax: `ibmint specify jre --version 8|17 --integration-node <n> --integration-server <s>` (node-managed) or `--work-directory <d>` (independent). Writes `server.java.yaml` next to the server config; change takes effect on the next server start. Revert with the same command plus `--default` (which restores Java 17, the shipped default in 13.0.1+)." },
+      { "text": "`mqsirevertjava`", "correct": false, "explanation": "Invented name. The revert mechanism is `ibmint specify jre --default`, not a separate command, and the `mqsi*` family never had a paired-revert command for JVM selection." }
+    ],
+    "answerBullets": [
+      "`ibmint specify jre` is the only supported way to pin an integration server's JRE in v13",
+      "Writes the choice into `server.java.yaml` next to the server config; takes effect on the next server start",
+      "Supports `--version 8|17`, or `--default` to revert to the shipped default (Java 17, since 13.0.1)",
+      "Scope is per-server (or per-work-directory for independent servers), not node-wide",
+      "Procedure is **stop the server -> run `ibmint specify jre` -> start the server**, per the IBM doc"
+    ],
+    "answerExplanation": "The `ibmint` command family replaced the old `mqsi*`-style broker admin commands for most v12+ operations, and `specify jre` is the one that sets per-server JVM selection. Candidates who pick `ibmint specify jre` have used the command; candidates picking `mqsispecifyjre` or `mqsirevertjava` are pattern-matching on the old `mqsi*` naming scheme that does not apply here.",
+    "tags": ["migration", "java-8", "java-17", "ibmint", "specify-jre", "mcq"],
+    "difficulty": "easy",
+    "references": [
+      "https://matthiasblomme.github.io/blogs/posts/ace-v13-new-features-overview/v13-new-features/",
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=commands-ibmint-specify-jre-command",
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=jre-configuring-integration-server-use-specified-java-runtime-environment"
+    ]
+  },
+  {
     "id": "cloud-001",
     "product": "Cloud",
     "role": "Any",
