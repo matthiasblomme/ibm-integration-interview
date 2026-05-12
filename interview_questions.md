@@ -2,13 +2,13 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 153
+**Total questions:** 154
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (14)](#mq-dev)
-- [ACE, Admin (53)](#ace-admin)
+- [ACE, Admin (54)](#ace-admin)
 - [ACE, Dev (48)](#ace-dev)
 - [Cloud (5)](#cloud)
 
@@ -1346,6 +1346,26 @@ _References:_
 - <https://matthiasblomme.github.io/blogs/posts/ace-v13-new-features-overview/v13-new-features/>
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=commands-ibmint-specify-jre-command>
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=jre-configuring-integration-server-use-specified-java-runtime-environment>
+
+**Q: Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)**
+
+- [x] `in-place migration`, Migrate the integration node on the same machine, keeping the same name. `ibmint extract node --overwrite-existing` replaces the old node with a v13 node in the same spot.
+- [x] `parallel migration`, Stand up a new v13 integration node beside the old one and move application logic across at your own pace. Lets you test old and new side by side until you cut over.
+- [ ] `shadow migration`, Invented distractor, not a documented ACE migration style. Sounds plausible because it echoes real terms elsewhere, but no migration path of this name exists in the ACE catalog.
+- [ ] `wave migration`, Invented distractor, not a documented ACE migration style.
+- [x] `extract migration`, Use `ibmint extract node` or `ibmint extract server` to pull configuration and resources out as files, then redeploy them into a fresh v13 environment, usually as independent integration servers.
+
+- IBM documents exactly three migration styles: **in-place**, **parallel**, and **extract**
+- The three styles differ in where the target lives (same machine vs beside it vs fresh environment) and how much old-and-new coexistence you get
+- Extract is the flexible one: the same `ibmint extract` command can feed in-place swaps, parallel setups, or a clean split into independent integration servers
+- Any other style name in this space is a distractor and should be rejected
+
+IBM names three migration styles: in-place, parallel, and extract. The other two options in the list are made-up distractors that sound plausible to a candidate pattern-matching on familiar-sounding words. Picking all three real styles is the safe answer.
+
+_References:_
+- <https://matthiasblomme.github.io/blogs/posts/ace-v13-new-features-overview/v13-new-features/>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=migrating-app-connect-enterprise-130>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=migration-app-connect-enterprise-migration-options>
 
 ### Flow lifecycle
 

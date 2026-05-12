@@ -28,64 +28,7 @@ Fields are the same as in `questions.json`, rendered for readability.
 
 
 
-## 1. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
-
-- **Product / Role / Topic:** ACE / Admin / Migration
-- **Difficulty:** easy
-- **Tags:** migration, v13, in-place, parallel, extract, mcq
-- **answerType:** multi
-
-### Question
-Which of these are documented IBM migration styles for moving
-an existing estate to ACE v13? (select all that apply)
-
-### Choices
-
-- `in-place migration`, **correct.** Migrate the integration
-  node on the same machine, keeping the same name.
-  `ibmint extract node --overwrite-existing` replaces the old
-  node with a v13 node in the same spot
-- `parallel migration`, **correct.** Stand up a new v13
-  integration node beside the old one and move application
-  logic across at your own pace. Lets you test old and new
-  side by side until you cut over
-- `shadow migration`, **wrong.** Invented distractor, not a
-  documented ACE migration style. Sounds plausible because it
-  echoes real terms elsewhere, but no migration path of this
-  name exists in the ACE catalog
-- `wave migration`, **wrong.** Invented distractor, not a
-  documented ACE migration style
-- `extract migration`, **correct.** Use `ibmint extract node`
-  or `ibmint extract server` to pull configuration and
-  resources out as files, then redeploy them into a fresh v13
-  environment, usually as independent integration servers
-
-### Answer, bullets
-- IBM documents exactly three migration styles: **in-place**,
-  **parallel**, and **extract**
-- The three styles differ in where the target lives (same
-  machine vs beside it vs fresh environment) and how much
-  old-and-new coexistence you get
-- Extract is the flexible one: the same `ibmint extract`
-  command can feed in-place swaps, parallel setups, or a clean
-  split into independent integration servers
-- Any other style name in this space is a distractor and
-  should be rejected
-
-### Explanation
-IBM names three migration styles: in-place, parallel, and
-extract. The other two options in the list are made-up
-distractors that sound plausible to a candidate pattern-matching
-on familiar-sounding words. Picking all three real styles is the
-safe answer.
-
-### References
-- Blog: Migrating ACE to v13 (matthiasblomme)
-- https://www.ibm.com/docs/en/app-connect/13.0.x?topic=migrating-app-connect-enterprise-130
-
----
-
-## 2. `ace-dev-048`, How do you do 2-phase commit with Kafka in ACE?
+## 1. `ace-dev-048`, How do you do 2-phase commit with Kafka in ACE?
 
 - **Product / Role / Topic:** ACE / Dev / Kafka
 - **Difficulty:** medium
@@ -161,7 +104,7 @@ limitation have not hit a partial-outcome incident yet.
 
 ---
 
-## 3. `ace-dev-049`, What is the default read mode (isolation level) for KafkaConsumer in ACE?
+## 2. `ace-dev-049`, What is the default read mode (isolation level) for KafkaConsumer in ACE?
 
 - **Product / Role / Topic:** ACE / Dev / Kafka
 - **Difficulty:** easy
