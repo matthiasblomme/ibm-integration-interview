@@ -2,14 +2,14 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 156
+**Total questions:** 157
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (14)](#mq-dev)
 - [ACE, Admin (54)](#ace-admin)
-- [ACE, Dev (50)](#ace-dev)
+- [ACE, Dev (51)](#ace-dev)
 - [Cloud (5)](#cloud)
 
 ## General
@@ -2042,6 +2042,20 @@ _References:_
 - <https://github.com/trevor-dolby-at-ibm-com/ace-user-variable-examples>
 - <https://github.com/trevor-dolby-at-ibm-com/ace-esql-read-env-var>
 - <https://community.ibm.com/community/user/discussion/environmentvariables-in-serverconfyaml-file>
+
+**Q: Why is hardcoding IP addresses in ACE properties unsafe, and what are the two correct alternatives?**
+
+- Hardcoding IPs ties the BAR to a single environment, promotion to test / UAT / prod means editing the BAR or rebuilding, instead of treating the same artefact as deployable everywhere
+- IPs change underneath you, load-balancer rotations, DR cutover, network re-IPs, cloud-provider IP shuffles all break a hardcoded value with no warning and no code change to point at
+- Hardcoded IPs hide intent. `192.168.1.45` does not say what it is; `payments-api.svc.cluster.local` does. Reviewability suffers, and so does triage when something breaks
+- **Correct alternative #1: hostnames.** Let DNS do the per-environment mapping. Each environment resolves the same hostname to a different IP, the BAR does not care which. Zero code change between envs
+- **Correct alternative #2: promoted properties.** Expose the endpoint as a BAR override property (`[AppName]#[NodeLabel]/[PropertyName]`) and supply the per-environment value via `mqsiapplybaroverride` (or `ibmint apply overrides`). The BAR is identical across envs; only the override file changes
+- The two alternatives are complementary, not either-or. A production-grade ACE app uses a **promoted property whose value is a hostname**, the override file picks the right hostname per env, and DNS picks the right IP per env. Two layers of indirection, each at the right layer
+
+A hardcoded IP is the signal that says 'this BAR was tested in one environment, not built for promotion'. The two production-grade alternatives address two different problems: hostnames move the env-to-IP mapping into DNS where it belongs; promoted properties move the env-to-endpoint mapping into the deploy pipeline. Candidates who name only one alternative get half the story; candidates who explain why you want both layers understand environment promotion.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=files-overriding-properties-bar>
 
 ### Build
 
