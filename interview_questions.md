@@ -2,13 +2,13 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 150
+**Total questions:** 151
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (14)](#mq-dev)
-- [ACE, Admin (50)](#ace-admin)
+- [ACE, Admin (51)](#ace-admin)
 - [ACE, Dev (48)](#ace-dev)
 - [Cloud (5)](#cloud)
 
@@ -1399,6 +1399,27 @@ The ACE Agent is the operator-facing AI feature of ACE 13: chat in the Dashboard
 
 _References:_
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=app-connect-enterprise-agent>
+
+**Q: What is the MCP (Model Context Protocol) feature in ACE v13.0.7.0, and how does it expose REST APIs?**
+
+- **MCP (Model Context Protocol)** is an open protocol that lets AI agents call 'tools' in a typed, discoverable way. ACE **v13.0.7+** adds support for **exposing any deployed REST API as an MCP server**, so AI agents can invoke your ACE-hosted APIs as first-class tools
+- **Two-phase configuration workflow** (not a one-click wizard): **Phase 1 (server.conf.yaml):** add `MCP.Runtime.mcpStartMode: "automatic"` and `port: 7750` (default port) to the integration server's `server.conf.yaml`. Restart the server. SSL is on by default; the MCP endpoint comes up at `https://<host>:7750/mcp`. **Phase 2 (App Connect Enterprise Web UI, default port 7600):** click the context window -> **Expose MCP tools** -> select your REST API -> choose which operations to expose -> configure per-operation tool details (auto-generated **Tool name**, customisable **Tool title**, AI-facing **Tool description**, **Enabled** flag) -> Confirm
+- The underlying REST API is unchanged: same BAR, same integration server, same endpoints. MCP adds a translation layer that advertises the operations to agents in the MCP tool format, with the proper input / output schemas derived from the REST definition
+- What this unlocks: an AI agent (Claude, a watsonx.ai agent, an MCP-aware IDE) can call your integration flows without a custom integration layer. Your existing REST API is the tool; no extra code
+- **Transport constraint:** IBM doc is explicit that clients must use **Streamable HTTP**, not Server-Sent Events (SSE), as the transport protocol. MCP clients that default to SSE will not connect
+- Security considerations still apply: the MCP server inherits the auth posture of the underlying REST API (API key, OAuth, etc. as configured on the REST API or its HTTPS listener). The MCP layer does not replace or relax that
+- Positioning: this is the inverse of the **ACE Agent** (which is ACE calling watsonx). MCP support is **other agents calling ACE**. Pair them and ACE sits on both sides of the agent boundary
+- Prereqs: ACE **v13.0.7 or later** installed, at least one REST API flow already deployed to an integration server
+
+MCP support from 13.0.7 is IBM's bet on MCP as the standard agent-tool interop protocol. The convenient bit is that you do not write an MCP server from scratch; ACE wraps an existing REST API and exposes it as one. Configuration is two-phase: turn on the MCP runtime in `server.conf.yaml` (port 7750 default, SSL on), then use the App Connect Enterprise Web UI's **Expose MCP tools** action to pick the REST API and choose which operations become tools. Candidates who frame this as 'AI agents calling ACE-hosted APIs as tools, the inverse of the ACE Agent which is ACE calling watsonx', know the two-phase workflow (server.conf.yaml plus Web UI), name the port default and the Streamable-HTTP transport requirement, and recall that auth is inherited from the REST side are reading the feature correctly.
+
+_References:_
+- <https://matthiasblomme.github.io/blogs/posts/ace-v13-new-features-overview/v13-new-features/>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=new-whats-app-connect-enterprise>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=tools-developing-mcp>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=connector-exposing-rest-api-mcp-tool>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=mcp-what-is>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=connector-configuring-mcp-properties>
 
 ## ACE, Dev
 

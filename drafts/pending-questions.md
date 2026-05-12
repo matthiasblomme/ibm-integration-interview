@@ -28,64 +28,7 @@ Fields are the same as in `questions.json`, rendered for readability.
 
 
 
-## 1. `ace-adm-051`, What is the MCP (Model Context Protocol) feature in ACE v13.0.7.0, and how does it expose REST APIs?
-
-- **Product / Role / Topic:** ACE / Admin / AI
-- **Difficulty:** medium
-- **Tags:** mcp, model-context-protocol, ai, agent, rest-api, v13, dashboard
-
-### Question
-What does ACE's v13.0.7.0 MCP support do, how does the
-Dashboard workflow turn a REST API into an MCP server, and
-how does it pair with Agent Preview?
-
-### Answer, bullets
-- **MCP (Model Context Protocol)** is an open protocol that
-  lets AI agents call "tools" in a typed, discoverable way.
-  ACE v13.0.7.0 adds support for **exposing any deployed
-  REST API as an MCP server**, so AI agents can invoke your
-  ACE-hosted APIs as first-class tools
-- Workflow in the Dashboard: a new **MCP icon** opens a new
-  **MCP Dashboard**. Click **Create MCP server**, a wizard
-  opens, pick any deployed REST API from any active
-  integration server, and the Dashboard converts it into an
-  MCP server exposing the API's operations as MCP tools
-- The underlying REST API is unchanged: same BAR, same
-  integration server, same endpoints. MCP adds a translation
-  layer that advertises the operations to agents in the MCP
-  tool format, with the proper input / output schemas derived
-  from the REST definition
-- What this unlocks: an AI agent (Claude, a watsonx.ai agent,
-  an MCP-aware IDE) can call your integration flows without a
-  custom integration layer. Your existing REST API is the
-  tool; no extra code
-- Security considerations still apply: the MCP server inherits
-  the auth posture of the underlying REST API (API key, OAuth,
-  etc. as configured on the REST API or its HTTPS listener).
-  The MCP layer does not replace or relax that
-- Positioning: this is the inverse of v13's Agent Preview
-  (which is ACE calling watsonx). MCP support is **other
-  agents calling ACE**. Pair them and ACE sits on both sides
-  of the agent boundary
-
-### Explanation
-MCP support from 13.0.7.0 is IBM's bet on MCP as the standard
-agent-tool interop protocol. The convenient bit is that you
-do not have to write an MCP server from scratch; the Dashboard
-wraps an existing REST API and exposes it as one. Candidates
-who frame this as "AI agents calling ACE-hosted APIs as
-tools, the inverse of Agent Preview which is ACE calling
-watsonx", mention that the underlying REST API is unchanged,
-and understand that auth is inherited from the REST side are
-reading the feature correctly.
-
-### References
-- Blog: ACE v13 new features overview (matthiasblomme)
-- https://www.ibm.com/docs/en/app-connect/13.0.x?topic=new-whats-app-connect-enterprise
-
----
-
-## 2. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
+## 1. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** medium
@@ -136,7 +79,7 @@ done the migration for real.
 
 ---
 
-## 3. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
+## 2. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy
@@ -195,7 +138,7 @@ not apply here.
 
 ---
 
-## 4. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
+## 3. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy
@@ -252,7 +195,7 @@ safe answer.
 
 ---
 
-## 5. `ace-dev-048`, How do you do 2-phase commit with Kafka in ACE?
+## 4. `ace-dev-048`, How do you do 2-phase commit with Kafka in ACE?
 
 - **Product / Role / Topic:** ACE / Dev / Kafka
 - **Difficulty:** medium
@@ -328,7 +271,7 @@ limitation have not hit a partial-outcome incident yet.
 
 ---
 
-## 6. `ace-dev-049`, What is the default read mode (isolation level) for KafkaConsumer in ACE?
+## 5. `ace-dev-049`, What is the default read mode (isolation level) for KafkaConsumer in ACE?
 
 - **Product / Role / Topic:** ACE / Dev / Kafka
 - **Difficulty:** easy
