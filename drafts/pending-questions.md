@@ -28,58 +28,7 @@ Fields are the same as in `questions.json`, rendered for readability.
 
 
 
-## 1. `ace-adm-052`, IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?
-
-- **Product / Role / Topic:** ACE / Admin / Migration
-- **Difficulty:** medium
-- **Tags:** migration, iib10, configurable-services, policies, ibmint-extract, node-scope
-
-### Question
-When migrating from IIB 10 to ACE v13, how are configurable
-services transformed, and what practical fix-up do you need to
-plan for after the extract runs?
-
-### Answer, bullets
-- **Configurable services are gone in v13.** The v13 world is
-  policies (`.policyxml`), not configurable services. Anything
-  IIB 10 expressed as a configurable service needs a policy
-  equivalent on the target
-- **`ibmint extract node` does the rewrite automatically.**
-  Configurable-service definitions are extracted and converted
-  to policy files as part of the extract output. You do not
-  write the policies by hand
-- **But the generated policies land node-wide, not
-  server-scoped.** All policies come out at the node level, even
-  ones that only one server actually uses. Same behaviour
-  existed on the IIB 10 to v12 path
-- **Consequence:** functionally correct but messy. Every
-  integration server sees every policy, including ones for
-  unrelated applications, which muddies ownership and makes the
-  policy list harder to reason about
-- **Fix-up pass after extract:** split the generated policy set
-  and move each policy onto the server that uses it. Boring but
-  worth doing once, before the node grows and the relocation
-  gets harder. Especially important if you run multiple apps
-  per server with distinct security or resource policies
-
-### Explanation
-IIB 10 migration to v13 has one real gotcha beyond Java 17
-cleanup: `ibmint extract` translates configurable services to
-policies automatically, but it does so at node scope, not at
-the specific-server scope where the underlying configurable
-service lived. The result is a pile of node-wide policies,
-which works but is not how you would structure it if writing
-from scratch. Candidates who know about this wrinkle, and say
-they budget an explicit fix-up pass to split and relocate, have
-done the migration for real.
-
-### References
-- Blog: Migrating ACE to v13 (matthiasblomme)
-- https://www.ibm.com/docs/en/app-connect/13.0.x?topic=130-performing-in-place-migration-integration-node
-
----
-
-## 2. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
+## 1. `ace-adm-053`, Which command pins an integration server to a specific JRE version in ACE v13?
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy
@@ -138,7 +87,7 @@ not apply here.
 
 ---
 
-## 3. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
+## 2. `ace-adm-054`, Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)
 
 - **Product / Role / Topic:** ACE / Admin / Migration
 - **Difficulty:** easy
@@ -195,7 +144,7 @@ safe answer.
 
 ---
 
-## 4. `ace-dev-048`, How do you do 2-phase commit with Kafka in ACE?
+## 3. `ace-dev-048`, How do you do 2-phase commit with Kafka in ACE?
 
 - **Product / Role / Topic:** ACE / Dev / Kafka
 - **Difficulty:** medium
@@ -271,7 +220,7 @@ limitation have not hit a partial-outcome incident yet.
 
 ---
 
-## 5. `ace-dev-049`, What is the default read mode (isolation level) for KafkaConsumer in ACE?
+## 4. `ace-dev-049`, What is the default read mode (isolation level) for KafkaConsumer in ACE?
 
 - **Product / Role / Topic:** ACE / Dev / Kafka
 - **Difficulty:** easy

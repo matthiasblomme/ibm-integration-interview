@@ -2,13 +2,13 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 151
+**Total questions:** 152
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (14)](#mq-dev)
-- [ACE, Admin (51)](#ace-admin)
+- [ACE, Admin (52)](#ace-admin)
 - [ACE, Dev (48)](#ace-dev)
 - [Cloud (5)](#cloud)
 
@@ -1311,6 +1311,21 @@ The three official styles all land on v13, but they differ in where the target l
 _References:_
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=migration-supported-migration-paths>
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=migrating-app-connect-enterprise-130>
+
+**Q: IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?**
+
+- **Configurable services are gone in v13.** The v13 world is policies (`.policyxml`), not configurable services. Anything IIB 10 expressed as a configurable service needs a policy equivalent on the target
+- **`ibmint extract node` does the rewrite automatically.** Configurable-service definitions are extracted and converted to policy files as part of the extract output. You do not write the policies by hand
+- **But the generated policies land node-wide, not server-scoped.** All policies come out at the node level, even ones that only one server actually uses. Same behaviour existed on the IIB 10 to v12 path
+- **Consequence:** functionally correct but messy. Every integration server sees every policy, including ones for unrelated applications, which muddies ownership and makes the policy list harder to reason about
+- **Fix-up pass after extract:** split the generated policy set and move each policy onto the server that uses it. Boring but worth doing once, before the node grows and the relocation gets harder. Especially important if you run multiple apps per server with distinct security or resource policies
+
+IIB 10 migration to v13 has one real gotcha beyond Java 17 cleanup: `ibmint extract` translates configurable services to policies automatically, but it does so at node scope, not at the specific-server scope where the underlying configurable service lived. The result is a pile of node-wide policies, which works but is not how you would structure it if writing from scratch. Candidates who know about this wrinkle, and say they budget an explicit fix-up pass to split and relocate, have done the migration for real.
+
+_References:_
+- <https://matthiasblomme.github.io/blogs/posts/ace-v13-new-features-overview/v13-new-features/>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=migrating-app-connect-enterprise-130>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=commands-ibmint-extract-node-command>
 
 ### Flow lifecycle
 
