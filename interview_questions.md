@@ -2,14 +2,14 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 155
+**Total questions:** 156
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (14)](#mq-dev)
 - [ACE, Admin (54)](#ace-admin)
-- [ACE, Dev (49)](#ace-dev)
+- [ACE, Dev (50)](#ace-dev)
 - [Cloud (5)](#cloud)
 
 ## General
@@ -2118,6 +2118,22 @@ _References:_
 - <https://matthiasblomme.github.io/blogs/posts/ace-v13-new-features-overview/v13-new-features/>
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=kafka-transactional-messaging>
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-kafkaproducer-node>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-kafkaconsumer-node>
+
+**Q: What is the default read mode (isolation level) for KafkaConsumer in ACE?**
+
+- The KafkaConsumer node's **`Isolation Level`** property controls which messages from transactional producers are delivered to the consumer
+- **Default is `read_uncommitted`.** The consumer receives messages as soon as they are published, **without waiting** for the publisher's transaction to commit. If the publisher later rolls back, the consumer has already seen and possibly processed a message that 'did not happen'
+- **Alternative is `read_committed`.** The consumer only receives messages from committed transactions; it blocks on uncommitted messages in the partition until they are committed or rolled back. This is what you want when end-to-end exactly-once semantics matter
+- The same `Isolation Level` property is on the **KafkaRead** node and behaves identically
+- Practical implication of the default: a fresh KafkaConsumer pointed at a topic written to by a transactional producer will not give you 'exactly once' semantics out of the box. Flip to `read_committed` to honour the publisher's transaction boundary
+- Pair `read_committed` with a transactional `Commit Message offset` mode (`Transactionally`) on the consumer if you want the read offset itself to participate in a Kafka transaction; otherwise the offset is saved separately by the consumer's own commit policy
+
+The default catches people: ACE's KafkaConsumer is set to `read_uncommitted`, which means a transactional producer's in-flight messages reach the consumer immediately. If the producer rolls back, the consumer has already acted on a message that should never have been visible. The fix is one property flip to `read_committed`. Candidates who know the default value and the Kafka transactional contract behind it have run real exactly-once flows; candidates who say 'Kafka just gives you exactly-once if you set transactional support' without naming the consumer side have read the marketing but not the docs.
+
+_References:_
+- <https://matthiasblomme.github.io/blogs/posts/ace-v13-new-features-overview/v13-new-features/>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=kafka-transactional-messaging>
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-kafkaconsumer-node>
 
 ### Nodes
