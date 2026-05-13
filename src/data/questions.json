@@ -3189,6 +3189,28 @@
     ]
   },
   {
+    "id": "ace-dev-056",
+    "product": "ACE",
+    "role": "Dev",
+    "topic": "ESQL",
+    "question": "How do you safely walk `InputExceptionList` in ESQL using references?",
+    "answerBullets": [
+      "**Correlation names:** in a **Compute node** the input side is `InputExceptionList` (always available regardless of Compute mode); the output side is `OutputExceptionList`, **only available in modes that include the ExceptionList tree** (e.g. `Exception`, `All`, `Message+ExceptionList`). In **Database / Filter** nodes there is a single combined tree, accessed as `ExceptionList`. Using the wrong correlation name in the wrong node or mode is a common copy-paste failure",
+      "**Start with a `REFERENCE` to the first exception subtree** rather than subscripting repeatedly: `DECLARE exRef REFERENCE TO InputExceptionList.*[1];`. `*[1]` matches the first child whatever its element name; subsequent navigation uses `MOVE`, never `*[2]` or `*[n]` indexing",
+      "**`MOVE LASTCHILD`: drill into nested exceptions to find the root cause.** Exception lists in ACE are nested, the *deepest* child usually carries the most precise error info (the actual BIP that failed). IBM's own example uses this pattern: `DECLARE exRef REFERENCE TO InputExceptionList.*[1]; WHILE exRef.Number IS NOT NULL DO ... MOVE exRef LASTCHILD; END WHILE;`. After the loop, `exRef` points one past the deepest exception, the loop body sees each level on the way down",
+      "**`MOVE NEXTSIBLING`: iterate across multiple exceptions at the same level.** If a flow throws more than one exception (e.g. a `THROW` after another `THROW` was already in flight), `InputExceptionList` has multiple sibling subtrees. Walk them horizontally with `NEXTSIBLING`: `DECLARE exRef REFERENCE TO InputExceptionList.*[1]; WHILE LASTMOVE(exRef) DO ... MOVE exRef NEXTSIBLING; END WHILE;`",
+      "**Use `LASTMOVE(ref)` as the loop guard when you can.** It returns TRUE if the most recent `MOVE` succeeded, FALSE when you've fallen off the end. Cleaner than NULL-checking a field that may legitimately be absent on some levels",
+      "**Why this beats subscripts:** `InputExceptionList.*[k]` re-navigates the tree from the root on every access; the reference + `MOVE` pattern holds a direct pointer and advances it. The performance gap matters when you have deep nesting or many exceptions, and the code is also more readable about which axis (down vs across) you are walking",
+      "**Whole-tree dump for logging** (when you cannot tell which level matters): the IBM doc shows the `ASBITSTREAM` + `XMLNSC` pattern to render the entire `ExceptionList` to a CHAR for trace output. Useful in catch handlers that just need to log everything"
+    ],
+    "answerExplanation": "The reference + `MOVE` pattern is the canonical ESQL idiom for `ExceptionList` because the tree is nested-and-sibling-shaped: `LASTCHILD` walks down the nesting chain to the root-cause exception, `NEXTSIBLING` walks across when multiple exceptions are in flight at the same level. `LASTMOVE` is the clean loop guard. Candidates who use subscript indexing on `InputExceptionList` get correct values but pay re-navigation cost on every access, and tend to miss either the down-axis or the across-axis (writing only one of the two loop shapes). Candidates who name both `MOVE` flavors, name `LASTMOVE`, and recall both the input-vs-output naming and the mode-dependency for `OutputExceptionList` are reading the tree correctly.",
+    "tags": ["esql", "exception-list", "reference", "move", "lastchild", "nextsibling", "lastmove"],
+    "difficulty": "medium",
+    "references": [
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=messages-accessing-exceptionlist-tree-using-esql"
+    ]
+  },
+  {
     "id": "cloud-001",
     "product": "Cloud",
     "role": "Any",
