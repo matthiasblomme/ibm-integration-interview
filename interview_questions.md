@@ -2,14 +2,14 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 165
+**Total questions:** 166
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (15)](#mq-dev)
 - [ACE, Admin (54)](#ace-admin)
-- [ACE, Dev (58)](#ace-dev)
+- [ACE, Dev (59)](#ace-dev)
 - [Cloud (5)](#cloud)
 
 ## General
@@ -2328,6 +2328,22 @@ ACE v13's JSON parser supports Draft 04 and Draft 05, plus Swagger 2.0 and OpenA
 
 _References:_
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=files-json-validation>
+
+### HTTP
+
+**Q: HTTP status codes in ACE: which to retry, and where does the code live after an `HTTPRequest`?**
+
+- **Where to read the status code in ACE:** after the request, the response status is on `InputLocalEnvironment.Destination.HTTP.ReplyStatusCode` (Compute node, downstream of HTTPRequest). For RESTRequest, the same convention applies. By default, a non-2xx response routes the message to the node's **Failure terminal** with the response body still available, your error-handler flow reads the code from there and decides what to do
+- **Permanent failures, log but do NOT retry by default:** `400 Bad Request`, the request itself is malformed (bad JSON, missing required field, validation failure); retrying sends the same payload, gets the same error, route to a data-quality error path. `401 Unauthorized`, credentials missing or invalid, exception is token-refresh flows (OAuth bearer expired) where a *single* re-auth-then-retry is justified, otherwise treat as permanent. `403 Forbidden`, auth was valid, the operation is not allowed, permanent. `404 Not Found`, resource does not exist, permanent. `501 Not Implemented`, server does not support the method, permanent
+- **Transient failures, retry with backoff:** `408 Request Timeout`, server gave up waiting, retry. `429 Too Many Requests`, rate-limited, retry but **respect the `Retry-After` header** if present; honour it as the minimum wait. Tight retries make the situation worse. `500 Internal Server Error`, bare-bones 'something went wrong', usually transient, retry with exponential backoff. `502 Bad Gateway` / `504 Gateway Timeout`, proxy / upstream-server transient failures, retry with backoff. `503 Service Unavailable`, server temporarily down, retry, **respect `Retry-After`** when present
+- **The retry pattern that works in ACE:** capture the status code on Failure terminal, classify (permanent vs transient), apply backoff before re-invoking the HTTPRequest. Tight retries with no backoff create thundering-herd problems against transient outages. Cap total retry budget (e.g. 3 attempts) and route to a definitive error path when exhausted
+- **What about network-level failures (DNS, connection refused, TCP reset)?** These do not have an HTTP status code at all, the request never reached the server. ACE surfaces them as exceptions on the Failure terminal with codes in `ExceptionList` rather than a status code. Treat them as transient and retry-with-backoff alongside 5xx/timeout codes
+- **Body still matters on a non-2xx.** Many APIs return a structured error body with a more specific code (e.g. an OAuth error type, or a per-field validation breakdown). Parse the body when present; the HTTP status code is the coarse classification, the body is the fine-grained one
+
+HTTP status codes split cleanly into permanent (4xx, mostly) and transient (5xx + 408 + 429). The interview tells: candidates who lump all 4xx as 'do not retry' miss 408 (timeout) and 429 (rate limit) which are transient; candidates who lump all 5xx as 'always retry' miss 501 which is permanent. ACE-specific: the status code lives on `InputLocalEnvironment.Destination.HTTP.ReplyStatusCode` after the request, the Failure terminal is the default route for non-2xx, and retry-with-backoff has to be wired into the error-handler flow because the node itself does not retry on response codes (only on connection-level failures via the Retry tab).
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-httprequest-node>
 
 ### Troubleshooting
 
