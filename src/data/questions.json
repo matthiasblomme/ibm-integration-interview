@@ -3277,6 +3277,30 @@
     ]
   },
   {
+    "id": "ace-dev-060",
+    "product": "ACE",
+    "role": "Dev",
+    "topic": "Patterns",
+    "question": "When does exponential backoff help, when does it make things worse, and how do you implement it in ACE?",
+    "answerBullets": [
+      "**Where exponential backoff helps:** any transient failure where the underlying issue resolves itself given time. DB connection timeout, HTTP `500/502/503/504`, network blip, brief Kafka broker unavailability, momentary lock contention. Doubling the wait between attempts (1s, 2s, 4s, 8s...) gives the dependency time to recover without tight-loop hammering",
+      "**Where it makes things worse, the real failure mode is non-jittered backoff across a fleet.** A single client retrying with `1s, 2s, 4s, 8s` is fine. **Hundreds of clients all retrying with the same schedule create a synchronized retry storm**, the recovering service comes back up, gets hit by every client at second 8, falls over again, and the cycle repeats. The dependency never stabilises",
+      "**The fix is jitter.** Two patterns commonly used: **full jitter** sleeps `random(0, base * 2^attempt)`, spreading retries across the entire window and killing synchronization completely; **equal jitter** sleeps `base * 2^attempt / 2 + random(0, base * 2^attempt / 2)`, half-deterministic and half-randomised, preserving the 'at least N seconds' floor while still de-synchronising. Either is fine; **plain exponential backoff is the antipattern in any multi-instance deployment**",
+      "**Cap the maximum backoff.** No point waiting hours, after a cap (e.g. 60s, 5 min) keep retrying at the cap rather than doubling further. Beyond a few minutes you should be paging or routing to a DLQ, not silently waiting",
+      "**Bound the total retry budget.** Combine the per-attempt backoff with a maximum retry count or a total time budget. `3 attempts max` or `10 minutes max wall time` are typical. After exhaustion, the message goes to a definitive error path, never silently disappears",
+      "**Respect `Retry-After` when the server tells you when to come back** (HTTP `429`, `503`). The server's hint is more accurate than your guess; honour it as the floor of your backoff (apply jitter *on top of* the hint)",
+      "**ACE primitives you actually wire this with:** the **HTTPRequest `Retry` tab** only retries on connection-level failures (e.g. socket reset), **not on HTTP status codes**, so this alone is not enough for 5xx/429 handling. Use **TimeoutControl + Compute** in the failure-handler subflow to schedule a delayed retry by re-injecting the message via TimeoutControl after a computed backoff, with the attempt count carried in `LocalEnvironment`. **'Put deferred' pattern (queue-driven retry):** instead of holding flow threads waiting for the backoff window, **put the message back on a queue with a scheduled / delayed delivery time** and let the queue manager hold it. Two implementations in the ACE/MQ stack: JMS `setDeliveryDelay(ms)` on the producer (MQ classes for JMS, 8.0+), the queue manager holds the message and makes it eligible for consumption only after the delay; **retry-bucket queues**, stage messages on per-delay queues (e.g. `RETRY.30S`, `RETRY.5M`) consumed by trigger-scheduled flows, older pattern, works on any MQ version. **Why 'put deferred' beats Compute+sleep:** flow threads are scarce, a Compute that sleeps for 60s pins a thread for 60s, a deferred put releases the thread immediately, the queue manager wakes the message later. Thread efficiency is the production win",
+      "**Where backoff does not apply:** permanent HTTP failures (`400/401/403/404/501`, see `ace-dev-058`), retrying gets the same error. Poison messages on MQ, `BOTHRESH`/`BOQNAME` is the mechanism (see `mq-dev-015`), not flow-level backoff. DB constraint violations (`D23xxx`), the data is wrong, retry won't help (see `ace-dev-057`)"
+    ],
+    "answerExplanation": "Exponential backoff is correct for transient failures; what is wrong is **non-jittered backoff across a fleet** because synchronized retries create thundering-herd storms that prevent the dependency from stabilising. Jitter (full or equal) breaks the synchronization. In ACE specifically, the HTTPRequest Retry tab only handles connection-level retries, so 5xx / 429 retry logic has to live in the failure-handler subflow. The senior-grade implementation does not hold flow threads waiting (`Compute + sleep`) but instead **puts the message on a queue with a delayed delivery time** (JMS `setDeliveryDelay`, or retry-bucket queues) so threads are released back to the pool while the message sits on the broker. Candidates who name jitter, cap, retry budget, `Retry-After`, and the put-deferred thread-efficiency win understand production-grade retry; candidates who say 'loop and sleep' have not yet caused a thundering-herd incident or a thread-pool exhaustion.",
+    "tags": ["retry", "exponential-backoff", "jitter", "thundering-herd", "rate-limit", "error-handling", "senior"],
+    "difficulty": "hard",
+    "references": [
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-httprequest-node",
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-timeoutcontrol-node"
+    ]
+  },
+  {
     "id": "cloud-001",
     "product": "Cloud",
     "role": "Any",
