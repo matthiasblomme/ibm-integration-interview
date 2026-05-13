@@ -3254,6 +3254,29 @@
     ]
   },
   {
+    "id": "ace-dev-059",
+    "product": "ACE",
+    "role": "Dev",
+    "topic": "Patterns",
+    "question": "How do you implement a saga / compensating-transaction pattern in ACE, and why is cleanup done in reverse order?",
+    "answerBullets": [
+      "**The reason you need this pattern in ACE.** Kafka does not participate in 2PC with MQ / DB (see `ace-dev-048`). REST calls and external SaaS APIs do not participate in 2PC at all. Once you call them, the work is **already committed externally**, no transaction manager can roll it back. If step N+1 fails, you have to issue an **explicit compensating action** (a `DELETE`, a `POST /cancel`, an MQ message, etc.) to undo step N",
+      "**ACE wiring shape, TryCatch + Compute per step.** Each forward step is wrapped in a **TryCatch node**. On failure, the Catch branch runs the **compensating Compute node(s)** for every step that already succeeded. State (which steps succeeded, with what side-effect identifiers like order IDs, ticket numbers, transaction refs) is carried forward in `LocalEnvironment` or `Environment` so the compensation logic can reach the right targets",
+      "**Reverse-order cleanup, with a concrete example.** Say the forward sequence is **(1) reserve inventory, (2) charge card, (3) book courier**. Step 3 fails. Compensation order **must** be **3 -> 2 -> 1**: undo step 3 first (cancel courier booking, if it partially succeeded); then undo step 2 (refund the card); then undo step 1 (release the inventory reservation)",
+      "**Why reverse, specifically:** later steps depend on earlier steps' side effects. Step 3 used the reservation from step 1 and the payment from step 2 to know *what* to book. If you undo step 1 first (release inventory), the cancel-courier call in step 3 may not be able to find the booking, or worse, may complete against stale state. Undo in reverse so each compensation operates against the state shape that existed when the corresponding forward step ran",
+      "**Idempotency on every compensating call.** Compensation may itself fail or be retried. Each compensating action must be **safe to call twice** (DELETE the order, POST /cancel with the order ID, etc.). Without idempotency, retries during compensation create new failure modes",
+      "**State tracking is mandatory.** Save the result of each forward step (correlation IDs, external resource IDs) into a known location in the message tree *before* moving on. If the flow fails before saving, you have a side effect with no handle to undo it. Persist this state if the flow could crash mid-saga (e.g. write a saga-log row in your DB)",
+      "**What ACE does not give you.** No built-in saga orchestrator, no automatic compensation registry, no transaction-log replay. You design the saga yourself with TryCatch + Compute + state tracking. The recent v13 features (MCP, ACE Agent) do not change this, the saga responsibility is still on the flow author",
+      "**When this is overkill:** if all steps go through resource managers that *can* 2PC (MQ + DB only), use ACE's transactional flow support (see `ace-dev-009`) instead. Saga is for the cases where at least one participant is non-XA (Kafka, REST, external SaaS)"
+    ],
+    "answerExplanation": "The saga / compensating-transaction pattern is what you reach for when ACE cannot give you a single coordinated transaction across all resource managers, which is most modern flows the moment Kafka, REST, or an external API joins the mix. The cleanup runs in reverse because later steps depend on the side effects of earlier ones, undoing top-down means each compensation runs against the state that existed when the forward step happened. ACE gives you the building blocks (TryCatch, Compute, LocalEnvironment for state-passing) but no orchestrator, you design and wire the saga yourself. Candidates who name TryCatch + reverse-order + idempotency + state-tracking understand the pattern at production grade; candidates who say 'just retry the failing step' have not yet had a partial-outcome incident.",
+    "tags": ["saga", "compensation", "error-handling", "trycatch", "multi-resource", "atomicity", "design-pattern"],
+    "difficulty": "medium",
+    "references": [
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-trycatch-node"
+    ]
+  },
+  {
     "id": "cloud-001",
     "product": "Cloud",
     "role": "Any",
