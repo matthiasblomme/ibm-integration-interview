@@ -2,14 +2,14 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 162
+**Total questions:** 163
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (15)](#mq-dev)
 - [ACE, Admin (54)](#ace-admin)
-- [ACE, Dev (55)](#ace-dev)
+- [ACE, Dev (56)](#ace-dev)
 - [Cloud (5)](#cloud)
 
 ## General
@@ -1870,6 +1870,20 @@ The ACE message tree does not have a built-in 'this element is an array' marker;
 _References:_
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=functions-select-function>
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=domain-creating-json-message>
+
+**Q: What is the danger of a bare `PROPAGATE` in ESQL when code follows it?**
+
+- **Default `PROPAGATE` does two destructive things at once.** Per IBM's PROPAGATE statement reference: `FINALIZE DEFAULT` (the absent-clause default) finalizes the output message tree before propagation, once finalized, no downstream node and no subsequent ESQL statement can change it. `DELETE DEFAULT` (the absent-clause default) clears the output local environment, message, and exception list, and recovers their memory immediately after propagation
+- **What this means for code after `PROPAGATE`:** the very next ESQL line sees an **emptied output tree**. Writes to `OutputRoot.X` start from a clean tree (not from the propagated content). Reads of `OutputRoot.X` find nothing. Classic subtle bug: 'I just set the field, why is it null on the next line?'
+- **The fix is to use `FINALIZE NONE DELETE NONE` on the PROPAGATE** when ESQL after the statement needs to see, or update, the propagated tree. Syntax: `PROPAGATE TO LABEL 'EnrichReply' FINALIZE NONE DELETE NONE;`. Now `OutputRoot` still has the propagated content, and is still mutable
+- **Cumulative-propagate pattern (loop):** `FINALIZE NONE DELETE NONE` is what lets each iteration build on the previous one. With the defaults, each iteration starts with empty output trees; with `NONE NONE`, each iteration sees what the previous iteration wrote (the doc states this is exactly the use case)
+- **Applies to all PROPAGATE flavors**, not just `TO LABEL`: bare `PROPAGATE`, `PROPAGATE TO TERMINAL 'out'`, and `PROPAGATE TO LABEL 'X'` all finalize-and-delete by default. The gotcha is general, not specific to TO LABEL
+- **Related-but-separate gotchas:** `PROPAGATE` is **synchronous**; if a downstream node throws an unhandled exception, the line after PROPAGATE never runs (and the Compute node's automatic commit does not fire). Also remember `RETURN FALSE;` at the end of the routine if you've used PROPAGATE, or the node auto-propagates again
+
+Bare `PROPAGATE` semantics include both finalization (the output tree is sealed) and deletion (the output trees are cleared from memory). Code that runs after the statement therefore sees emptied trees by default, which is the source of the 'field is null after I set it' class of bug. `FINALIZE NONE DELETE NONE` is the explicit opt-out that preserves and keeps the trees mutable, required for any pattern that propagates a partial result and then continues to add to it. Candidates who name both modifiers and explain when each is needed have hit this in production; candidates who only mention `FINALIZE NONE` (or only `DELETE NONE`) get half the answer.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=statements-propagate-statement>
 
 ### Hybrid connectivity
 
