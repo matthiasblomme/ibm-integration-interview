@@ -2,14 +2,14 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 164
+**Total questions:** 165
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (15)](#mq-dev)
 - [ACE, Admin (54)](#ace-admin)
-- [ACE, Dev (57)](#ace-dev)
+- [ACE, Dev (58)](#ace-dev)
 - [Cloud (5)](#cloud)
 
 ## General
@@ -1635,6 +1635,21 @@ The IBM-documented cascade is **per-node Failure terminal -> upstream propagatio
 _References:_
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=rfgw-default-error-handling>
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=ovr-handling-errors-in-message-flows>
+
+**Q: Which `SQLSTATE` indicates a DB deadlock in ACE, and how does its handling differ from a connection error?**
+
+- **ACE prefixes DB-origin SQL states with `D`** to distinguish them from integration-node-originated states. So a DB2 / Oracle / PostgreSQL deadlock with SQL state `40001` becomes **`D40001`** inside ACE; a connection-class failure starting with `08` becomes **`D08xxx`**. A candidate who writes `IF SQLSTATE = '40001'` will never match in ACE, the literal must be `D40001`
+- **Deadlock / serialization failure: `D40001` (and DB-specific variants like `D40P01` on PostgreSQL).** This is **retryable**: the DB picked your transaction as the victim, the work was undone, retrying with a small backoff usually succeeds because the other transaction has now finished. Tight bounded retry (e.g. 3 attempts, jittered backoff) is appropriate. Do **not** circuit-break on these
+- **Connection-class: `D08xxx` (`D08001` connection refused, `D08006` connection failure, `D08S01` communication link failure, etc.).** Match with `SQLSTATE LIKE 'D08%'`. **Different strategy:** the database is unreachable, retrying immediately just hammers a dead endpoint. Use a **circuit-breaker / exponential backoff with a cap**, alert on sustained failures, do not loop tightly
+- **Constraint violations: `D23xxx` (`D23000` integrity constraint violation, often a duplicate key).** **Never retry**, the data or logic is wrong, retrying gets the same error. Route to a dedicated error path that captures the bad input
+- **`Throw exception on database error` node property** controls the default behaviour. Set (default): node throws on any DB error, routes to Failure terminal, exception details land in `ExceptionList`. Cleared: errors do **not** throw, you must check `SQLSTATE` yourself and `THROW` explicitly if needed. Pick 'cleared' when you want fine-grained classify-then-retry logic; 'set' when you want the flow's catch tier to handle it
+- **User-thrown SQL states (from `THROW`) are taken as-is** (no automatic `U` prefix). IBM convention: write them as `U...` if you want a handler to match them via `LIKE 'U%'`, distinct from `D...` database states. The `U` prefix is a convention, not enforced
+- **Catch-everything pattern:** `WHEN SQLSTATE LIKE '%'` as the last handler in a scope catches anything not explicitly classified, useful as a safety net so unknown errors do not silently slip through
+
+The SQL-standard taxonomy says '40001 = deadlock; 08% = connection', but in ACE the runtime values you compare against are **`D40001`** and **`D08%`** because ACE prefixes DB-origin states with `D`. The retry strategy differs by class: deadlocks are transient and retryable with short backoff, connection failures need circuit-breaker / capped exponential backoff because tight retries hammer dead endpoints, constraint violations should never be retried. Candidates who name the `D` prefix, the three categories, and pair each with the right retry pattern have written real DB-integration code; candidates who match against bare `40001` are repeating the SQL standard without checking what ACE actually returns.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=functions-sqlstate-function>
 
 ### HTTPS
 
