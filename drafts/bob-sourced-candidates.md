@@ -45,7 +45,7 @@ covers the same ground.
 | # | Verdict | Question | Source file | Hook |
 |---|---------|----------|-------------|------|
 | 17 | K (graduated as `ace-dev-061`) | Why is a reference more efficient than repeated subscript access like `InputRoot.XMLNSC.A.B.C[1]`? | esql_guidelines.md § Using References | Kept as standalone fundamentals primer despite overlap with `ace-dev-024`/`ace-dev-056` |
-| 18 |        | What's the performance impact of `CARDINALITY` in a loop condition, and the correct fix? | esql_guidelines.md § Cardinality | Evaluated every iteration; cache it in a local variable before the loop |
+| 18 | K (graduated as `ace-dev-062`) | What's the performance impact of `CARDINALITY` in a loop condition, and the correct fix? | esql_guidelines.md § Cardinality | O(N²) gotcha; Fix 1 cache in local; Fix 2 (preferred) reference + MOVE NEXTSIBLING. Pre-flag #79 (CARDINALITY in loops, Top-10 mistakes) is the same point, mark S there |
 | 19 |        | Compare `CARDINALITY` vs `LASTMOVE` for a has-children check, why is LASTMOVE cheaper? | esql_guidelines.md § Cardinality Child Element Checks | LASTMOVE = pointer check; CARDINALITY traverses the subtree |
 | 20 |        | Is `IF InputRoot.Field = NULL` correct ESQL? What's the proper syntax and why? | esql_guidelines.md § NULL Handling | No, use `IS NULL`; in SQL `NULL = NULL` is UNKNOWN, not TRUE |
 | 21 |        | What risk does a missing `BROKER SCHEMA` at the top of an ESQL file create in multi-app deployments? | esql_guidelines.md § BROKER SCHEMA Declarations | Default schema assignment can cause routing / module-resolution collisions |

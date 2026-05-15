@@ -3322,6 +3322,28 @@
     ]
   },
   {
+    "id": "ace-dev-062",
+    "product": "ACE",
+    "role": "Dev",
+    "topic": "ESQL",
+    "question": "What is the performance impact of `CARDINALITY` in a loop condition, and how do you fix it?",
+    "answerBullets": [
+      "**What `CARDINALITY` actually does.** Returns the number of elements in a list, which it computes by **walking the list and counting children**. It is not a cached property on the tree node; the count is recomputed on every call",
+      "**The antipattern:** putting `CARDINALITY(...)` in the loop condition: `WHILE i <= CARDINALITY(InputRoot.XMLNSC.Items.Item[]) DO ... SET i = i + 1; END WHILE;`. The condition is re-evaluated **on every iteration**, and each evaluation walks the full child list to count it. For N items, the total work is **O(N²)**: 100 items = 10,000 walks, 1000 items = 1,000,000 walks. Flows that look fine in dev with 10-element messages fall over in prod with 5,000-element messages",
+      "**Fix 1: cache the count before the loop.** `DECLARE n INT CARDINALITY(InputRoot.XMLNSC.Items.Item[]); WHILE i <= n DO ... END WHILE;`. Now the count walk happens **once**, total work is O(N). Lowest-effort fix for existing code",
+      "**Fix 2 (preferred): use a reference + `MOVE NEXTSIBLING`.** Avoids both the counting and the per-iteration subscript walk (see `ace-dev-061`): `DECLARE itemRef REFERENCE TO InputRoot.XMLNSC.Items.Item[1]; WHILE LASTMOVE(itemRef) DO ... MOVE itemRef NEXTSIBLING; END WHILE;`. No count needed, the loop guard is the move-succeeded check. Strictly faster than Fix 1 because it skips the count walk entirely",
+      "**When CARDINALITY in a loop is acceptable:** small fixed-size lists where you know N is tiny (a fixed-shape header with 3 fields, an enum), or one-shot checks outside a loop. The penalty is real but trivial at N <= 10",
+      "**Related gotcha: `CARDINALITY(...) > 0` to test 'is anything there'.** This works but still walks the whole list. If you only need to know whether the first element exists, **`LASTMOVE(itemRef)` after a `REFERENCE TO ...[1]` declaration** is cheaper. Use CARDINALITY when you need the actual count; use existence checks for boolean questions",
+      "**Detecting the antipattern in review:** `CARDINALITY` syntactically appearing in a `WHILE` / `FOR` / `IF i <` line condition is almost always wrong. Tooling-generated ESQL skeletons sometimes ship with this shape, treat it as a TODO"
+    ],
+    "answerExplanation": "`CARDINALITY` recomputes its count on every call by walking the child list. Inside a loop condition it becomes O(N²) on N elements, which is the classic ESQL profile killer that does not show up under low-load testing. The minimum-effort fix is to cache the count in a local before the loop; the proper fix is the reference + `NEXTSIBLING` pattern (`ace-dev-061`) which sidesteps counting entirely. Candidates who name the O(N²) shape, both fixes, and the related `LASTMOVE` shortcut for existence checks have profiled ESQL on production volumes; candidates who say 'but it's just a count' have not.",
+    "tags": ["esql", "cardinality", "performance", "loop", "fundamentals", "gotcha"],
+    "difficulty": "medium",
+    "references": [
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=functions-cardinality-function"
+    ]
+  },
+  {
     "id": "cloud-001",
     "product": "Cloud",
     "role": "Any",
