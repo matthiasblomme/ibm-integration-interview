@@ -2,14 +2,14 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 173
+**Total questions:** 174
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (15)](#mq-dev)
 - [ACE, Admin (54)](#ace-admin)
-- [ACE, Dev (66)](#ace-dev)
+- [ACE, Dev (67)](#ace-dev)
 - [Cloud (5)](#cloud)
 
 ## General
@@ -2451,6 +2451,24 @@ HTTP status codes split cleanly into permanent (4xx, mostly) and transient (5xx 
 
 _References:_
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-httprequest-node>
+
+### Parsing
+
+**Q: Which message domain (parser) do you pick for: namespaced XML, opaque binary, fixed-format SWIFT, JSON?**
+
+- **The common message domains in ACE v13, and when each one fits:** `XMLNSC`, XML, namespace-aware, compact in-memory tree, the modern default for any XML payload, `C` is for compact. `XMLNS`, XML, namespace-aware, full DOM-style tree, heavier, legacy, mostly kept for compatibility. `XML`, XML without namespace awareness, drops namespace context on parse, legacy only. `JSON`, JSON, pairs with JSON Schema validation (see `ace-dev-052`). `BLOB`, opaque bytes, no structured navigation, the payload is held as-is. `MRM`, model-driven parser for fixed / variable-format records (SWIFT MT, EDIFACT, X12, custom CWF / TDS), legacy tooling around message sets. `DFDL`, model-driven parser using the industry-standard DFDL schema, the intended modern successor to `MRM`; new fixed-format projects should target DFDL. `MIME`, multipart messages (SOAP attachments, MTOM, multipart/form-data), splits the message into parts. `DataObject`, used by v13 connector messages (Salesforce, SAP, Box, etc.), the connector frames the data; you usually do not pick this manually
+- **XML with namespaces -> `XMLNSC`.** Strongly preferred over the older `XMLNS` and the namespace-unaware `XML` domains, which are kept only for legacy compatibility. Picking `XML` (no NS) on namespaced input silently drops the namespace prefix metadata, downstream code that expects `ns:Element` sees just `Element` and routing logic breaks
+- **Opaque binary you do not parse -> `BLOB`.** Use `BLOB` when the message is a payload you forward as-is (a file you put on a queue, an image, a PDF, an encrypted blob). The parser stores the bytes; you cannot navigate fields. **Trap:** picking `BLOB` on a message you actually need to read leaves downstream Compute nodes with nothing to dereference; the workaround `ASBITSTREAM` round-trips through a real parser
+- **Fixed-format SWIFT / EDIFACT / X12 / custom CWF / TDS -> `DFDL` (modern) or `MRM` (legacy).** Both are model-driven parsers that consume a schema describing the bit-or-byte layout. **`DFDL`** is the newer parser (industry-standard DFDL language, with a Toolkit DFDL Schema editor); **`MRM`** is the legacy MRM message-set tooling. New projects should target DFDL; MRM is kept for migrated estates. Picking `BLOB` or `XML` on a SWIFT MT message leaves you parsing fixed-width fields by hand in ESQL, which is what these domains exist to avoid
+- **JSON -> `JSON`.** Native JSON parser. Picking `XMLNSC` on JSON input throws (loud, at least). The JSON domain integrates with JSON Schema validation (see `ace-dev-052`)
+- **Multipart messages (SOAP attachments, multipart/form-data, MTOM) -> `MIME`.** The MIME parser splits the message into parts that downstream nodes can navigate. Picking `BLOB` on a multipart message leaves the parts un-split
+- **The general failure modes when you pick the wrong domain:** silent data loss (`XMLNS`/`XML` on namespaced input drops namespace context; `BLOB` on structured data hides the structure). Loud parse failure (`XMLNSC` on JSON, `JSON` on XML). Forced ESQL by-hand parsing (`BLOB` on a message you need to read). Validation that does not actually validate (`format` / `default` / `discriminator` ignored on `JSON`, see `ace-dev-052`)
+- **In review, treat the message domain as a deliberate decision, not a default.** The Toolkit picks a domain based on file extensions and content sniffing; that is a starting guess. Confirm against the actual payload shape and the validation you need
+
+The message domain is the parser ACE applies to the wire bytes. Picking the right one buys you a structured tree you can navigate with ESQL field references; picking the wrong one either loses data silently (`XMLNS`/`XML` flattening namespaces, `BLOB` hiding structure), forces you to parse by hand, or fails loudly. The full common-domain set in v13 is `XMLNSC` / `XMLNS` / `XML` / `JSON` / `BLOB` / `MRM` / `DFDL` / `MIME` / `DataObject`, but the four cases that come up daily are `XMLNSC` for XML, `BLOB` for opaque pass-through, `DFDL` (or legacy `MRM`) for fixed-format records, and `JSON` for JSON. Candidates who recall the silent-data-loss failure modes (especially `XMLNS` vs `XMLNSC`) understand the cost of getting this wrong; candidates who say 'just use BLOB if you're not sure' do not.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=concepts-message-parsers-domains>
 
 ### Troubleshooting
 
