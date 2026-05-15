@@ -2,14 +2,14 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 168
+**Total questions:** 169
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (15)](#mq-dev)
 - [ACE, Admin (54)](#ace-admin)
-- [ACE, Dev (61)](#ace-dev)
+- [ACE, Dev (62)](#ace-dev)
 - [Cloud (5)](#cloud)
 
 ## General
@@ -1914,6 +1914,20 @@ The reference + `MOVE` pattern is the canonical ESQL idiom for `ExceptionList` b
 
 _References:_
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=messages-accessing-exceptionlist-tree-using-esql>
+
+**Q: Why is a reference more efficient than repeated subscript access in ESQL?**
+
+- **Each subscript access re-navigates the tree from the root.** Writing `InputRoot.XMLNSC.A.B.C[1]` five times in a row asks ACE to walk `InputRoot -> XMLNSC -> A -> B -> C -> first child` **five times**. The runtime does not cache the result of the previous walk
+- **A `REFERENCE` holds a direct pointer into the tree.** Declare once, reuse N times: `DECLARE itemRef REFERENCE TO InputRoot.XMLNSC.A.B.C[1]; SET out.field1 = itemRef.Name; SET out.field2 = itemRef.Qty; SET out.field3 = itemRef.Price;`. The tree walk happens once at declaration; subsequent `itemRef.X` accesses go straight to the cached node
+- **The break-even point is two accesses.** If you read the path exactly once, subscript is fine and is more readable. From the second access onward, the reference pays off. The cost compounds when the path is deep or appears inside a loop
+- **References work for writes too.** Assigning *through* a reference (`SET itemRef.Status = 'PAID';`) modifies the tree at the pointed-to node, same as the subscript form, just without the re-walk. Useful for 'find this element, then update several fields on it'
+- **Common antipattern: subscript inside a loop.** `WHILE i <= 100 DO ... InputRoot.XMLNSC.Items.Item[i] ... END WHILE;` does the full root-to-Item walk on every iteration. Replace with a `REFERENCE TO InputRoot.XMLNSC.Items.Item[1]` plus `MOVE ref NEXTSIBLING` for the canonical fast loop
+- **Reference != value.** A reference is a pointer; assigning a reference to another variable (`DECLARE b REFERENCE TO a;`) creates an alias, not a copy. Mutating through `b` mutates through `a`. This is usually what you want, but candidates who expect value-copy semantics get surprised
+
+ACE's message tree is a logical structure and field-reference syntax is path-based, so every appearance of `Root.A.B.C` is a fresh walk from the root. References cache the walk by holding a direct pointer to the resolved node, so subsequent reads and writes go straight to the element. The performance gap is small for one access (the walk is cheap), but it scales with depth, with repeated access, and especially with loops. Candidates who reach for `REFERENCE` whenever they touch the same path twice (and who use `MOVE` for loop iteration) write ESQL that performs at production volume; candidates who chain subscripts in every line have not yet profiled their flows.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=tree-creating-dynamic-field-references>
 
 ### Hybrid connectivity
 
