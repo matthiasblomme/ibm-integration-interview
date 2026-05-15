@@ -3479,6 +3479,30 @@
     ]
   },
   {
+    "id": "ace-dev-069",
+    "product": "ACE",
+    "role": "Dev",
+    "topic": "Parsing",
+    "question": "When do you pick On Demand parsing vs Immediate vs Complete?",
+    "answerBullets": [
+      "**What 'parsing' actually means here.** ACE wire bytes arrive at an input node; the parser turns them into a navigable message tree. Parser Options controls **when** that work happens, eagerly at the input node, or lazily as ESQL reaches into the tree",
+      "**On Demand (default and the right default).** The parser parses **only the parts of the tree that ESQL actually touches**, when they are touched. If a flow reads three top-level fields, the parser walks only those three paths. The rest of the body is never parsed, the CPU cost is minimal. Best for high-volume flows that read a few well-known fields from large messages",
+      "**Immediate.** The **body** is fully parsed at the input node, eagerly. Used when you need the body's structure available before the flow logic runs (e.g. a generic router that inspects shape before deciding where to send the message, or a Trace node early in the flow that logs the full body). The Environment, LocalEnvironment, and ExceptionList are still on-demand",
+      "**Complete.** The **entire logical tree** (body, headers, properties, everything) is parsed upfront, fully. Used when you need strict upfront validation against a model, a malformed message should fail at the input node and route to Failure, not deep inside the flow. The expensive choice for large messages, justified only when you need the validation contract",
+      "**Example where On Demand saves real CPU.** A 5MB XML payment-clearing message with 500 line items, where the flow only reads `MessageId`, `Sender`, and `TotalAmount` from the header to make a routing decision. On Demand parses ~200 bytes of header; Complete parses 5MB. At 100 msg/s, the difference is hours of CPU per day",
+      "**When you should NOT use On Demand:** when you need **upfront validation**, a malformed body should be rejected at the input. With On Demand, a syntactically broken element halfway through the body does not fire until ESQL touches it, which might be three nodes later in a different branch. The error surfaces in the wrong place",
+      "**Validation is a separate property** on the same Parser Options tab (`Validate` set to `None` / `Content` / `Content and Value`). Validation only kicks in **at the points where the parser runs**, so On Demand + Content-Validation means content checks happen as fields are accessed, not at the input. To validate the entire message upfront, pair `Complete` parsing with `Content and Value` validation",
+      "**Decision rule:** high-volume flow reading a few fields -> On Demand. Schema-driven flow that must reject malformed input -> Complete + Validate Content and Value. Router that inspects body shape but does not need full validation -> Immediate",
+      "**Per-node override.** ESQL `CREATE` with a `PARSE` clause can force parsing of a specific subtree mid-flow, so you can stay On Demand at the input node and parse explicitly only where needed. Useful for 'lazy at input, eager just before the validator node' patterns"
+    ],
+    "answerExplanation": "Parser Options choose when the parser walks the bit stream into a tree: lazily as ESQL touches fields (On Demand), eagerly at the input for the body only (Immediate), or eagerly for everything (Complete). On Demand is the right default because most flows only read a small subset of a large message and the parser walking is the dominant CPU cost. The legitimate cases for Immediate or Complete are when validation correctness or shape-based routing requires the tree to exist before flow logic runs, you trade upfront CPU for clean failure semantics. Candidates who name the three modes, give the 'read three fields from 5MB' example for On Demand, and pair Complete with `Content and Value` validation for upfront rejection are reading the trade-off correctly; candidates who default to Complete 'to be safe' are paying CPU for a contract they probably do not need.",
+    "tags": ["parsing", "on-demand", "immediate", "complete", "parser-options", "performance", "validation", "fundamentals"],
+    "difficulty": "medium",
+    "references": [
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=concepts-parsing-message"
+    ]
+  },
+  {
     "id": "cloud-001",
     "product": "Cloud",
     "role": "Any",
