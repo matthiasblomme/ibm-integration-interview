@@ -3344,6 +3344,28 @@
     ]
   },
   {
+    "id": "ace-dev-063",
+    "product": "ACE",
+    "role": "Dev",
+    "topic": "ESQL",
+    "question": "Is `IF field = NULL` correct ESQL? What is the proper NULL handling syntax?",
+    "answerBullets": [
+      "**`field = NULL` is wrong, and worse, it fails silently.** ESQL inherits SQL three-valued logic: any expression with a NULL operand returns NULL (UNKNOWN). `CustomerId = NULL` therefore returns NULL, not TRUE. In a boolean context (`IF`, `WHILE`), NULL is treated as FALSE, so the branch **never fires**. No exception, no warning, the code just behaves as if the field is always non-null",
+      "**The correct test is `IS NULL` / `IS NOT NULL`:** `IF InputRoot.XMLNSC.Order.CustomerId IS NULL THEN ... END IF;`. `IS` is the dedicated null-test operator, evaluates to TRUE or FALSE (never UNKNOWN), so it actually fires",
+      "**NULL is distinct from 0, empty string, and missing.** For INTEGER, NULL is not 0. For CHARACTER, NULL is not `''`. For a tree node, NULL means 'the field exists but has no value', separate from 'the field does not exist at all'. A `field IS NULL` test is TRUE in **both** cases (no value, and no field), which is usually what you want",
+      "**Bonus gotcha: `SET field = NULL` DELETES the field.** IBM doc is explicit: `SET OutputRoot.XMLNS.Msg.Data.Name = NULL;` DELETES the Name element. This is rarely what you mean. To **assign a null value** while keeping the element, use `VALUE NULL`: `SET OutputRoot.XMLNS.Msg.Data.Name VALUE = NULL;`. The element stays in the output XML / JSON tree but carries no value",
+      "**Any-operand-NULL: arithmetic and concatenation also propagate NULL.** `NULL + 5 = NULL`, `'prefix' || NULL = NULL`, `LENGTH(NULL) = NULL`. Anywhere you mix possibly-null inputs into a value, the output is null unless you guard. Use `COALESCE(x, default)` to substitute a fallback",
+      "**`REFERENCE` is the one ESQL type that does NOT support NULL.** A reference always points somewhere or is undeclared; it has no null state. To test 'is this reference valid', use `LASTMOVE(ref)` after the last `MOVE` (see `ace-dev-056`), not `ref IS NULL`",
+      "**In review, treat `= NULL` and `<> NULL` as bugs.** They might compile and run silently, but they never do what the author intended. Replace with `IS NULL` / `IS NOT NULL`. Especially common when ported from C# / Java / JavaScript backgrounds where `== null` works"
+    ],
+    "answerExplanation": "ESQL inherits SQL three-valued logic, so `field = NULL` always evaluates to UNKNOWN, which is treated as FALSE in a boolean context. The branch never fires, no exception is thrown, the code looks fine and silently misbehaves. `IS NULL` is the dedicated test that handles NULL correctly. The bonus gotcha is on the SET side: `SET field = NULL` deletes the field rather than assigning a null value; `SET field VALUE = NULL` is the way to keep the element with a null value. Candidates who name `IS NULL`, distinguish missing-vs-null, and recall the `VALUE NULL` assignment quirk have written real ESQL with optional fields; candidates who write `= NULL` from instinct have not yet shipped a flow that 'works' for months because a guard never fires.",
+    "tags": ["esql", "null", "three-valued-logic", "is-null", "value-null", "gotcha", "fundamentals"],
+    "difficulty": "easy",
+    "references": [
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=rfgr-esql-null-data-type"
+    ]
+  },
+  {
     "id": "cloud-001",
     "product": "Cloud",
     "role": "Any",
