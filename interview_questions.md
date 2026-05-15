@@ -2,14 +2,14 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 171
+**Total questions:** 172
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (15)](#mq-dev)
 - [ACE, Admin (54)](#ace-admin)
-- [ACE, Dev (64)](#ace-dev)
+- [ACE, Dev (65)](#ace-dev)
 - [Cloud (5)](#cloud)
 
 ## General
@@ -1958,6 +1958,21 @@ ESQL inherits SQL three-valued logic, so `field = NULL` always evaluates to UNKN
 
 _References:_
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=rfgr-esql-null-data-type>
+
+**Q: What risk does omitting `BROKER SCHEMA` create, and when does the collision actually happen?**
+
+- **What `BROKER SCHEMA` does.** It declares the **namespace** (schema) that the file's `CREATE FUNCTION`, `CREATE PROCEDURE`, `CREATE MODULE`, and module-level `DECLARE` belong to. IBM compares it to C++ namespaces, Java packages, and XML target namespaces. Optional in syntax: omit it and everything in the file falls into the **default schema**
+- **The risk in one sentence:** within a single deployable unit (an application or a library), two ESQL files that both omit `BROKER SCHEMA` and define a same-named procedure / module / function **collide in the default schema**. The runtime resolves the name to one of them, and the others are silently shadowed
+- **Where it actually bites:** the framing 'multi-app deployments' is a bit loose, ACE's schema boundary is per *deployable unit*, not per integration server. The real collision shapes are: two ESQL files in the same application, both lacking `BROKER SCHEMA`, both defining `CREATE PROCEDURE LogAudit(...)`. One wins, the other is dead code, no error. A shared library referenced by multiple apps, where library ESQL omits `BROKER SCHEMA` and app ESQL also omits it, the library's defaults can shadow app-local definitions during name resolution. Refactor / copy-paste scenarios: file A's `CREATE PROCEDURE Foo` gets copy-pasted into file B in the same app without renaming, both go to default schema, the original silently stops being called
+- **The symptom is the wrong code runs.** No exception, no compile-time error, no deploy-time warning. You changed a procedure, redeployed, and the change 'didn't take' because the runtime picked the other namesake. This is one of the worst classes of bug to triage because the code looks correct in source review
+- **The fix is one line at the top of every ESQL file:** `BROKER SCHEMA com.mycompany.payments.utils`. By convention, mirror the file's package-like organisation (reverse-DNS, dotted, e.g. `com.team.app.subsystem`). Now `CREATE PROCEDURE LogAudit(...)` lives in that schema, and a same-named procedure elsewhere in a different schema is unambiguous
+- **Calling across schemas:** once you declare schemas, you call functions by their fully-qualified name (`com.mycompany.payments.utils.LogAudit(...)`) or use the `PATH` clause on `BROKER SCHEMA` to import another schema's namespace for unqualified calls. `BROKER SCHEMA com.x.y PATH com.shared.utils;` resolves unqualified names in `com.shared.utils` after the local schema
+- **Defensive rule for review:** every ESQL file should have `BROKER SCHEMA` at the top; flag any file that doesn't. The cost is one line, the benefit is no collision class of bug
+
+Omitting `BROKER SCHEMA` is benign in a single-file project and silently dangerous as soon as you have multiple files defining procedures or modules. The default schema is shared, so same-named items collide; the runtime resolves them in some order (effectively non-deterministic from the author's view), and the loser is silently shadowed. The bug class is 'the code I see in source review is not the code that ran'. The fix is one line per file plus a convention (reverse-DNS dotted schema names). Candidates who name the default-schema collision, point to multi-file applications and shared libraries as the shapes where it bites, and propose `BROKER SCHEMA` as a mandatory review item understand the cost of skipping it.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=statements-broker-schema-statement>
 
 ### Hybrid connectivity
 
