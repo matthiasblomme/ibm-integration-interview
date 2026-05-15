@@ -2,14 +2,14 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 175
+**Total questions:** 176
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (15)](#mq-dev)
 - [ACE, Admin (54)](#ace-admin)
-- [ACE, Dev (68)](#ace-dev)
+- [ACE, Dev (69)](#ace-dev)
 - [Cloud (5)](#cloud)
 
 ## General
@@ -2486,6 +2486,23 @@ Compute Mode is the propagation contract: it selects which output trees go downs
 
 _References:_
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-compute-node>
+
+**Q: What is the cost of chaining three Compute nodes when one would do?**
+
+- **What happens at each Compute -> Compute boundary.** Each Compute, when its ESQL finishes, **finalizes the output tree** (seals it so downstream nodes cannot mutate, see `ace-dev-055`), **propagates** the message to the next node, and (with default `DELETE DEFAULT`) **clears the output trees from memory**. Three Computes = three finalize+propagate+clear cycles, even if the work inside each is tiny
+- **Tree-copy cost.** When you write `OutputRoot.X = InputRoot.Y` in a Compute, the relevant subtree is **copied** into the output. With three Computes each copying their own slice, the same parts of the message tree get walked and copied more than once. The cost compounds with message size (10KB body = trivial; 5MB body = real wall-clock time)
+- **Transaction time stays open across all three.** The flow's unit of work is a single transaction from the input node to the final output node. Each intermediate Compute keeps the transaction **open**, holding MQ get-under-syncpoint locks, DB row locks, etc. until commit. Three Computes in series means the lock-hold window is N+N+N node-times rather than one combined node-time. On contention-heavy DBs or queues, this is what shows up as 'tail latency'
+- **Memory and rollback-buffer.** The transaction's rollback buffer grows with every step that mutates state. Three propagations = three tree-clear-and-reallocate cycles plus three rollback-buffer entries. Memory pressure rises, and if the flow rolls back, the buffer has more to replay
+- **CPU: the parser may re-parse.** If any of the three Computes touches a part of the tree that was not fully parsed yet (on-demand parsing), the parser walks further. Chained nodes that each touch a different sub-tree force the parser to do work three times instead of once
+- **The fix is the same as the cause: merge.** One Compute with audit + enrich + transform inside the same `CREATE FUNCTION Main()` body finalises once, propagates once, allocates once. The ESQL is the same lines, the wiring is shorter
+- **When chaining is the right call (and not a performance bug):** distinct responsibilities that must be reviewable as separate modules (a strict separation of concerns the team enforces in review). Different transactional behaviour (one Compute committing to a DB independently from the next), but this needs explicit `Transaction = Commit` on the DB-touching node. Different deployable lifetime (a shared subflow used by many flows, which uses an embedded Compute). In those cases the readability or modularity win pays for the propagation cost. The bug is *unconscious* chaining where adjacent Computes could be one
+- **How to spot it in review:** sequences of three or more Computes with no node in between (no MQOutput, no HTTPRequest, no Filter) and no separate-transaction reason are usually merge candidates. The fix is local: collapse into one Compute, no flow re-architecture needed
+
+Chaining Computes is not free: each finalize + propagate + clear cycle costs a tree copy, the transaction stays open across all of them holding locks longer, the rollback buffer grows with each propagation, and the parser may walk the same tree multiple times. Three Computes that could have been one are three times the propagation overhead for the same logical work. The fix is to merge logically-related steps into a single Compute body; the legitimate non-merge cases are when different transactional behaviour, distinct review-time responsibilities, or shared subflow reuse justify the cost. Candidates who can articulate the per-boundary cost (finalize, propagate, clear, transaction extension) and name the merge as a local optimisation have profiled flows; candidates who see Computes as free are usually shipping flows whose latency they cannot explain.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-compute-node>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=statements-propagate-statement>
 
 ### Troubleshooting
 
