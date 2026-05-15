@@ -2,14 +2,14 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 174
+**Total questions:** 175
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (15)](#mq-dev)
 - [ACE, Admin (54)](#ace-admin)
-- [ACE, Dev (67)](#ace-dev)
+- [ACE, Dev (68)](#ace-dev)
 - [Cloud (5)](#cloud)
 
 ## General
@@ -2469,6 +2469,23 @@ The message domain is the parser ACE applies to the wire bytes. Picking the righ
 
 _References:_
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=concepts-message-parsers-domains>
+
+### Flow design
+
+**Q: What are the seven Compute Modes, and which trees propagate in each?**
+
+- **What Compute Mode controls.** It selects which **output trees** (the ones built by your ESQL via `OutputRoot` / `OutputLocalEnvironment` / `OutputExceptionList`) are propagated downstream. **Trees not included in the selection pass the original input through** (`InputRoot` -> downstream as-is, `InputLocalEnvironment` -> downstream as-is, etc.), even if your ESQL wrote to the matching `Output*` correlation. Those writes are local to the node and dropped at propagation
+- **The full seven-mode propagation matrix** (Compute Mode -> trees actually propagated): `Message` (default): `OutputRoot`, `InputLocalEnvironment`, `InputExceptionList`. `LocalEnvironment`: `InputRoot`, `OutputLocalEnvironment`, `InputExceptionList`. `LocalEnvironment And Message`: `OutputRoot`, `OutputLocalEnvironment`, `InputExceptionList`. `Exception`: `InputRoot`, `InputLocalEnvironment`, `OutputExceptionList`. `Exception And Message`: `OutputRoot`, `InputLocalEnvironment`, `OutputExceptionList`. `Exception And LocalEnvironment`: `InputRoot`, `OutputLocalEnvironment`, `OutputExceptionList`. `All`: `OutputRoot`, `OutputLocalEnvironment`, `OutputExceptionList` (nothing flows from input automatically)
+- **The silent gotcha:** if the mode does not include a tree, ESQL writes to the corresponding `Output*` correlation are **discarded at propagation** and the downstream node sees the unchanged `Input*` instead. Classic symptom: 'I set `OutputLocalEnvironment.Destination.MQ.DestinationData.queueName` but the next node is using the old queue.' The Compute Mode was left at the default `Message`, so the LocalEnvironment write never propagated
+- **`All` mode is its own pitfall.** In `All`, nothing flows from input automatically; every tree must be explicitly copied if you want any input data: `SET OutputRoot = InputRoot; SET OutputLocalEnvironment = InputLocalEnvironment; SET OutputExceptionList = InputExceptionList;`. The tooling-generated skeleton's `CopyEntireMessage()` only copies the **body** (`OutputRoot = InputRoot`), so in `All` mode the LocalEnvironment and ExceptionList are silently dropped unless you add the other two lines yourself
+- **`Environment` is not controlled by Compute Mode.** The Environment tree (a flow-scoped scratchpad, distinct from LocalEnvironment) **always passes through** unchanged regardless of mode. Use `Environment` for state you want every node to see; use `LocalEnvironment` for routing / destination overrides that depend on the mode being right
+- **Compute Mode is the default for `PROPAGATE`.** A bare `PROPAGATE` statement in the same Compute uses the node's Compute Mode to decide which trees go out. A `PROPAGATE TO TERMINAL '...'` without `MESSAGE`/`ENVIRONMENT`/`EXCEPTION` clauses inherits the same defaults. To override per-call, use the `MESSAGE`/`ENVIRONMENT`/`EXCEPTION` clauses on the PROPAGATE itself (see `ace-dev-055`)
+- **Decision rule:** pick the mode that names every tree you intend to modify. If you write to `OutputLocalEnvironment` in any branch, the mode must include `LocalEnvironment`. If in doubt, set `All` and copy explicitly, verbose but unambiguous. The default `Message` is correct for 'transform the body, leave routing alone' which is most one-to-one flows
+
+Compute Mode is the propagation contract: it selects which output trees go downstream, and unselected trees fall back to the input versions, **regardless of what ESQL did to the matching `Output*` correlation**. The silent failure mode is modifying `OutputLocalEnvironment` in a Compute set to `Message` mode, the modification is real inside the node and discarded at propagation. The fix is matching the mode to the trees you write. `All` requires explicit copy of every input you want to keep, which is the second common pitfall. `Environment` is the exception to the whole rule (always propagated). Candidates who name the seven modes, surface the discard-on-propagation gotcha, and recall the `Environment` exception have debugged a 'my change didn't take' bug in a Compute node; candidates who say 'Compute Mode is just for the body' are operating on the default and have not yet hit the wrong-tree case.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-compute-node>
 
 ### Troubleshooting
 

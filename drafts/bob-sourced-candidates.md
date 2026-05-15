@@ -58,7 +58,7 @@ covers the same ground.
 
 | # | Verdict | Question | Source file | Hook |
 |---|---------|----------|-------------|------|
-| 26 | (possible overlap) | Explain the difference between Message mode and LocalEnvironment mode on a Compute node. Which trees propagate in each? | flow_guidelines.md § Compute Mode | Message = OutputRoot + InputLocalEnvironment; LocalEnvironment = InputRoot + OutputLocalEnvironment |
+| 26 | K (graduated as `ace-dev-067`) | Explain the difference between Message mode and LocalEnvironment mode on a Compute node. Which trees propagate in each? | flow_guidelines.md § Compute Mode | Broadened to full 7-mode propagation matrix + discard-on-propagation gotcha + All-mode CopyEntireMessage trap + Environment-always-passes-through exception |
 | 27 |        | Why is `SET OutputRoot = InputRoot` correct in Message mode but buggy if combined with All mode + only `CopyEntireMessage()`? | flow_guidelines.md § Message Copying in All Mode | All mode discards inputs; CopyEntireMessage() only covers the body, not LocalEnvironment/ExceptionList |
 | 28 | (possible overlap) | What's the cost of chaining 3 separate Compute nodes when one would do, in tree copies and transaction time? | flow_guidelines.md § Consecutive Compute Nodes | Each node copies the tree and extends the transaction, CPU, memory and rollback-buffer all multiply |
 | 29 |        | When should you use On Demand parsing vs Immediate or Complete parsing? Give an example where On Demand saves CPU. | flow_guidelines.md § Message Parsing | On Demand = parse only what's accessed (best default); Immediate/Complete only when upfront validation is required |
