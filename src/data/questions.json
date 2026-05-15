@@ -3388,6 +3388,28 @@
     ]
   },
   {
+    "id": "ace-dev-065",
+    "product": "ACE",
+    "role": "Dev",
+    "topic": "ESQL",
+    "question": "Why is parameterised `PASSTHRU` faster than literal-interpolated `PASSTHRU` in an ESQL loop?",
+    "answerBullets": [
+      "**What the database actually does on each `PASSTHRU`.** When ACE sends a SQL string to the database, the DB has to **parse** it (lex / syntax-check), **plan** it (decide indexes, join order, etc.), then **execute** it. Parse + plan together are 'prepare'. Mature databases cache the plan keyed on the SQL **text**",
+      "**Literal-interpolated form: new SQL text every call.** `PASSTHRU('SELECT * FROM Users WHERE Id = ''' || userId || '''')` builds a different SQL string for every value of `userId`: `SELECT * FROM Users WHERE Id = '42'`, `SELECT * FROM Users WHERE Id = '43'`, etc. Each is a fresh string, cache miss, **full prepare on every call**. In a loop over 1000 IDs, that is 1000 prepares",
+      "**Parameterised form: one SQL text, N executions.** `PASSTHRU('SELECT * FROM Users WHERE Id = ?', userId)` sends one fixed SQL text (`SELECT * FROM Users WHERE Id = ?`) plus a separate bind-variable payload per call. The DB prepares once, caches the plan, and **reuses** it for every execution. 1000 calls = 1 prepare + 1000 executions",
+      "**The performance gap can be 10x or more on hot paths.** Prepare/plan is the expensive part of a query for simple lookups; once the plan is cached, execute is mostly network + index seek. Skipping 999 prepares is real wall-clock time",
+      "**Security bonus: parameterised form is also the SQL-injection defence.** Literal interpolation lets a hostile `userId` like `' OR 1=1 --` break out of the quotes and rewrite the query. Bind variables are sent separately and never re-parsed as SQL, so injection is structurally impossible. (Senior candidates name this even when the question is framed as performance, the two motivations are the same.)",
+      "**The legitimate corner case for literal SQL.** Some things **cannot** be parameterised in standard SQL: **table names, column names, schema names**. If you genuinely need dynamic identifiers (`SELECT * FROM <dynamic-table>`), you have to concatenate. The defence in that case is **strict allow-list validation** of the identifier (`IF tableName NOT IN ('Users', 'Orders') THEN THROW ...`) before concatenation. Never concatenate untrusted input into an identifier slot",
+      "**In review, treat `||` inside a `PASSTHRU` SQL string as suspect.** If the concatenated value is a *data value*, it should be a `?` parameter instead. If it is an *identifier*, validate against an allow-list first"
+    ],
+    "answerExplanation": "Parameterised `PASSTHRU` outperforms literal-interpolated `PASSTHRU` because the database caches query plans keyed on SQL text. Literal interpolation builds a different SQL string per call, every call missing the cache and forcing a full prepare; parameterised form holds the SQL text constant and varies only the bind variables, so the prepared plan is reused. In a tight loop the gap is order-of-magnitude. The same change also closes SQL injection by design, which is why parameterised SQL is the recommendation everywhere, performance and security align. The only legitimate concatenation case is dynamic identifiers (table / column names), which must be validated against an allow-list rather than passed through user input.",
+    "tags": ["esql", "passthru", "sql", "prepared-statement", "bind-variables", "performance", "sql-injection"],
+    "difficulty": "medium",
+    "references": [
+      "https://www.ibm.com/docs/en/app-connect/13.0?topic=statements-passthru-statement"
+    ]
+  },
+  {
     "id": "cloud-001",
     "product": "Cloud",
     "role": "Any",
