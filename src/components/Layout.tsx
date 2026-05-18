@@ -23,7 +23,7 @@ export function Layout() {
       </nav>
       <main className="main">
         <Outlet />
-        {/* <Footer /> */}
+        {false && <Footer />}
       </main>
     </div>
   );
