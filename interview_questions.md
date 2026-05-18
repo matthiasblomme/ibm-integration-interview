@@ -2,14 +2,14 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 128
+**Total questions:** 177
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
-- [MQ, Dev (14)](#mq-dev)
-- [ACE, Admin (40)](#ace-admin)
-- [ACE, Dev (36)](#ace-dev)
+- [MQ, Dev (15)](#mq-dev)
+- [ACE, Admin (54)](#ace-admin)
+- [ACE, Dev (70)](#ace-dev)
 - [Cloud (5)](#cloud)
 
 ## General
@@ -131,8 +131,8 @@ Both models handle restart recovery after a clean or crash restart, the key diff
 
 _References:_
 - <https://www.ibm.com/support/pages/ibm-mq-linear-and-circular-logging>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0%2Fcom.ibm.mq.con.doc%2Fq018440_.html>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0%2Fcom.ibm.mq.pla.doc%2Fq018445_.html>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0%2Fcom.ibm.mq.con.doc%2Fq018440_.html>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0%2Fcom.ibm.mq.pla.doc%2Fq018445_.html>
 
 ### Security
 
@@ -188,13 +188,13 @@ The key mental model is topic trees and subscriptions. Publishers don't know sub
 Cluster-based pub/sub is the right default when you want scale and auto-discovery across peer qmgrs; hierarchy is the answer when you need controlled, structured links (e.g. connecting otherwise-separate clusters). Knowing PUBSCOPE/SUBSCOPE exists to scope traffic is what separates 'I've used MQ pub/sub' from 'I've designed a pub/sub topology'.
 
 _References:_
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=networks-publishsubscribe-clusters>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=networks-connecting-queue-manager-publishsubscribe-hierarchy>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=networks-publishsubscribe-clusters>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=networks-connecting-queue-manager-publishsubscribe-hierarchy>
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=explorer-configuring-publishsubscribe-mq-queue-managers>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.con.doc/q017435_.htm>
-- <https://www.ibm.com/docs/en/app-connect/11.0.0?topic=applications-publishsubscribe-overview>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.con.doc/q017435_.htm>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=applications-publishsubscribe-overview>
 - <https://www.mqtechconference.com/sessions_v2014/MQTC_pubsub_networks.pdf>
-- <https://mqseries.net/phpBB/viewtopic.php?t=78106&sid=f3b380efc56696085c1231f21d>
+- <https://mqseries.net/phpBB/viewtopic.php?t=78106>
 
 **Q: How can you temporarily disable an MQ subscription without deleting it?**
 
@@ -259,9 +259,9 @@ MQ carries structured metadata plus an opaque body. Headers compose, an MQMD may
 A UOW is how MQ gives you atomicity across several message operations, and (via XA) across MQ plus other resources like a database. Local vs global is really 'single-phase vs two-phase commit', mention MQCMIT/MQBACK/MQBEGIN by name and you signal you've actually written transactional MQ code rather than just heard about it.
 
 _References:_
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q026790_.html>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.sce.doc/q023320_.htm>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.dev.doc/q106030_.htm>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q026790_.html>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.sce.doc/q023320_.htm>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.dev.doc/q106030_.htm>
 - <https://usuaris.tinet.cat/sag/mq_trmgr.htm>
 - <https://www.mqtechconference.com/sessions_v2014/Introduction_to_MQ.pdf>
 
@@ -282,7 +282,7 @@ Persistence trades throughput for durability, and it is ALWAYS set by the puttin
 _References:_
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=objects-persistence>
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=properties-mq-queue>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=descriptor-persistence-mqlong>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=descriptor-persistence-mqlong>
 - <https://www.ibm.com/docs/en/integration-bus/10.0.0?topic=messages-ensuring-that-are-not-lost>
 - <https://www.ibm.com/support/pages/ibm-mq-message-persistence-faqs>
 - <https://www.ibm.com/support/pages/node/6576289>
@@ -507,9 +507,9 @@ _References:_
 The essence: client = network access via a channel, bindings = same-host direct access through the local MQ runtime. Bindings is simpler and faster when app and qmgr live on the same server; client is more flexible and is the normal choice when they're separate. In ACE this shows up as two distinct configuration paths, client needs a channel + listener on the MQ side, local just needs the co-located qmgr name. Modern deployments (containers, separate app/qmgr pods) almost always use client mode with reconnection enabled.
 
 _References:_
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q030760_.html>
-- <https://www.ibm.com/docs/en/app-connect/11.0.0?topic=mq-configuring-client-connection>
-- <https://www.ibm.com/docs/en/app-connect/11.0.0?topic=mq-configuring-local-connection>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q030760_.html>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=mq-configuring-client-connection>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=mq-configuring-local-connection>
 
 **Q: What is a CCDT and how do you use it?**
 
@@ -526,7 +526,7 @@ A CCDT is the central connection-definition file for MQ clients, you put channel
 _References:_
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=tables-configuring-binary-format-ccdt>
 - <https://www.ibm.com/docs/en/ace-ipaas?topic=types-mqccdt>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.mig.doc/q001640_.html>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.mig.doc/q001640_.html>
 
 **Q: How do you make an MQ client application resilient to qmgr failures?**
 
@@ -545,8 +545,8 @@ Resilience = reconnect + endpoints + failure detection + well-behaved app logic.
 _References:_
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=restart-automatic-client-reconnection>
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=configuring-recovery-restart>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.con.doc/q081900_.html>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q032520_.html>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.con.doc/q081900_.html>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q032520_.html>
 
 **Q: What is the MQ heartbeat (HBINT)?**
 
@@ -555,12 +555,11 @@ _References:_
 - The two ends negotiate HBINT at channel start, the **lower** of the two configured values wins
 - Default is 300 seconds (5 minutes). Lower it when you need faster failure detection (at the cost of a bit more chatter)
 - Crucially, heartbeat works **even on an idle channel**: e.g. when a client is sitting inside a long-running MQGET with WAIT; without HBINT a dead-but-not-torn-down conversation looks fine
-- Because it's an MQ conversation, HBINT can catch situations where the MQ agent is stuck even though the underlying TCP socket still appears connected
 
 HBINT is MQ's own liveness ping between a client and the qmgr (or between two qmgrs over a message channel). It operates above TCP, so it can notice problems with the MQ conversation that TCP itself doesn't see. Negotiated between peers, the lower value wins, so both sides should be set deliberately, not left at whatever was defined on one end.
 
 _References:_
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.con.doc/q081890_.html>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.con.doc/q081890_.html>
 
 **Q: What is the MQ TCP KeepAlive?**
 
@@ -582,13 +581,12 @@ _References:_
 - **HBINT catches:** MQ conversation stuck while TCP looks fine (hung agent, long idle MQGET WAIT with a broken peer, mis-behaving client that no longer processes flows)
 - **KeepAlive catches:** network paths gone away, firewall silently dropping idle sockets, NAT entry timing out, peer host disappearing without a proper close, none of which HBINT notices because no MQ flow attempts are being made
 - **Use both.** They're complementary, not alternatives. HBINT defends the MQ conversation; KeepAlive defends the underlying socket. Disabling one leaves the other's blind spot exposed
-- **Rough tuning:** HBINT somewhere between 60 s and the default 300 s (shorter = faster failure detection, a little more chatter). KeepAlive idle tuned to fire sooner than your network's firewall idle timeout (often 15 minutes or less)
-- On the channel config that means `HBINT(300)` (or lower) plus `KEEPALIVE(YES)`, and don't forget the OS-level keepalive knobs, otherwise KeepAlive is only nominally enabled
+- **Joint tuning:** treat HBINT and KeepAlive as a pair, both configured deliberately, not just one. The common production failure mode is `KEEPALIVE(YES)` set on the channel with kernel defaults left untouched, so KeepAlive is enabled in name only
 
-The cleanest way to frame it is by what each protocol sees: HBINT knows about MQ conversations but not about sockets, KeepAlive knows about sockets but not about MQ. Each blind spot is the other's strength, which is why production MQ setups enable both. The common mistake is turning on `KEEPALIVE(YES)` on the channel and assuming that's sufficient, kernel defaults of 2 hours before the first probe mean you'll still hit firewall idle drops, so OS-level tuning is mandatory for KeepAlive to actually do its job.
+The cleanest way to frame it is by what each protocol sees: HBINT knows about MQ conversations but not about sockets, KeepAlive knows about sockets but not about MQ. Each blind spot is the other's strength, which is why production MQ setups enable both. The common mistake is treating `KEEPALIVE(YES)` on the channel as sufficient on its own, see `mq-dev-013` for why the OS-level knobs are mandatory.
 
 _References:_
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.con.doc/q081890_.html>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.con.doc/q081890_.html>
 - <https://www.ibm.com/support/pages/two-steps-are-needed-setting-tcpip-keepalive-ibm-mq>
 
 ### Messages
@@ -606,7 +604,7 @@ Set persistence explicitly if the message matters, don't rely on queue defaults 
 
 _References:_
 - <https://www.ibm.com/support/pages/ibm-mq-message-persistence-faqs>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=descriptor-persistence-mqlong>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=descriptor-persistence-mqlong>
 
 **Q: What are MQ message properties and how do they relate to MQRFH2?**
 
@@ -620,12 +618,12 @@ _References:_
 The clean framing is: **properties = API abstraction, MQRFH2 = on-the-wire header format that sometimes carries them**. Not everything is always stored in an MQRFH2, and you don't need to parse an MQRFH2 to read or set a property, the MQI exposes them directly. Candidates who conflate the two ('properties live in MQRFH2') give themselves away; the `PROPCTL` values and the usr/jms/mcd folder names are the precision tells.
 
 _References:_
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q032000_.htm>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q032000_.htm>
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=mqi-mqrfh2-rules-formatting-header-2>
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=2-field-details-mqrfh2>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q029560_.htm>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q022860_.htm>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q022920_.htm>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q029560_.htm>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q022860_.htm>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q022920_.htm>
 
 **Q: What are the three MQPER_* persistence values and what does AS_Q_DEF actually resolve to?**
 
@@ -640,7 +638,7 @@ Every MQ developer has to know the three persistence values, but AS_Q_DEF is whe
 _References:_
 - <https://www.ibm.com/support/pages/ibm-mq-message-persistence-faqs>
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=constants-mqper-persistence-values>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=descriptor-persistence-mqlong>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=descriptor-persistence-mqlong>
 
 ### Pub/Sub
 
@@ -659,7 +657,7 @@ _References:_
 Subscribing is really about two choices: a topic string to listen on and a destination queue to receive matches. Non-durable sub = subscription disappears with the client; durable sub = subscription persists, messages keep arriving, app resumes by name. The key ACE nuance: ACE flows don't subscribe directly, you wire up an MQ subscription that feeds an ordinary queue, and the flow reads that queue. That's a common gotcha in interviews when someone expects a 'subscribe to a topic' flow primitive and the answer is 'no, you set up the subscription in MQ and read the resulting queue'.
 
 _References:_
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=properties-mq-subscription>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=properties-mq-subscription>
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=objects-working-subscriptions>
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=objects-mq-console-working-subscriptions>
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=consumers-durable-subscribers>
@@ -683,8 +681,8 @@ XA is the correct answer when 'commit MQ and another resource together' is a har
 
 _References:_
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=clients-what-is-extended-transactional-client>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.con.doc/q016540_.htm>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/xms_managed_mq.html>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.con.doc/q016540_.htm>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/xms_managed_mq.html>
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=coordination-mq-xa-switch-structure>
 
 ### Error handling
@@ -704,7 +702,7 @@ Two things to nail in an answer: (1) the actual definition, a poison message is 
 
 _References:_
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=consumers-poison-messages-in-xms>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q032280_.html>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q032280_.html>
 - <https://www.ibm.com/support/pages/ibm-mq-message-persistence-faqs>
 
 ### APIs
@@ -723,7 +721,7 @@ JMS is the ergonomic, portable choice for Java apps, especially anything that li
 _References:_
 - <https://www.ibm.com/docs/en/was/9.0.5?topic=network-differences-between-service-integration-mq>
 - <https://www.ibm.com/docs/SSFKSJ_9.2.0/com.ibm.mq.pro.doc/q003460_.htm>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q123770_.html>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q123770_.html>
 
 ### MQGET
 
@@ -744,8 +742,24 @@ _References:_
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=reference-mqgmo-get-message-options>
 - <https://www.mqtechconference.com/sessions_v2013/WMQ_Best_Practices.pdf>
 - <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=multiplatforms-get-sample-programs>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.dev.doc/q101830_.html>
-- <https://www.ibm.com/docs/en/ibm-mq/9.2.x?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q026320_.html>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.ref.dev.doc/q101830_.html>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=SSFKSJ_9.2.0/com.ibm.mq.dev.doc/q026320_.html>
+
+### Poison messages
+
+**Q: A queue defines BOQNAME but the backout queue does not exist, what happens to messages that reach BOTHRESH?**
+
+- The consumer (or framework wrapping it) compares `MQMD.BackoutCount` to the queue's `BOTHRESH`. Once the threshold is hit, the framework tries to **put the message to the queue named by `BOQNAME`**
+- **If `BOQNAME` does not exist** (or is full, has wrong put permissions, or is put-inhibited): the put fails. The fallback is the **queue manager's dead-letter queue (DLQ)**. The message lands on the DLQ instead of the configured backout queue
+- **Why this is a silent data-loss risk:** the DLQ is a shared catch-all, the message arrives without app context, so it is hard to identify which app it came from or why. For non-persistent messages (especially via XMS / IBM MQ classes for JMS), the docs explicitly say the message **may be discarded entirely** if the DLQ put also fails, or if no DLQ is configured on the queue manager. Nothing alerts. The flow keeps running. The message just disappears from view
+- The trap is configuring `BOQNAME` correctly but never verifying that the backout queue actually exists. MQ does not validate the target queue at config-time, so 'BOQNAME is set, we're safe' is a false sense of security
+- **Defensive checklist:** (a) ensure the backout queue exists *before* deploying the consumer, (b) monitor `BOQNAME` depth (does anything ever land there?), (c) monitor DLQ depth (anything unexpected?), (d) alert on both. The pair of metrics catches misconfiguration early
+
+Setting `BOQNAME` tells MQ where poisoned messages should go, but MQ does not validate that the target queue actually exists when `BOQNAME` is set. If the backout put fails for any reason (missing queue, full, no permission, inhibited), the message falls through to the queue manager's DLQ. For non-persistent messages MQ may silently discard the message altogether. Either way, the application loses visibility. Candidates who name both the DLQ fallback and the non-persistent discard case understand the failure modes; candidates who say 'messages go to BOQNAME, end of story' have not seen this in production.
+
+_References:_
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=developing-handling-poison-messages>
+- <https://www.ibm.com/docs/en/ibm-mq/9.4?topic=introduction-dead-letter-queues>
 
 ## ACE, Admin
 
@@ -802,9 +816,9 @@ Each jump has a different flavour: WMB→IIB is cosmetic, IIB→ACE v11 is archi
 The operator world is stream- and channel-based rather than version-and-fix-pack based. The important mental shift is that you subscribe to a channel in OLM and IBM publishes which operand (ACE container) versions flow through that channel, you don't pin a specific ACE fix-pack the way you would on-prem. Know the words 'operator', 'operand', 'channel', 'CD vs LTS/Cycle-2', and 'EUS' and you're fluent.
 
 _References:_
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=release-models-packaging-versions-app-connect-operator>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=release-models-packaging-versions-app-connect-operator>
 - <https://www.ibm.com/support/pages/ibm-app-connect-enterprise-certified-container-versions-support-lifecycle>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=release-app-connect-operand-versions-features>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=release-app-connect-operand-versions-features>
 
 **Q: Explain the ACE versioning scheme (V.R.M.F) and what each digit means.**
 
@@ -948,6 +962,40 @@ Same `openssl s_client -cipher` pattern as Windows, but Linux comes with openssl
 
 Monitoring events are non-intrusive, they don't change the flow, and give you structured insight at key points. Beware of volume: enabling them on every node in production will flood the consumer.
 
+**Q: What is Business Transaction Monitoring (BTM), and which databases does v13 support for the event store?**
+
+- BTM (Business Transaction Monitoring), re-introduced in ACE 12.0.2.0, correlates monitoring events emitted by message flows so you can track one business transaction (e.g. a single order) across multiple flows, applications, and integration servers
+- Four moving parts: **monitoring events** emitted from flow nodes, **an event store** (relational DB), a **transaction definition** that maps events to stages (start / progress / end / failure), and **traffic** to visualise
+- In v12, the only supported event-store backends were **IBM Db2** and **Oracle**. v13 adds **Microsoft SQL Server** and **PostgreSQL** via ODBC, broadening deployability in estates that do not run Db2 or Oracle. **Caveat:** PostgreSQL is supported on **Windows and xLinux only** per IBM docs; on other platforms you still pick from the other three
+- Events reach the store via a dedicated integration server. IBM's example data store is named **`BTMDataStore`** in the `Stores` section of the server's `server.conf.yaml` (teams often call the server itself `record` in practice). Set `dataSource`, `schema`, `storeMode`, `queue`, and `backoutQueue`; defaults are `SYSTEM.BROKER.DC.RECORD` and `SYSTEM.BROKER.DC.BACKOUT`
+- Schema creation scripts ship with ACE under `<install>/server/ddl/<db>/`, for example `DataCaptureSchema_v2.sql` for MonitoringEventV2, or `DataCaptureSchema.sql` for the older WMB format, plus `BusinessCaptureSchema.sql`. Pick the one that matches the `eventFormat` you configure on the integration server
+- **Server-level prereqs in `server.conf.yaml`** (this lives on the integration server, NOT `node.conf.yaml`): `Monitoring.MessageFlow.publicationOn: 'active'` and `eventFormat: 'MonitoringEventV2'` (the modern format); `Events.BusinessEvents.MQ.enabled: true` for BTM specifically; `RecordReplay.recordReplayEnabled: true` to enable the recorder
+- **MQ prereqs:** BTM is MQ-dependent. Set `defaultQueueManager` (local) or `remoteDefaultQueueManager` (with a policy reference) in `server.conf.yaml`, and ensure `SYSTEM.BROKER.DC.RECORD` / `SYSTEM.BROKER.DC.BACKOUT` exist on that queue manager (run `iib_createqueues` on the queue manager if they do not)
+
+BTM is 'distributed tracing for message flows' that predates OpenTelemetry in ACE: monitoring events with a shared correlator, an MQ-backed publication path, an ODBC-backed store, and a web dashboard. The v13 relevance is simple: the event-store backends doubled from two (Db2, Oracle) to four (adding SQL Server and PostgreSQL, with PostgreSQL on Windows / xLinux only), which matters for shops that do not run Db2. Candidates who list all four backends, know the `<install>/server/ddl` scripts, can describe the record / backout queue pair, and remember the MQ default-queue-manager dependency are showing real setup experience.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=management-monitoring-business-transactions>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=monitoring-business-transaction-monitoring-overview>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=monitoring-configuring-business-transaction-monitoring>
+
+**Q: What is the global transaction correlator in BTM, and why must the first event set it explicitly?**
+
+- ACE monitoring events carry **three correlation attributes**: **local** (within one flow), **parent** (between flows in ACE), and **global** (across flows + external systems). BTM is built specifically on the **global** correlator: IBM's doc is explicit that 'a global correlator must be present if the event is to be used by the built-in business transaction monitoring capability'
+- The **global transaction correlator** is the field BTM uses to tie individual monitoring events together into a single business transaction. Every event in a transaction carries the same correlator value; without it, you have unrelated events, not a tracked flow
+- Configure it on each monitoring event under **Global transaction correlator**. Point it at a stable value from the message (business identifier like order number, customer ref, request id), never a random runtime field. Common pickup locations IBM lists as canonical: `$Root/MQMD/MsgId`, `$Root/MQMD/CorrelId`, JMS `Transport_Folders` headers, `$LocalEnvironment/Destination/HTTP/RequestIdentifier`
+- The **first event** of a flow has to set the global correlator **explicitly** (XPath into the message tree), because there is no prior event to inherit from. Later events in the same flow can be set to **Automatic**, which means 'reuse the value already saved in the Environment tree'. For the **global** correlator specifically, if `Automatic` runs with nothing upstream having set a value, no correlator is used at all (no fallback generation, unlike the local correlator which would auto-generate)
+- **Aggregation gotcha:** the **Collector** and **AggregateControl** nodes do **not** preserve the Environment tree for later nodes. If a flow crosses one of those, the first event source after the aggregator has to re-extract the correlator from the message tree (XPath again), or the Automatic chain breaks silently
+- Uniqueness matters: within a transaction definition the correlator must be unique per business-transaction instance, because BTM uses it both to group events and to deduplicate. A correlator that is not unique will split one transaction into several, or merge unrelated ones
+- In the BTM Dashboard, the correlator is the **only value you can search on** to find a transaction's events, so make it something a human can type and recognise. No UUIDs if you can help it
+- Practical pattern: pick a business-meaningful identifier (payment ref, order id), validate it exists on the first event, configure later events in the same flow to auto-pick. If flows are chained, propagate the identifier in the message or headers so the next flow's first event can set it from real message data
+
+BTM is driven entirely off one field, the global transaction correlator (one of three correlators an event can carry, the others being local and parent). It is also the only thing you can search on in the dashboard. The subtle rule is that the very first event in a flow has no predecessor, so 'reuse-the-saved-correlator' does not work for it; you must pick the source field explicitly with an XPath. The same is true after a Collector or AggregateControl node, because those drop the Environment tree. Candidates who pick the correlator from the message payload (business id) rather than a generated UUID or random runtime field, who explain why the first event is special, and who flag the aggregation reset, have actually used the product.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=management-monitoring-business-transactions>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=events-correlation-monitoring>
+
 ### Policies
 
 **Q: What types of policies exist in ACE and what is the dynamic vs non-dynamic difference?**
@@ -1037,7 +1085,7 @@ _References:_
 Three independent choices to reason about: which image you start from (operator-provided, ACECC, or fully custom), how artefacts get into the running container (baked, deploy-time mount, runtime pull), and how the deployment is driven (operator, GitOps, CI, Ansible, …). Candidates who can articulate these three axes separately, and place a real deployment on each, have clearly done this in anger rather than just read a diagram.
 
 _References:_
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=release-models-packaging-versions-app-connect-operator>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=release-models-packaging-versions-app-connect-operator>
 
 **Q: What approaches reduce ACE container startup time, and which ones are Kubernetes-specific?**
 
@@ -1121,6 +1169,21 @@ Candidates sometimes conflate 'App Connect' with 'ACE', and conflate 'Operator' 
 - Benefits: declarative config, GitOps-friendly, consistent with other CP4I products, shifts lifecycle work from manual scripts into the cluster itself
 
 The operator is how you run ACE 'the Kubernetes way': you author YAML describing what you want, the operator reconciles reality to match. It is what makes declarative, GitOps-driven ACE deployments practical on OpenShift / CP4I. Good partner question to the operator-release-model one already in the bank: this is 'what is it', that one is 'how is it shipped'.
+
+**Q: Why is cert-manager required when installing the ACE Operator on plain Kubernetes, and what fails without it?**
+
+- The ACE Operator ships **admission webhooks** (validating + mutating) that gate every change to its CRDs (`IntegrationRuntime`, `IntegrationServer`, `Dashboard`, `DesignerAuthoring`, etc.). Admission webhooks have to be served over TLS, and the certs have to be provisioned and rotated by something
+- cert-manager is that something: the Operator's manifests reference cert-manager `Issuer` and `Certificate` resources to mint and rotate the webhook certs. Without cert-manager installed first, the install fails to reconcile with `no matches for kind "Issuer" in version "cert-manager.io/v1"` (the API server does not know what an Issuer is yet)
+- CP4I bundles cert-manager via the IBM Cloud Pak Foundational Services; standalone OpenShift typically adds it via the OpenShift cert-manager Operator. The cert-manager prereq only bites on **plain Kubernetes** (Minikube, kind, DIY) where you install cert-manager yourself before the ACE Operator
+- Install cert-manager before the ACE Operator: `kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.17.2/cert-manager.yaml` (or the current release). Wait for the `cert-manager`, `cert-manager-cainjector`, and `cert-manager-webhook` pods to reach `Running` in the `cert-manager` namespace
+- Verify the CRDs are registered before installing ACE: `kubectl get crd issuers.cert-manager.io clusterissuers.cert-manager.io certificates.cert-manager.io`. All three present means the prereq is satisfied
+- Once cert-manager is up, reuse it for the rest of your TLS story: Dashboard ingress, the `DesignerAuthoring` web UI, and anything else that needs a cluster-signed cert, via `Certificate` resources backed by a `selfsigned-issuer` for dev or a real CA-backed `ClusterIssuer` for shared environments
+
+The Operator is a Kubernetes controller that extends the API with CRDs and gates every CR change through admission webhooks, which must be served over TLS. It outsources the cert lifecycle to cert-manager rather than rolling its own. On CP4I and on OpenShift with the cert-manager Operator this is invisible because cert-manager is already there. On plain Kubernetes (Minikube, kind, vanilla), installing the ACE Operator without cert-manager first is the classic day-one mistake, and the `no matches for kind "Issuer"` reconcile error is the tell-tale.
+
+_References:_
+- <https://cert-manager.io/docs/installation/>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=operator-installing-app-connect>
 
 ### Credentials
 
@@ -1216,7 +1279,109 @@ TAD tells you *what's in scope* and *where the hard bits are*, not *what to do*.
 TAD is the 'know-before-you-start' tool for ACE / IIB modernisation, specifically for pre-v13 estates (IIB 10, ACE 11, ACE 12). You run `TADataCollector` against a backed-up node or a packaged BAR and it tells you what is deployed, what may block the migration, and how hard each workload is likely to be (Simple / Moderate / Complex, with a Green / Yellow / Red severity per issue). Candidates sometimes confuse TAD with the broader IBM Cloud Transformation Advisor product; in the ACE context, TAD is the ACE-specific tool.
 
 _References:_
-- <https://www.ibm.com/docs/en/app-connect/11.0.0?topic=tasks-running-transformation-advisor-tool>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=tasks-running-transformation-advisor-tool>
+
+**Q: What does `ibmint extract node` NOT bring along during a v13 migration?**
+
+- **What it does:** `ibmint extract node` extracts the configuration and deployed resources of a source component and recreates them in the specified v13 integration node. It does not copy the surrounding runtime environment, so several categories need to be moved by hand
+- **Shared-classes JARs:** not extracted. Server starts clean; the first JavaCompute node that needs a class from a missing JAR fails at runtime. The classic one to miss because nothing complains at startup
+- **Keystores and truststores:** not extracted. First outbound TLS call raises a handshake error
+- **ODBC configuration:** `odbc.ini` and `odbcinst.ini` are not extracted. Any flow using a database node loses its DSN
+- **User-defined nodes:** `.lil` files and plug-in JARs under the node's plugins directory are not extracted. Flows referencing a UDN will not deploy on the new node without the plug-in copied over
+- **Environment variables, shell / service scripts, cron jobs:** they sit outside the node's config, so the tool cannot see them. Recreate them by hand (systemd units, Windows service definitions, `.profile`, any housekeeping scripts)
+- **Live aggregation state is lost:** IBM's in-place migration doc explicitly tells you to check 'no aggregations in progress' before migrating, because in-flight aggregation data is not preserved across the v13 cutover. Drain or fail aggregations before extract, not after
+
+`ibmint extract node` is the supported path for pulling a v11 / v12 node into v13, but the set it covers is the node's own config plus deployed resources, not the runtime environment around it. Keystores, shared-classes JARs, ODBC DSNs, UDN plug-ins, env vars, and scripts all have to be copied by hand. The tool logs what was skipped, but the log is easy to miss, and the resulting server starts clean and fails later. Practical pattern: read the full extract output, diff against the source node's work path, and script the copies so it is reproducible. The interview signal is whether the candidate has actually run a migration and knows the skip list by heart.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=commands-ibmint-extract-node-command>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=130-performing-in-place-migration-integration-node>
+
+**Q: How do you keep one integration server on Java 8 when the rest of v13 runs Java 17?**
+
+- v13 ships both a Java 17 and a Java 8 runtime. Java 17 is the default. The IBM-documented Java-8-only blockers are the **CORBARequest node**, **WebSphere Registry and Repository (WSRR)**, **WebSphere eXtreme Scale (WXS)**, and **TFIM** (when the WSTrust STS Security Provider is enabled); pre-13.0.7 deployments using **WS-Security** or **WS-ReliableMessaging** also still need Java 8. Pin those per-server without downgrading the whole node
+- Command for a node-managed server: `ibmint specify jre --version 8 --integration-node <nodeName> --integration-server <serverName>`. For an independent server: `ibmint specify jre --version 8 --work-directory <dir>`
+- It writes a **`server.java.yaml`** next to the server config with contents like `javaVersion: 8` and `aceVersion: 13.0.6.0`. The change takes effect on the **next server start**, not immediately
+- To revert to the shipped default, run the same command with `--default`
+- **Java 17 behaviour differences to watch:** the JVM no longer observes `TMPDIR`; set `_JAVA_OPTIONS="-Djava.io.tmpdir=..."` or `ResourceManagers.JVM.jvmSystemProperty` in `server.conf.yaml` / `node.conf.yaml` instead. JSSE trace `-Djavax.net.debug=true` is Java 8 only; use `-Djavax.net.debug=all` for cross-version
+- Java 8 is a holding position, not an endpoint. Every server pinned to Java 8 needs a named owner and a retirement date; document which server runs which JVM or you will forget
+
+An estate rarely moves to v13 at 100% Java 17 on day one. `ibmint specify jre` lets you keep the handful of servers that still need Java 8 (CORBARequest, WSRR, WXS, TFIM-with-STS, or pre-13.0.7 WS-Security / WS-ReliableMessaging) while the rest of the node moves forward. Good candidates mention the `server.java.yaml` file, the need to restart the server for it to take effect, and the small Java 17 behaviour deltas (TMPDIR, JSSE trace) that bite when you forget.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=commands-ibmint-specify-jre-command>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=java-limitations-jre-versions-app-connect-enterprise>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=migrating-app-connect-enterprise-130>
+
+**Q: What are the three migration styles for moving to ACE v13, and which one preserves parallel testing?**
+
+- **In-place migration:** migrate the integration node on the same machine, keeping the same name. Run `ibmint extract node --overwrite-existing` and the old node is replaced by a v13 node in the same spot. Clients do not need reconfiguring. Downside: the node is down during the switch and your rollback story is 'restore from backup'
+- **Parallel migration:** stand up a new v13 integration node beside the old one and move application logic across at your own pace. Both run side by side until you are happy to cut over. This is the style that **preserves parallel testing** of old and new. Costs: extra hardware / VM, and two nodes to manage during the transition
+- **Extract migration:** use `ibmint extract node` or `ibmint extract server` to pull configuration and resources out as files, then redeploy them into a fresh v13 environment, usually as independent integration servers. The flexible option, the same command works for in-place swap, parallel, or splitting a node-owned setup into independent servers
+- **Phased per-server migration (a sub-mode of extract):** the `ibmint extract server` half of the extract style enables a real phased rollout: stand up a clean v13 environment, then migrate servers across one at a time. You control the cadence, you can pause and resume between servers, and rollback per server is just 'do not cut traffic over yet'. The most controlled option for risk-averse cutovers
+- Framing: in-place and parallel answer 'where does the new one live', extract answers 'how do I get the config out in a form I can work with'. Extract is the path of choice when you want to version or review configuration before it lands in v13
+- **Source-version reality:** the supported path is **IIB 10 / ACE 11 / ACE 12 -> v13** (and target must be Production-Advanced or Production-Standard, not Evaluation). IIB 8 and IIB 9 are NOT in the supported migration path, but unsupported does not mean infeasible: realistic options are (a) migrate v8 / v9 to IIB 10 first (which IS supported as a path to v13), then v10 -> v13, or (b) if you have the sources, rebuild and redeploy applications / libraries / services on a fresh v13 install one at a time. v9 was a transitional release between v8 and v10 and gets the same treatment in this story
+
+The three official styles all land on v13, but they differ in where the target lives, how long old and new coexist, and how much flexibility you have to review and version configuration on the way in. Parallel is the one that lets you test old-and-new side by side. Extract is the one that gives you config-as-files, and its `ibmint extract server` form unlocks a phased per-server rollout that is the most controlled option for risk-averse cutovers. In-place is the fastest and most brittle. Candidates who talk about parallel testing should mention the parallel style explicitly; candidates who frame the decision around source version (v12 -> v13 easy and direct; IIB 8 / 9 not officially supported, so via v10 or app-by-app rebuild) and who mention the per-server phased option within extract migration are showing real experience.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=migration-supported-migration-paths>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=migrating-app-connect-enterprise-130>
+
+**Q: IIB 10 to ACE v13: how are configurable services migrated, and what practical issue comes with the automation?**
+
+- **Configurable services are gone in v13.** The v13 world is policies (`.policyxml`), not configurable services. Anything IIB 10 expressed as a configurable service needs a policy equivalent on the target
+- **`ibmint extract node` does the rewrite automatically.** Configurable-service definitions are extracted and converted to policy files as part of the extract output. You do not write the policies by hand
+- **But the generated policies land node-wide, not server-scoped.** All policies come out at the node level, even ones that only one server actually uses. Same behaviour existed on the IIB 10 to v12 path
+- **Consequence:** functionally correct but messy. Every integration server sees every policy, including ones for unrelated applications, which muddies ownership and makes the policy list harder to reason about
+- **Fix-up pass after extract:** split the generated policy set and move each policy onto the server that uses it. Boring but worth doing once, before the node grows and the relocation gets harder. Especially important if you run multiple apps per server with distinct security or resource policies
+
+IIB 10 migration to v13 has one real gotcha beyond Java 17 cleanup: `ibmint extract` translates configurable services to policies automatically, but it does so at node scope, not at the specific-server scope where the underlying configurable service lived. The result is a pile of node-wide policies, which works but is not how you would structure it if writing from scratch. Candidates who know about this wrinkle, and say they budget an explicit fix-up pass to split and relocate, have done the migration for real.
+
+_References:_
+- <https://matthiasblomme.github.io/blogs/posts/ace-v13-new-features-overview/v13-new-features/>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=migrating-app-connect-enterprise-130>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=commands-ibmint-extract-node-command>
+
+**Q: Which command pins an integration server to a specific JRE version in ACE v13?**
+
+- [ ] `mqsispecifyjre`, No such `mqsi*` command exists. The `mqsi*` family never had a per-server JRE selector; Java selection in older versions was via `mqsichangebroker` flags or `MQSI_FORCE_JVM` style environment variables, not a dedicated command.
+- [ ] `ibmint set java`, `ibmint set` is a real subcommand family (`ibmint set credential`, `ibmint set webuser-password`, etc.), but there is no `set java` variant. Plausible-sounding distractor for candidates who know `ibmint set credential` exists.
+- [x] `ibmint specify jre`, Syntax: `ibmint specify jre --version 8|17 --integration-node <n> --integration-server <s>` (node-managed) or `--work-directory <d>` (independent). Writes `server.java.yaml` next to the server config; change takes effect on the next server start. Revert with the same command plus `--default` (which restores Java 17, the shipped default in 13.0.1+).
+- [ ] `mqsirevertjava`, Invented name. The revert mechanism is `ibmint specify jre --default`, not a separate command, and the `mqsi*` family never had a paired-revert command for JVM selection.
+
+- `ibmint specify jre` is the only supported way to pin an integration server's JRE in v13
+- Writes the choice into `server.java.yaml` next to the server config; takes effect on the next server start
+- Supports `--version 8|17`, or `--default` to revert to the shipped default (Java 17, since 13.0.1)
+- Scope is per-server (or per-work-directory for independent servers), not node-wide
+- Procedure is **stop the server -> run `ibmint specify jre` -> start the server**, per the IBM doc
+
+The `ibmint` command family replaced the old `mqsi*`-style broker admin commands for most v12+ operations, and `specify jre` is the one that sets per-server JVM selection. Candidates who pick `ibmint specify jre` have used the command; candidates picking `mqsispecifyjre` or `mqsirevertjava` are pattern-matching on the old `mqsi*` naming scheme that does not apply here.
+
+_References:_
+- <https://matthiasblomme.github.io/blogs/posts/ace-v13-new-features-overview/v13-new-features/>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=commands-ibmint-specify-jre-command>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=jre-configuring-integration-server-use-specified-java-runtime-environment>
+
+**Q: Which of these are documented IBM migration styles for moving to ACE v13? (multi-select MCQ)**
+
+- [x] `in-place migration`, Migrate the integration node on the same machine, keeping the same name. `ibmint extract node --overwrite-existing` replaces the old node with a v13 node in the same spot.
+- [x] `parallel migration`, Stand up a new v13 integration node beside the old one and move application logic across at your own pace. Lets you test old and new side by side until you cut over.
+- [ ] `shadow migration`, Invented distractor, not a documented ACE migration style. Sounds plausible because it echoes real terms elsewhere, but no migration path of this name exists in the ACE catalog.
+- [ ] `wave migration`, Invented distractor, not a documented ACE migration style.
+- [x] `extract migration`, Use `ibmint extract node` or `ibmint extract server` to pull configuration and resources out as files, then redeploy them into a fresh v13 environment, usually as independent integration servers.
+
+- IBM documents exactly three migration styles: **in-place**, **parallel**, and **extract**
+- The three styles differ in where the target lives (same machine vs beside it vs fresh environment) and how much old-and-new coexistence you get
+- Extract is the flexible one: the same `ibmint extract` command can feed in-place swaps, parallel setups, or a clean split into independent integration servers
+- Any other style name in this space is a distractor and should be rejected
+
+IBM names three migration styles: in-place, parallel, and extract. The other two options in the list are made-up distractors that sound plausible to a candidate pattern-matching on familiar-sounding words. Picking all three real styles is the safe answer.
+
+_References:_
+- <https://matthiasblomme.github.io/blogs/posts/ace-v13-new-features-overview/v13-new-features/>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=migrating-app-connect-enterprise-130>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=migration-app-connect-enterprise-migration-options>
 
 ### Flow lifecycle
 
@@ -1232,6 +1397,23 @@ The mode you want depends on whether 'someone stopped it' is information you wan
 
 ### Troubleshooting
 
+**Q: What is the ACE Log Analyzer, and what file types does it process?**
+
+- The **Log Analyzer** (`ACELogAnalyser` / `aceloganalyser.jar`, new in v13) is a troubleshooting tool that parses and summarises ACE diagnostic artefacts into navigable reports, instead of hand-reading raw files
+- Supported inputs: **Service trace** or **User trace** files; **Activity Log** files in CSV; **Message Flow Accounting and Statistics** files in CSV; **Parser Manager Logs**
+- Ships with the runtime at `<install>/server/tools/aceloganalyser.jar`. Two modes: **GUI mode** (default when launched with no args): `java -Xmx2000m -jar <install>/server/tools/aceloganalyser.jar`. **CLI mode** (one functionality per execution): same `java -Xmx2000m -jar ...` plus mandatory `-z <functionality>`, `-f <inputFiles>` (comma-separated), `-d <outputDirectory>`. `-Xmx2000m` matters when the input files are large
+- CLI functionalities (one per execution) map to the input types: **Trace family:** `traceAnalysis`, `splitTraceThreads`, `extractUserTrace`, `extractSyslogAndErrorEntries`. **Activity log:** `activityLogAnalysis`. **Accounting & stats:** `splitAccountingAndStatsCSVFiles`. **Parser logs:** `parserManagerAnalysis`
+- Output is a per-functionality report directory (typically HTML plus split / extracted artefacts) that you can keep alongside an incident ticket, send to IBM Support, or diff against a baseline from a healthy run
+- Companion data-collection tool: **`aceDataCollector`** is the command IBM points you at for gathering the input files in the first place (trace dumps, log bundles); pair it with ACELogAnalyser for end-to-end problem-determination flow
+- Before v13 the same investigation was a mix of `mqsiservice` / `mqsireadlog` invocations, Excel-ing stat CSVs, and reading raw trace in a text editor. ACELogAnalyser does not replace any of that, it just produces a human-navigable view over the same inputs
+- Intended for problem determination rather than steady-state observability; for live monitoring you still want OTel (traces), activity log (per-node events), and flow / resource stats
+
+ACELogAnalyser is the consolidation of trace, activity log, accounting stats, and parser log analysis into one tool, with both a GUI and a CLI (the CLI runs one `-z <functionality>` at a time, output to a directory). It does not do anything the underlying files did not already contain; it just makes them readable as a report. The interview signal is knowing it exists, naming the four input types, naming a couple of CLI functionalities (`traceAnalysis`, `activityLogAnalysis`), mentioning `aceDataCollector` as the companion data-collection tool, and recognising it is a problem-determination tool rather than a monitoring dashboard.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=new-whats-app-connect-enterprise>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=tools-using-acelognanalyser>
+
 **Q: Throughput suddenly dropped on an ACE flow in production. Walk me through triage.**
 
 - Check if the drop correlates with a recent deploy, config change or fix pack
@@ -1241,6 +1423,74 @@ The mode you want depends on whether 'someone stopped it' is information you wan
 - Check the OS: CPU saturation, IO wait, network retransmits
 
 Sudden changes usually have a cause you can pin to a timeline: a change, an external dependency, a resource exhaustion. Stats + backend + OS covers those three lanes.
+
+### Operations
+
+**Q: What does `mqsirestart` do, and why is it better than `mqsistop` + `mqsistart`?**
+
+- `mqsirestart` is a community-contributed wrapper script (it is **not shipped** with ACE; drop the `.cmd` into `%MQSI_FILEPATH%/bin` alongside the built-in scripts) that runs `mqsistop` followed by `mqsistart` against the same target in one invocation
+- Targets both integration **servers** (`mqsirestart.cmd <NodeName> --integration-server <IS>`) and integration **nodes** (`mqsirestart.cmd <NodeName>`). Same flags and syntax as the built-in commands
+- Why it beats running the two commands yourself: closes the **gap between stop and start** that reliably gets interrupted by Slack, an incident, or the reflex to grab a coffee, leaving a node stopped longer than intended; removes the **typo surface** (`mqsistpo`, `mqsisart`); keeps both halves as a single auditable action in logs and scripts
+- It is not a substitute for `mqsichangeproperties` or `mqsichangeflowstats` that do NOT require a restart. Use restart only when a restart is the actual requirement
+- Check behaviour before using in production: the script issues `mqsistop` without special flags; if you rely on `mqsistop -i` (immediate) or a custom timeout in your ops procedure, either pass those flags or keep doing the two commands by hand
+- Built-in `ibmint restart server` does **not exist** at the time of writing; the modern ibmint pattern is `ibmint stop server` + `ibmint start server` separately, so a wrapper script fills the same gap on the ibmint side too
+
+`mqsirestart` is a pragmatic operator workaround for the fact that 'stop then start' is two commands you run in sequence a dozen times a day. It removes the gap, the typos, and the forgotten-Friday scenario by making the pair atomic from the operator's point of view. Candidates who know it is a community script (not shipped), who know the node / server syntax, and who compare it to the absence of a built-in `ibmint restart server` understand the ergonomic gap it fills.
+
+_References:_
+- <https://github.com/matthiasblomme/ACE_MQ_Tooling>
+
+**Q: How does `mqsistopmsgflow` differ from `ibmint stop server`?**
+
+- **`mqsistopmsgflow`** is a **multi-scope stop**: depending on the args, it can stop an integration node, an integration server, all applications in a server, a specific application or library, a single named message flow, or all flows across the node. The server keeps running only when you target a flow or an application; without flow / application args, `--integration-server <is>` stops the server itself and preserves each flow's per-flow state for the next start
+- **Scope by arg combination:** `mqsistopmsgflow <node> --integration-server <is>` stops the server; add `--application <app>` for a single app or `--all-applications` for every app in that server; add `--flow <name>` (or `-m`) inside an application or library for a specific flow; or go wider with `--all-integration-servers --all-applications` across the node
+- **`mqsistop` is IBM's preferred command for the node / server scope** (its own doc names `mqsistopmsgflow` as 'an alternative' and `mqsistop` as 'the preferred method for stopping components'). But `mqsistop` cannot reach inside a server to stop an app or a flow; for that scope, `mqsistopmsgflow` is the only option
+- **`ibmint stop server <serverName>`** stops the integration server itself. **Managed integration servers only**, IBM's doc is explicit that `ibmint stop server` cannot be used on an independent integration server. Pair with one of `--integration-node`, `--integration-node-file`, `--admin-host`+`--admin-port`, or `--admin-uri` to identify the target. `--immediate` forces an immediate shutdown; `--timeout-seconds` defaults to 60. Not an equivalent for stopping a single flow
+- There is **no `ibmint` equivalent** for stopping an application or flow inside a running server; if you need that, `mqsistopmsgflow` is the only in-place tool. For declarative control at deploy time, set `startMode: manual | maintained` on the app / flow, or use a `.stopped` file
+- **Gotcha on re-deploy:** stopping a flow with `mqsistopmsgflow` is not durable. The next deploy ignores your runtime stop and starts the flow again if its `startMode` is `automatic`. To keep a flow stopped across deploys, set `startMode: maintained` or `manual`, or drop a `.stopped` file in the flow's `overrides/<app>/<flow>/` directory
+- **Summary axis:** node / server scope -> prefer `mqsistop` (or `ibmint stop server` for managed servers); app / flow scope inside a running server -> only `mqsistopmsgflow`; durable across deploys -> `startMode` or `.stopped` file at deploy time. Different tools for different levels of the stack
+
+Three commands and one config knob live at different levels and are often confused. `mqsistop` is IBM's preferred node/server stop. `mqsistopmsgflow` is the alternative at node/server scope and the only tool for the app/flow scope inside a running server. `ibmint stop server` covers managed integration servers (not independent ones). None of them are durable across deploys without also using `startMode` or a `.stopped` file. Candidates who can articulate the four levels (preferred node/server stop vs in-place app/flow stop vs ibmint server lifecycle vs deploy-time config), mention the `.stopped` file fallback, and know `ibmint stop server` does not work on independent integration servers show they have operated ACE in production, not just labs.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=commands-mqsistopmsgflow-command>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=commands-ibmint-stop-server-command>
+
+### AI
+
+**Q: What is the ACE Agent in the Dashboard, and what are its constraints?**
+
+- The **ACE Agent** is a chat-style interface inside the App Connect **Dashboard** that lets you query your App Connect environment in natural language. Typical questions: list integration runtimes and versions, show deployed integrations and their dependencies, highlight resource usage or topology, surface documentation or troubleshooting guidance. Originally shipped as a preview, now **GA**
+- Responses are generated by large language models hosted through **watsonx.ai**, so an outbound channel to watsonx is a prerequisite, along with the relevant entitlement
+- Availability constraint: **container environments only** (ACE Operator-deployed Dashboards on OpenShift / CP4I / vanilla Kubernetes). Not available on on-prem Windows / Linux Toolkit-style installs
+- Positioning: complements the Dashboard, does not replace it. The agent surfaces information the Dashboard already has, in a conversational form, for rapid exploration. Treat it as an interactive query layer over the Dashboard's data rather than an automation engine; runbooks should still go through the Dashboard / REST API surface where you control the shape of the response
+- Related v13 AI features worth distinguishing: the **Toolkit-embedded Watsonx Code Assistant** (chat inside the Toolkit, development-time, separate subscription) and **Project Bob** (standalone modernisation IDE). Three separate tools, three different audiences (developer in Toolkit, modernisation lead in Bob, operator in Dashboard ACE Agent)
+
+The ACE Agent is the operator-facing AI feature of ACE 13: chat in the Dashboard, watsonx-backed, container-deployed. Originally a preview, now GA. The interview signal is knowing the two hard constraints (container-only, watsonx dependency) and being able to distinguish it from WCA in the Toolkit and from Project Bob. Candidates who treat it as 'chat on top of the Dashboard for exploration' rather than 'Ops AI that runs runbooks' are reading the positioning correctly.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=app-connect-enterprise-agent>
+
+**Q: What is the MCP (Model Context Protocol) feature in ACE v13.0.7.0, and how does it expose REST APIs?**
+
+- **MCP (Model Context Protocol)** is an open protocol that lets AI agents call 'tools' in a typed, discoverable way. ACE **v13.0.7+** adds support for **exposing any deployed REST API as an MCP server**, so AI agents can invoke your ACE-hosted APIs as first-class tools
+- **Two-phase configuration workflow** (not a one-click wizard): **Phase 1 (server.conf.yaml):** add `MCP.Runtime.mcpStartMode: "automatic"` and `port: 7750` (default port) to the integration server's `server.conf.yaml`. Restart the server. SSL is on by default; the MCP endpoint comes up at `https://<host>:7750/mcp`. **Phase 2 (App Connect Enterprise Web UI, default port 7600):** click the context window -> **Expose MCP tools** -> select your REST API -> choose which operations to expose -> configure per-operation tool details (auto-generated **Tool name**, customisable **Tool title**, AI-facing **Tool description**, **Enabled** flag) -> Confirm
+- The underlying REST API is unchanged: same BAR, same integration server, same endpoints. MCP adds a translation layer that advertises the operations to agents in the MCP tool format, with the proper input / output schemas derived from the REST definition
+- What this unlocks: an AI agent (Claude, a watsonx.ai agent, an MCP-aware IDE) can call your integration flows without a custom integration layer. Your existing REST API is the tool; no extra code
+- **Transport constraint:** IBM doc is explicit that clients must use **Streamable HTTP**, not Server-Sent Events (SSE), as the transport protocol. MCP clients that default to SSE will not connect
+- Security considerations still apply: the MCP server inherits the auth posture of the underlying REST API (API key, OAuth, etc. as configured on the REST API or its HTTPS listener). The MCP layer does not replace or relax that
+- Positioning: this is the inverse of the **ACE Agent** (which is ACE calling watsonx). MCP support is **other agents calling ACE**. Pair them and ACE sits on both sides of the agent boundary
+- Prereqs: ACE **v13.0.7 or later** installed, at least one REST API flow already deployed to an integration server
+
+MCP support from 13.0.7 is IBM's bet on MCP as the standard agent-tool interop protocol. The convenient bit is that you do not write an MCP server from scratch; ACE wraps an existing REST API and exposes it as one. Configuration is two-phase: turn on the MCP runtime in `server.conf.yaml` (port 7750 default, SSL on), then use the App Connect Enterprise Web UI's **Expose MCP tools** action to pick the REST API and choose which operations become tools. Candidates who frame this as 'AI agents calling ACE-hosted APIs as tools, the inverse of the ACE Agent which is ACE calling watsonx', know the two-phase workflow (server.conf.yaml plus Web UI), name the port default and the Streamable-HTTP transport requirement, and recall that auth is inherited from the REST side are reading the feature correctly.
+
+_References:_
+- <https://matthiasblomme.github.io/blogs/posts/ace-v13-new-features-overview/v13-new-features/>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=new-whats-app-connect-enterprise>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=tools-developing-mcp>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=connector-exposing-rest-api-mcp-tool>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=mcp-what-is>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=connector-configuring-mcp-properties>
 
 ## ACE, Dev
 
@@ -1371,6 +1621,35 @@ Transactionality is a per-node setting that has to be consistent across the flow
 - Mitigation for the no-threshold case: configure BOTHRESH + BOQNAME on every input queue as a standard (even BOTHRESH=3 with a named backout queue prevents the infinite loop), or add a Failure terminal that handles the error explicitly
 
 With no error handling attached, the flow relies entirely on the MQ backout mechanism, which is valid only if BOTHRESH is actually configured. The often-missed trap is that BOTHRESH defaults to 0, which means 'no threshold' → the poison message loops forever. A senior answer will call out both the normal case and the no-threshold case, and recommend setting BOTHRESH + BOQNAME as queue standards regardless of flow-level error handling.
+
+**Q: Describe the layered error handling in ACE: where do exceptions go, and what is the default cascade?**
+
+- **Tier 1, node-level Failure terminal.** Every node has an optional **Failure terminal**. When that node throws, the exception (with the in-flight message) is routed to the connected Failure terminal. This is the most precise catch: 'this specific node failed, do this specific thing'
+- **Tier 2, flow-level catch via TryCatch + input-node Catch terminal.** A **TryCatch node** wraps a sub-region of the flow: anything unhandled inside the `Try` branch flows to the `Catch` branch. The **MQInput / HTTPInput / FileInput Catch terminal** is the same idea applied to the whole flow: anything unhandled downstream lands here
+- **Tier 3, input-node default (no explicit handler).** If neither a Failure terminal nor a Catch terminal is wired, the exception propagates *upstream* until it reaches the input node. The input node's default behaviour is **protocol-dependent**: MQInput rolls back the UOW, message restored to the queue, `BackoutCount` incremented (then BOTHRESH/BOQNAME kick in); HTTPInput returns an error response to the client; FileInput moves the file to the configured error directory
+- **Parallel dimension: transactional rollback.** Independently of the catch tier, if the flow is transactional, any unhandled exception triggers rollback of all participating resource managers (MQ + DB). This is **not a catch**, it is the *consequence* when no catch took the exception. Catch terminals and TryCatch handlers can re-throw to keep the rollback semantics intact, or swallow the exception to commit a partial-success state, the choice is explicit
+- **`ExceptionList` is how you read the failure inside a handler.** Once an exception reaches a Failure / Catch / TryCatch branch, the message tree has an `ExceptionList` subtree containing the BIP code, label, text, and insertion strings. Walking it with references (see `ace-dev-024`) is the standard pattern, do not subscript into it
+
+The IBM-documented cascade is **per-node Failure terminal -> upstream propagation -> input-node default**, with TryCatch nodes carving sub-regions in the middle. There is no first-class 'application-tier' error handler in the IBM model; people who claim one are describing a team pattern (e.g. a shared error-handling subflow that every input node Catch wires into). Candidates who name the three real tiers (node, flow-region via TryCatch, input-node default), name the parallel transactional rollback, and recall that the input-node default is protocol-dependent are reading the model correctly.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=rfgw-default-error-handling>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=ovr-handling-errors-in-message-flows>
+
+**Q: Which `SQLSTATE` indicates a DB deadlock in ACE, and how does its handling differ from a connection error?**
+
+- **ACE prefixes DB-origin SQL states with `D`** to distinguish them from integration-node-originated states. So a DB2 / Oracle / PostgreSQL deadlock with SQL state `40001` becomes **`D40001`** inside ACE; a connection-class failure starting with `08` becomes **`D08xxx`**. A candidate who writes `IF SQLSTATE = '40001'` will never match in ACE, the literal must be `D40001`
+- **Deadlock / serialization failure: `D40001` (and DB-specific variants like `D40P01` on PostgreSQL).** This is **retryable**: the DB picked your transaction as the victim, the work was undone, retrying with a small backoff usually succeeds because the other transaction has now finished. Tight bounded retry (e.g. 3 attempts, jittered backoff) is appropriate. Do **not** circuit-break on these
+- **Connection-class: `D08xxx` (`D08001` connection refused, `D08006` connection failure, `D08S01` communication link failure, etc.).** Match with `SQLSTATE LIKE 'D08%'`. **Different strategy:** the database is unreachable, retrying immediately just hammers a dead endpoint. Use a **circuit-breaker / exponential backoff with a cap**, alert on sustained failures, do not loop tightly
+- **Constraint violations: `D23xxx` (`D23000` integrity constraint violation, often a duplicate key).** **Never retry**, the data or logic is wrong, retrying gets the same error. Route to a dedicated error path that captures the bad input
+- **`Throw exception on database error` node property** controls the default behaviour. Set (default): node throws on any DB error, routes to Failure terminal, exception details land in `ExceptionList`. Cleared: errors do **not** throw, you must check `SQLSTATE` yourself and `THROW` explicitly if needed. Pick 'cleared' when you want fine-grained classify-then-retry logic; 'set' when you want the flow's catch tier to handle it
+- **User-thrown SQL states (from `THROW`) are taken as-is** (no automatic `U` prefix). IBM convention: write them as `U...` if you want a handler to match them via `LIKE 'U%'`, distinct from `D...` database states. The `U` prefix is a convention, not enforced
+- **Catch-everything pattern:** `WHEN SQLSTATE LIKE '%'` as the last handler in a scope catches anything not explicitly classified, useful as a safety net so unknown errors do not silently slip through
+
+The SQL-standard taxonomy says '40001 = deadlock; 08% = connection', but in ACE the runtime values you compare against are **`D40001`** and **`D08%`** because ACE prefixes DB-origin states with `D`. The retry strategy differs by class: deadlocks are transient and retryable with short backoff, connection failures need circuit-breaker / capped exponential backoff because tight retries hammer dead endpoints, constraint violations should never be retried. Candidates who name the `D` prefix, the three categories, and pair each with the right retry pattern have written real DB-integration code; candidates who match against bare `40001` are repeating the SQL standard without checking what ACE actually returns.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=functions-sqlstate-function>
 
 ### HTTPS
 
@@ -1543,9 +1822,9 @@ Route is declarative and readable for a handful of cases; RouteToLabel is for ru
 ACE gives you three idiomatic ways to log from a flow: the Log node (declarative), the LOG ESQL statement (procedural) and the Trace node (heavyweight diagnostic). Mentioning the performance cost of Trace nodes specifically, and that they force a full message parse, signals you've been burned by leaving one on in production at least once.
 
 _References:_
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-log-node>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=statements-log-statement>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=server-using-trace-nodes-integration>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-log-node>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=statements-log-statement>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=server-using-trace-nodes-integration>
 
 ### ESQL
 
@@ -1578,6 +1857,138 @@ Second-to-last = `[<2]`. Mnemonic: `>` counts forward from the start, `<` counts
 
 The mnemonic to keep them straight: `>` points forward from the start, `<` points back from the end. `Field[>]` = first, `Field[<]` = last, and you can extend either with a number (`[>2]` second from start, `[<2]` second from end / penultimate). Together with `CREATE LASTCHILD` they're the idiomatic way to build up an output array without hand-rolling an index counter. Candidates who use `[<]` and `[<2]` fluently have written non-trivial ESQL transforms; beginners tend to increment their own counters or end up with malformed arrays.
 
+**Q: What is the `Item` element in ACE's JSON-array representation, and why is it needed?**
+
+- JSON array entries are **anonymous** in the wire format (no name, only an ordinal position), but ACE's message tree is a **named-element** model. The trigger that makes a parent serialise as a JSON array is **`IDENTITY(JSON.Array)`** on that parent (the parser sets the element type to `JSON.Array`); the children sit under it as `NameValue` elements
+- IBM's strong convention is to name those children **`Item`**, matching the name the JSON parser uses on input. The JSON serializer ignores the names on output (array items are anonymous), but the convention is what every IBM example uses, every Toolkit-generated tree shows, and every downstream tool expects when inspecting the message
+- Canonical append pattern: `CREATE FIELD OutputRoot.JSON.Data.myArray IDENTITY(JSON.Array)myArray;` then `CREATE LASTCHILD OF OutputRoot.JSON.Data.myArray NAME 'Item' VALUE 'v1';` (or `TYPE NameValue NAME 'Item' VALUE 42`). Repeat per element, order is preserved
+- Direct-index pattern works too: `SET OutputRoot.JSON.Data.myArray.Item[1] = 'v1';` etc. Gaps in the indices cause an array-subscript error; use `CREATE LASTCHILD` to avoid worrying about numbering
+- For an array of **objects** (not scalars), create the `Item` first, then its children: `CREATE LASTCHILD OF ... NAME 'Item';` then `CREATE LASTCHILD OF ....Item[<] NAME 'key' VALUE 'v'`. The `[<]` refers to the just-created last item
+- Common slip: forgetting the `IDENTITY(JSON.Array)` on the parent. The names of the children do not flip the shape; the parent's element type does. Without `IDENTITY(JSON.Array)`, even children named `Item` will serialise as an object with repeated keys rather than as a JSON array
+
+The `Item` element is the tell-tale that someone has actually built JSON arrays in ESQL the way IBM models them: an `IDENTITY(JSON.Array)` parent with `Item`-named children. The parent type triggers array serialization; the `Item` name is the convention everyone follows for consistency with the parser, even though the serializer ignores names on output. Pair this with `IDENTITY(JSON.Array)` and either `CREATE LASTCHILD` (clean) or `Item[N]` with contiguous indices (error-prone).
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=domain-creating-json-message>
+
+**Q: Why is `CREATE FIELD ... IDENTITY(JSON.Array)` necessary when preparing JSON array output in ESQL?**
+
+- Without `IDENTITY(JSON.Array)` on the parent element, the JSON serializer has no way to distinguish 'a single object with repeated keys' from 'a JSON array'. It defaults to object shape and either emits strange output (one key repeated, or the last value winning) or raises a serialisation error
+- The `IDENTITY(JSON.Array)` identifier marks the element as an array container in the tree, so downstream `CREATE LASTCHILD` calls with `NAME 'Item'` or `SET ...Item[N] = ...` assignments are formatted as a real JSON array on output
+- Canonical prep + populate: `CREATE FIELD OutputRoot.JSON.Data.emailList IDENTITY(JSON.Array);` then either `SET OutputRoot.JSON.Data.emailList.Item[] = (SELECT U.address FROM ... AS U);` for a plain SELECT, or `SET OutputRoot.JSON.Data.emailList = ROW (SELECT U.address FROM ... AS U);` for a single structured row
+- Pairs naturally with the `SELECT` family: **SELECT** returns a tree fragment of matching rows (good for building an array), **ROW** is a row constructor that builds a structured row literal, often paired with a SELECT to wrap the select result as a single composite row, **THE** pulls out exactly one value (returns the first element of a list, useful when you expect zero or one matches)
+- Forgetting the `IDENTITY(JSON.Array)` step is a classic time-sink: the flow runs, the output 'looks almost right', and a downstream consumer rejects it because it received an object where it expected an array. Easier to catch upfront than to debug from a JSON diff
+- Same concept in Java via the `MbJSON.ARRAY` element type (mapping nodes, JavaCompute): `outRoot.createElementAsLastChild(MbJSON.ARRAY, "Data", null)` produces the same array-typed parent that `IDENTITY(JSON.Array)` does in ESQL; the tree needs to be typed as array before you start appending to it
+
+The ACE message tree does not have a built-in 'this element is an array' marker; you have to opt in with `IDENTITY(JSON.Array)`. Everything JSON-array-shaped on the output side (arrays of scalars, arrays of objects, results of SELECT / ROW expressions) starts with that one-line prep, and the common bug is skipping it and getting an object-shaped output that mostly works until one specific downstream call fails. Candidates who mention `IDENTITY(JSON.Array)` as the first line they write when building array output are comfortable with ESQL-to-JSON serialisation.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=functions-select-function>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=domain-creating-json-message>
+
+**Q: What is the danger of a bare `PROPAGATE` in ESQL when code follows it?**
+
+- **Default `PROPAGATE` does two destructive things at once.** Per IBM's PROPAGATE statement reference: `FINALIZE DEFAULT` (the absent-clause default) finalizes the output message tree before propagation, once finalized, no downstream node and no subsequent ESQL statement can change it. `DELETE DEFAULT` (the absent-clause default) clears the output local environment, message, and exception list, and recovers their memory immediately after propagation
+- **What this means for code after `PROPAGATE`:** the very next ESQL line sees an **emptied output tree**. Writes to `OutputRoot.X` start from a clean tree (not from the propagated content). Reads of `OutputRoot.X` find nothing. Classic subtle bug: 'I just set the field, why is it null on the next line?'
+- **The fix is to use `FINALIZE NONE DELETE NONE` on the PROPAGATE** when ESQL after the statement needs to see, or update, the propagated tree. Syntax: `PROPAGATE TO LABEL 'EnrichReply' FINALIZE NONE DELETE NONE;`. Now `OutputRoot` still has the propagated content, and is still mutable
+- **Cumulative-propagate pattern (loop):** `FINALIZE NONE DELETE NONE` is what lets each iteration build on the previous one. With the defaults, each iteration starts with empty output trees; with `NONE NONE`, each iteration sees what the previous iteration wrote (the doc states this is exactly the use case)
+- **Applies to all PROPAGATE flavors**, not just `TO LABEL`: bare `PROPAGATE`, `PROPAGATE TO TERMINAL 'out'`, and `PROPAGATE TO LABEL 'X'` all finalize-and-delete by default. The gotcha is general, not specific to TO LABEL
+- **Related-but-separate gotchas:** `PROPAGATE` is **synchronous**; if a downstream node throws an unhandled exception, the line after PROPAGATE never runs (and the Compute node's automatic commit does not fire). Also remember `RETURN FALSE;` at the end of the routine if you've used PROPAGATE, or the node auto-propagates again
+
+Bare `PROPAGATE` semantics include both finalization (the output tree is sealed) and deletion (the output trees are cleared from memory). Code that runs after the statement therefore sees emptied trees by default, which is the source of the 'field is null after I set it' class of bug. `FINALIZE NONE DELETE NONE` is the explicit opt-out that preserves and keeps the trees mutable, required for any pattern that propagates a partial result and then continues to add to it. Candidates who name both modifiers and explain when each is needed have hit this in production; candidates who only mention `FINALIZE NONE` (or only `DELETE NONE`) get half the answer.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=statements-propagate-statement>
+
+**Q: How do you safely walk `InputExceptionList` in ESQL using references?**
+
+- **Correlation names:** in a **Compute node** the input side is `InputExceptionList` (always available regardless of Compute mode); the output side is `OutputExceptionList`, **only available in modes that include the ExceptionList tree** (e.g. `Exception`, `All`, `Message+ExceptionList`). In **Database / Filter** nodes there is a single combined tree, accessed as `ExceptionList`. Using the wrong correlation name in the wrong node or mode is a common copy-paste failure
+- **Start with a `REFERENCE` to the first exception subtree** rather than subscripting repeatedly: `DECLARE exRef REFERENCE TO InputExceptionList.*[1];`. `*[1]` matches the first child whatever its element name; subsequent navigation uses `MOVE`, never `*[2]` or `*[n]` indexing
+- **`MOVE LASTCHILD`: drill into nested exceptions to find the root cause.** Exception lists in ACE are nested, the *deepest* child usually carries the most precise error info (the actual BIP that failed). IBM's own example uses this pattern: `DECLARE exRef REFERENCE TO InputExceptionList.*[1]; WHILE exRef.Number IS NOT NULL DO ... MOVE exRef LASTCHILD; END WHILE;`. After the loop, `exRef` points one past the deepest exception, the loop body sees each level on the way down
+- **`MOVE NEXTSIBLING`: iterate across multiple exceptions at the same level.** If a flow throws more than one exception (e.g. a `THROW` after another `THROW` was already in flight), `InputExceptionList` has multiple sibling subtrees. Walk them horizontally with `NEXTSIBLING`: `DECLARE exRef REFERENCE TO InputExceptionList.*[1]; WHILE LASTMOVE(exRef) DO ... MOVE exRef NEXTSIBLING; END WHILE;`
+- **Use `LASTMOVE(ref)` as the loop guard when you can.** It returns TRUE if the most recent `MOVE` succeeded, FALSE when you've fallen off the end. Cleaner than NULL-checking a field that may legitimately be absent on some levels
+- **Why this beats subscripts:** `InputExceptionList.*[k]` re-navigates the tree from the root on every access; the reference + `MOVE` pattern holds a direct pointer and advances it. The performance gap matters when you have deep nesting or many exceptions, and the code is also more readable about which axis (down vs across) you are walking
+- **Whole-tree dump for logging** (when you cannot tell which level matters): the IBM doc shows the `ASBITSTREAM` + `XMLNSC` pattern to render the entire `ExceptionList` to a CHAR for trace output. Useful in catch handlers that just need to log everything
+
+The reference + `MOVE` pattern is the canonical ESQL idiom for `ExceptionList` because the tree is nested-and-sibling-shaped: `LASTCHILD` walks down the nesting chain to the root-cause exception, `NEXTSIBLING` walks across when multiple exceptions are in flight at the same level. `LASTMOVE` is the clean loop guard. Candidates who use subscript indexing on `InputExceptionList` get correct values but pay re-navigation cost on every access, and tend to miss either the down-axis or the across-axis (writing only one of the two loop shapes). Candidates who name both `MOVE` flavors, name `LASTMOVE`, and recall both the input-vs-output naming and the mode-dependency for `OutputExceptionList` are reading the tree correctly.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=messages-accessing-exceptionlist-tree-using-esql>
+
+**Q: Why is a reference more efficient than repeated subscript access in ESQL?**
+
+- **Each subscript access re-navigates the tree from the root.** Writing `InputRoot.XMLNSC.A.B.C[1]` five times in a row asks ACE to walk `InputRoot -> XMLNSC -> A -> B -> C -> first child` **five times**. The runtime does not cache the result of the previous walk
+- **A `REFERENCE` holds a direct pointer into the tree.** Declare once, reuse N times: `DECLARE itemRef REFERENCE TO InputRoot.XMLNSC.A.B.C[1]; SET out.field1 = itemRef.Name; SET out.field2 = itemRef.Qty; SET out.field3 = itemRef.Price;`. The tree walk happens once at declaration; subsequent `itemRef.X` accesses go straight to the cached node
+- **The break-even point is two accesses.** If you read the path exactly once, subscript is fine and is more readable. From the second access onward, the reference pays off. The cost compounds when the path is deep or appears inside a loop
+- **References work for writes too.** Assigning *through* a reference (`SET itemRef.Status = 'PAID';`) modifies the tree at the pointed-to node, same as the subscript form, just without the re-walk. Useful for 'find this element, then update several fields on it'
+- **Common antipattern: subscript inside a loop.** `WHILE i <= 100 DO ... InputRoot.XMLNSC.Items.Item[i] ... END WHILE;` does the full root-to-Item walk on every iteration. Replace with a `REFERENCE TO InputRoot.XMLNSC.Items.Item[1]` plus `MOVE ref NEXTSIBLING` for the canonical fast loop
+- **Reference != value.** A reference is a pointer; assigning a reference to another variable (`DECLARE b REFERENCE TO a;`) creates an alias, not a copy. Mutating through `b` mutates through `a`. This is usually what you want, but candidates who expect value-copy semantics get surprised
+
+ACE's message tree is a logical structure and field-reference syntax is path-based, so every appearance of `Root.A.B.C` is a fresh walk from the root. References cache the walk by holding a direct pointer to the resolved node, so subsequent reads and writes go straight to the element. The performance gap is small for one access (the walk is cheap), but it scales with depth, with repeated access, and especially with loops. Candidates who reach for `REFERENCE` whenever they touch the same path twice (and who use `MOVE` for loop iteration) write ESQL that performs at production volume; candidates who chain subscripts in every line have not yet profiled their flows.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=tree-creating-dynamic-field-references>
+
+**Q: What is the performance impact of `CARDINALITY` in a loop condition, and how do you fix it?**
+
+- **What `CARDINALITY` actually does.** Returns the number of elements in a list, which it computes by **walking the list and counting children**. It is not a cached property on the tree node; the count is recomputed on every call
+- **The antipattern:** putting `CARDINALITY(...)` in the loop condition: `WHILE i <= CARDINALITY(InputRoot.XMLNSC.Items.Item[]) DO ... SET i = i + 1; END WHILE;`. The condition is re-evaluated **on every iteration**, and each evaluation walks the full child list to count it. For N items, the total work is **O(N²)**: 100 items = 10,000 walks, 1000 items = 1,000,000 walks. Flows that look fine in dev with 10-element messages fall over in prod with 5,000-element messages
+- **Fix 1: cache the count before the loop.** `DECLARE n INT CARDINALITY(InputRoot.XMLNSC.Items.Item[]); WHILE i <= n DO ... END WHILE;`. Now the count walk happens **once**, total work is O(N). Lowest-effort fix for existing code
+- **Fix 2 (preferred): use a reference + `MOVE NEXTSIBLING`.** Avoids both the counting and the per-iteration subscript walk (see `ace-dev-061`): `DECLARE itemRef REFERENCE TO InputRoot.XMLNSC.Items.Item[1]; WHILE LASTMOVE(itemRef) DO ... MOVE itemRef NEXTSIBLING; END WHILE;`. No count needed, the loop guard is the move-succeeded check. Strictly faster than Fix 1 because it skips the count walk entirely
+- **When CARDINALITY in a loop is acceptable:** small fixed-size lists where you know N is tiny (a fixed-shape header with 3 fields, an enum), or one-shot checks outside a loop. The penalty is real but trivial at N <= 10
+- **Related gotcha: `CARDINALITY(...) > 0` to test 'is anything there'.** This works but still walks the whole list. If you only need to know whether the first element exists, **`LASTMOVE(itemRef)` after a `REFERENCE TO ...[1]` declaration** is cheaper. Use CARDINALITY when you need the actual count; use existence checks for boolean questions
+- **Detecting the antipattern in review:** `CARDINALITY` syntactically appearing in a `WHILE` / `FOR` / `IF i <` line condition is almost always wrong. Tooling-generated ESQL skeletons sometimes ship with this shape, treat it as a TODO
+
+`CARDINALITY` recomputes its count on every call by walking the child list. Inside a loop condition it becomes O(N²) on N elements, which is the classic ESQL profile killer that does not show up under low-load testing. The minimum-effort fix is to cache the count in a local before the loop; the proper fix is the reference + `NEXTSIBLING` pattern (`ace-dev-061`) which sidesteps counting entirely. Candidates who name the O(N²) shape, both fixes, and the related `LASTMOVE` shortcut for existence checks have profiled ESQL on production volumes; candidates who say 'but it's just a count' have not.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=functions-cardinality-function>
+
+**Q: Is `IF field = NULL` correct ESQL? What is the proper NULL handling syntax?**
+
+- **`field = NULL` is wrong, and worse, it fails silently.** ESQL inherits SQL three-valued logic: any expression with a NULL operand returns NULL (UNKNOWN). `CustomerId = NULL` therefore returns NULL, not TRUE. In a boolean context (`IF`, `WHILE`), NULL is treated as FALSE, so the branch **never fires**. No exception, no warning, the code just behaves as if the field is always non-null
+- **The correct test is `IS NULL` / `IS NOT NULL`:** `IF InputRoot.XMLNSC.Order.CustomerId IS NULL THEN ... END IF;`. `IS` is the dedicated null-test operator, evaluates to TRUE or FALSE (never UNKNOWN), so it actually fires
+- **NULL is distinct from 0, empty string, and missing.** For INTEGER, NULL is not 0. For CHARACTER, NULL is not `''`. For a tree node, NULL means 'the field exists but has no value', separate from 'the field does not exist at all'. A `field IS NULL` test is TRUE in **both** cases (no value, and no field), which is usually what you want
+- **Bonus gotcha: `SET field = NULL` DELETES the field.** IBM doc is explicit: `SET OutputRoot.XMLNS.Msg.Data.Name = NULL;` DELETES the Name element. This is rarely what you mean. To **assign a null value** while keeping the element, use `VALUE NULL`: `SET OutputRoot.XMLNS.Msg.Data.Name VALUE = NULL;`. The element stays in the output XML / JSON tree but carries no value
+- **Any-operand-NULL: arithmetic and concatenation also propagate NULL.** `NULL + 5 = NULL`, `'prefix' || NULL = NULL`, `LENGTH(NULL) = NULL`. Anywhere you mix possibly-null inputs into a value, the output is null unless you guard. Use `COALESCE(x, default)` to substitute a fallback
+- **`REFERENCE` is the one ESQL type that does NOT support NULL.** A reference always points somewhere or is undeclared; it has no null state. To test 'is this reference valid', use `LASTMOVE(ref)` after the last `MOVE` (see `ace-dev-056`), not `ref IS NULL`
+- **In review, treat `= NULL` and `<> NULL` as bugs.** They might compile and run silently, but they never do what the author intended. Replace with `IS NULL` / `IS NOT NULL`. Especially common when ported from C# / Java / JavaScript backgrounds where `== null` works
+
+ESQL inherits SQL three-valued logic, so `field = NULL` always evaluates to UNKNOWN, which is treated as FALSE in a boolean context. The branch never fires, no exception is thrown, the code looks fine and silently misbehaves. `IS NULL` is the dedicated test that handles NULL correctly. The bonus gotcha is on the SET side: `SET field = NULL` deletes the field rather than assigning a null value; `SET field VALUE = NULL` is the way to keep the element with a null value. Candidates who name `IS NULL`, distinguish missing-vs-null, and recall the `VALUE NULL` assignment quirk have written real ESQL with optional fields; candidates who write `= NULL` from instinct have not yet shipped a flow that 'works' for months because a guard never fires.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=rfgr-esql-null-data-type>
+
+**Q: What risk does omitting `BROKER SCHEMA` create, and when does the collision actually happen?**
+
+- **What `BROKER SCHEMA` does.** It declares the **namespace** (schema) that the file's `CREATE FUNCTION`, `CREATE PROCEDURE`, `CREATE MODULE`, and module-level `DECLARE` belong to. IBM compares it to C++ namespaces, Java packages, and XML target namespaces. Optional in syntax: omit it and everything in the file falls into the **default schema**
+- **The risk in one sentence:** within a single deployable unit (an application or a library), two ESQL files that both omit `BROKER SCHEMA` and define a same-named procedure / module / function **collide in the default schema**. The runtime resolves the name to one of them, and the others are silently shadowed
+- **Where it actually bites:** the framing 'multi-app deployments' is a bit loose, ACE's schema boundary is per *deployable unit*, not per integration server. The real collision shapes are: two ESQL files in the same application, both lacking `BROKER SCHEMA`, both defining `CREATE PROCEDURE LogAudit(...)`. One wins, the other is dead code, no error. A shared library referenced by multiple apps, where library ESQL omits `BROKER SCHEMA` and app ESQL also omits it, the library's defaults can shadow app-local definitions during name resolution. Refactor / copy-paste scenarios: file A's `CREATE PROCEDURE Foo` gets copy-pasted into file B in the same app without renaming, both go to default schema, the original silently stops being called
+- **The symptom is the wrong code runs.** No exception, no compile-time error, no deploy-time warning. You changed a procedure, redeployed, and the change 'didn't take' because the runtime picked the other namesake. This is one of the worst classes of bug to triage because the code looks correct in source review
+- **The fix is one line at the top of every ESQL file:** `BROKER SCHEMA com.mycompany.payments.utils`. By convention, mirror the file's package-like organisation (reverse-DNS, dotted, e.g. `com.team.app.subsystem`). Now `CREATE PROCEDURE LogAudit(...)` lives in that schema, and a same-named procedure elsewhere in a different schema is unambiguous
+- **Calling across schemas:** once you declare schemas, you call functions by their fully-qualified name (`com.mycompany.payments.utils.LogAudit(...)`) or use the `PATH` clause on `BROKER SCHEMA` to import another schema's namespace for unqualified calls. `BROKER SCHEMA com.x.y PATH com.shared.utils;` resolves unqualified names in `com.shared.utils` after the local schema
+- **Defensive rule for review:** every ESQL file should have `BROKER SCHEMA` at the top; flag any file that doesn't. The cost is one line, the benefit is no collision class of bug
+
+Omitting `BROKER SCHEMA` is benign in a single-file project and silently dangerous as soon as you have multiple files defining procedures or modules. The default schema is shared, so same-named items collide; the runtime resolves them in some order (effectively non-deterministic from the author's view), and the loser is silently shadowed. The bug class is 'the code I see in source review is not the code that ran'. The fix is one line per file plus a convention (reverse-DNS dotted schema names). Candidates who name the default-schema collision, point to multi-file applications and shared libraries as the shapes where it bites, and propose `BROKER SCHEMA` as a mandatory review item understand the cost of skipping it.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=statements-broker-schema-statement>
+
+**Q: Why is parameterised `PASSTHRU` faster than literal-interpolated `PASSTHRU` in an ESQL loop?**
+
+- **What the database actually does on each `PASSTHRU`.** When ACE sends a SQL string to the database, the DB has to **parse** it (lex / syntax-check), **plan** it (decide indexes, join order, etc.), then **execute** it. Parse + plan together are 'prepare'. Mature databases cache the plan keyed on the SQL **text**
+- **Literal-interpolated form: new SQL text every call.** `PASSTHRU('SELECT * FROM Users WHERE Id = ''' || userId || '''')` builds a different SQL string for every value of `userId`: `SELECT * FROM Users WHERE Id = '42'`, `SELECT * FROM Users WHERE Id = '43'`, etc. Each is a fresh string, cache miss, **full prepare on every call**. In a loop over 1000 IDs, that is 1000 prepares
+- **Parameterised form: one SQL text, N executions.** `PASSTHRU('SELECT * FROM Users WHERE Id = ?', userId)` sends one fixed SQL text (`SELECT * FROM Users WHERE Id = ?`) plus a separate bind-variable payload per call. The DB prepares once, caches the plan, and **reuses** it for every execution. 1000 calls = 1 prepare + 1000 executions
+- **The performance gap can be 10x or more on hot paths.** Prepare/plan is the expensive part of a query for simple lookups; once the plan is cached, execute is mostly network + index seek. Skipping 999 prepares is real wall-clock time
+- **Security bonus: parameterised form is also the SQL-injection defence.** Literal interpolation lets a hostile `userId` like `' OR 1=1 --` break out of the quotes and rewrite the query. Bind variables are sent separately and never re-parsed as SQL, so injection is structurally impossible. (Senior candidates name this even when the question is framed as performance, the two motivations are the same.)
+- **The legitimate corner case for literal SQL.** Some things **cannot** be parameterised in standard SQL: **table names, column names, schema names**. If you genuinely need dynamic identifiers (`SELECT * FROM <dynamic-table>`), you have to concatenate. The defence in that case is **strict allow-list validation** of the identifier (`IF tableName NOT IN ('Users', 'Orders') THEN THROW ...`) before concatenation. Never concatenate untrusted input into an identifier slot
+- **In review, treat `||` inside a `PASSTHRU` SQL string as suspect.** If the concatenated value is a *data value*, it should be a `?` parameter instead. If it is an *identifier*, validate against an allow-list first
+
+Parameterised `PASSTHRU` outperforms literal-interpolated `PASSTHRU` because the database caches query plans keyed on SQL text. Literal interpolation builds a different SQL string per call, every call missing the cache and forcing a full prepare; parameterised form holds the SQL text constant and varies only the bind variables, so the prepared plan is reused. In a tight loop the gap is order-of-magnitude. The same change also closes SQL injection by design, which is why parameterised SQL is the recommendation everywhere, performance and security align. The only legitimate concatenation case is dynamic identifiers (table / column names), which must be validated against an allow-list rather than passed through user input.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=statements-passthru-statement>
+
 ### Hybrid connectivity
 
 **Q: Where is the Switch Server managed when you use App Connect as a SaaS offering (App Connect on IBM Cloud / ACEaaS), and what does it do there?**
@@ -1592,7 +2003,7 @@ The mnemonic to keep them straight: `>` points forward from the start, `<` point
 The Switch Server is the rendezvous point that lets on-prem and SaaS flows reach each other without inbound firewall holes. Who runs it flips with the deployment model: on-prem = you run it; SaaS = IBM hosts it and you manage it as a resource in the same namespace as Designer and Dashboard, associating it with them. Framing the Switch Server as 'the connectivity layer for hybrid App Connect' (callable flows AND private-network reach via connectivity agents) is broader and more accurate than 'it is only for callable flows'.
 
 _References:_
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=resources-switch-server-refere>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=resources-switch-server-refere>
 
 ### Patterns
 
@@ -1609,14 +2020,14 @@ _References:_
 'Grouping nodes' is umbrella language that in practice covers three different ACE families with different trade-offs. Group (Scatter/Gather/Complete) is the modern, stateless, MQ-free choice for fast fan-out/fan-in inside one server. Collector is the right answer when messages arrive independently from many sources, out of order, and you want rule-based collection; it is MQ-backed, which is why it behaves more like the classic aggregation pattern than like Group. Aggregation (AggregateControl / Request / Reply) remains the right choice when you need recoverable aggregation state or cross-server orchestration.
 
 _References:_
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-groupscatter-node>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-groupgather-node>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-groupcomplete-node>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-collector-node>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-aggregatecontrol-node>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-aggregatereply-node>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=nodes-aggregaterequest-node>
-- <https://www.ibm.com/docs/en/app-connect/11.0.0?topic=nodes-group-aggregation>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-groupscatter-node>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-groupgather-node>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-groupcomplete-node>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-collector-node>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-aggregatecontrol-node>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-aggregatereply-node>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-aggregaterequest-node>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-group-aggregation>
 
 **Q: What are sequencing nodes used for in ACE, and what are the runtime constraints you need to know?**
 
@@ -1631,9 +2042,42 @@ _References:_
 Sequencing nodes solve the tension between 'process in parallel for throughput' and 'preserve order where it matters for correctness'. The important nuance most candidates miss is that order preservation is per-sequence-group, not flow-wide, and that sequencing is MQ-backed state (similar to the Collector node), so it picks up the same MQ co-location / remote-qmgr requirements. The 'one thread per group' property is how ACE keeps the guarantee safe under additional instances.
 
 _References:_
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=sequences-message-sequencing>
-- <https://www.ibm.com/docs/en/app-connect/11.0.0?topic=nodes-sequence-node>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=sequences-message-sequencing>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-sequence-node>
 - <https://www.ibm.com/docs/en/integration-bus/10.0.0?topic=nodes-configuring-sequence-node>
+
+**Q: How do you implement a saga / compensating-transaction pattern in ACE, and why is cleanup done in reverse order?**
+
+- **The reason you need this pattern in ACE.** Kafka does not participate in 2PC with MQ / DB (see `ace-dev-048`). REST calls and external SaaS APIs do not participate in 2PC at all. Once you call them, the work is **already committed externally**, no transaction manager can roll it back. If step N+1 fails, you have to issue an **explicit compensating action** (a `DELETE`, a `POST /cancel`, an MQ message, etc.) to undo step N
+- **ACE wiring shape, TryCatch + Compute per step.** Each forward step is wrapped in a **TryCatch node**. On failure, the Catch branch runs the **compensating Compute node(s)** for every step that already succeeded. State (which steps succeeded, with what side-effect identifiers like order IDs, ticket numbers, transaction refs) is carried forward in `LocalEnvironment` or `Environment` so the compensation logic can reach the right targets
+- **Reverse-order cleanup, with a concrete example.** Say the forward sequence is **(1) reserve inventory, (2) charge card, (3) book courier**. Step 3 fails. Compensation order **must** be **3 -> 2 -> 1**: undo step 3 first (cancel courier booking, if it partially succeeded); then undo step 2 (refund the card); then undo step 1 (release the inventory reservation)
+- **Why reverse, specifically:** later steps depend on earlier steps' side effects. Step 3 used the reservation from step 1 and the payment from step 2 to know *what* to book. If you undo step 1 first (release inventory), the cancel-courier call in step 3 may not be able to find the booking, or worse, may complete against stale state. Undo in reverse so each compensation operates against the state shape that existed when the corresponding forward step ran
+- **Idempotency on every compensating call.** Compensation may itself fail or be retried. Each compensating action must be **safe to call twice** (DELETE the order, POST /cancel with the order ID, etc.). Without idempotency, retries during compensation create new failure modes
+- **State tracking is mandatory.** Save the result of each forward step (correlation IDs, external resource IDs) into a known location in the message tree *before* moving on. If the flow fails before saving, you have a side effect with no handle to undo it. Persist this state if the flow could crash mid-saga (e.g. write a saga-log row in your DB)
+- **What ACE does not give you.** No built-in saga orchestrator, no automatic compensation registry, no transaction-log replay. You design the saga yourself with TryCatch + Compute + state tracking. The recent v13 features (MCP, ACE Agent) do not change this, the saga responsibility is still on the flow author
+- **When this is overkill:** if all steps go through resource managers that *can* 2PC (MQ + DB only), use ACE's transactional flow support (see `ace-dev-009`) instead. Saga is for the cases where at least one participant is non-XA (Kafka, REST, external SaaS)
+
+The saga / compensating-transaction pattern is what you reach for when ACE cannot give you a single coordinated transaction across all resource managers, which is most modern flows the moment Kafka, REST, or an external API joins the mix. The cleanup runs in reverse because later steps depend on the side effects of earlier ones, undoing top-down means each compensation runs against the state that existed when the forward step happened. ACE gives you the building blocks (TryCatch, Compute, LocalEnvironment for state-passing) but no orchestrator, you design and wire the saga yourself. Candidates who name TryCatch + reverse-order + idempotency + state-tracking understand the pattern at production grade; candidates who say 'just retry the failing step' have not yet had a partial-outcome incident.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-trycatch-node>
+
+**Q: When does exponential backoff help, when does it make things worse, and how do you implement it in ACE?**
+
+- **Where exponential backoff helps:** any transient failure where the underlying issue resolves itself given time. DB connection timeout, HTTP `500/502/503/504`, network blip, brief Kafka broker unavailability, momentary lock contention. Doubling the wait between attempts (1s, 2s, 4s, 8s...) gives the dependency time to recover without tight-loop hammering
+- **Where it makes things worse, the real failure mode is non-jittered backoff across a fleet.** A single client retrying with `1s, 2s, 4s, 8s` is fine. **Hundreds of clients all retrying with the same schedule create a synchronized retry storm**, the recovering service comes back up, gets hit by every client at second 8, falls over again, and the cycle repeats. The dependency never stabilises
+- **The fix is jitter.** Two patterns commonly used: **full jitter** sleeps `random(0, base * 2^attempt)`, spreading retries across the entire window and killing synchronization completely; **equal jitter** sleeps `base * 2^attempt / 2 + random(0, base * 2^attempt / 2)`, half-deterministic and half-randomised, preserving the 'at least N seconds' floor while still de-synchronising. Either is fine; **plain exponential backoff is the antipattern in any multi-instance deployment**
+- **Cap the maximum backoff.** No point waiting hours, after a cap (e.g. 60s, 5 min) keep retrying at the cap rather than doubling further. Beyond a few minutes you should be paging or routing to a DLQ, not silently waiting
+- **Bound the total retry budget.** Combine the per-attempt backoff with a maximum retry count or a total time budget. `3 attempts max` or `10 minutes max wall time` are typical. After exhaustion, the message goes to a definitive error path, never silently disappears
+- **Respect `Retry-After` when the server tells you when to come back** (HTTP `429`, `503`). The server's hint is more accurate than your guess; honour it as the floor of your backoff (apply jitter *on top of* the hint)
+- **ACE primitives you actually wire this with:** the **HTTPRequest `Retry` tab** only retries on connection-level failures (e.g. socket reset), **not on HTTP status codes**, so this alone is not enough for 5xx/429 handling. Use **TimeoutControl + Compute** in the failure-handler subflow to schedule a delayed retry by re-injecting the message via TimeoutControl after a computed backoff, with the attempt count carried in `LocalEnvironment`. **'Put deferred' pattern (queue-driven retry):** instead of holding flow threads waiting for the backoff window, **put the message back on a queue with a scheduled / delayed delivery time** and let the queue manager hold it. Two implementations in the ACE/MQ stack: JMS `setDeliveryDelay(ms)` on the producer (MQ classes for JMS, 8.0+), the queue manager holds the message and makes it eligible for consumption only after the delay; **retry-bucket queues**, stage messages on per-delay queues (e.g. `RETRY.30S`, `RETRY.5M`) consumed by trigger-scheduled flows, older pattern, works on any MQ version. **Why 'put deferred' beats Compute+sleep:** flow threads are scarce, a Compute that sleeps for 60s pins a thread for 60s, a deferred put releases the thread immediately, the queue manager wakes the message later. Thread efficiency is the production win
+- **Where backoff does not apply:** permanent HTTP failures (`400/401/403/404/501`, see `ace-dev-058`), retrying gets the same error. Poison messages on MQ, `BOTHRESH`/`BOQNAME` is the mechanism (see `mq-dev-015`), not flow-level backoff. DB constraint violations (`D23xxx`), the data is wrong, retry won't help (see `ace-dev-057`)
+
+Exponential backoff is correct for transient failures; what is wrong is **non-jittered backoff across a fleet** because synchronized retries create thundering-herd storms that prevent the dependency from stabilising. Jitter (full or equal) breaks the synchronization. In ACE specifically, the HTTPRequest Retry tab only handles connection-level retries, so 5xx / 429 retry logic has to live in the failure-handler subflow. The senior-grade implementation does not hold flow threads waiting (`Compute + sleep`) but instead **puts the message on a queue with a delayed delivery time** (JMS `setDeliveryDelay`, or retry-bucket queues) so threads are released back to the pool while the message sits on the broker. Candidates who name jitter, cap, retry budget, `Retry-After`, and the put-deferred thread-efficiency win understand production-grade retry; candidates who say 'loop and sleep' have not yet caused a thundering-herd incident or a thread-pool exhaustion.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-httprequest-node>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-timeoutcontrol-node>
 
 ### MQ
 
@@ -1665,10 +2109,10 @@ _References:_
 OTel is how ACE plugs into modern cross-service distributed tracing, a complement to the existing activity log, flow / resource stats and Log / Trace nodes rather than a replacement. Candidates should know that ACE emits traces only (not metrics or logs), that context flows in via transport headers and request nodes propagate it onwards, and that a configured integration server appears as a span tree inside a larger distributed trace. The real discriminators: the unsupported-node list and the MQGet-ignores-inbound-trace-parent gotcha, both of which surface in real rollouts.
 
 _References:_
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=management-configuring-opentelemetry-trace-integration-server>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=server-turning-off-opentelemetry-message-flow>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=functions-opentelemetry-trace-parent-function>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=functions-opentelemetry-trace-state-function>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=management-configuring-opentelemetry-trace-integration-server>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=server-turning-off-opentelemetry-message-flow>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=functions-opentelemetry-trace-parent-function>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=functions-opentelemetry-trace-state-function>
 
 ### Caching
 
@@ -1685,11 +2129,11 @@ _References:_
 IBM treats caching in ACE as a spectrum from in-message state to fully external infrastructure, and the interview signal is whether the candidate frames the decision by scope, lifetime and persistence rather than by listing products. The two v13 headlines to know: the new embedded global cache from 13.0.3.0 replaces the old WXS grid with something that actually works in containers and no longer forces Java 8; and the external Redis backend means the same `MbGlobalMap` API can drive a shared, durable store. Knowing the WXS grids are deprecated is a good tell that the candidate is current, not repeating older material.
 
 _References:_
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=overview-choosing-right-type-cache>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=overview-embedded-global-cache>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=overview-external-redis-global-cache>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=overview-local-cache>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=dco-differences-between-local-cache-embedded-global-cache-external-redis-global-cache>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=overview-choosing-right-type-cache>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=overview-embedded-global-cache>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=overview-external-redis-global-cache>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=overview-local-cache>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=dco-differences-between-local-cache-embedded-global-cache-external-redis-global-cache>
 
 ### Designer
 
@@ -1705,9 +2149,377 @@ _References:_
 The on-prem ACE 13 Designer is simply part of the install: run the `Designer` command and you get the browser UI on localhost backed by a local vault. Candidates sometimes assume Designer is SaaS-only, or that it needs a `DesignerAuthoring` resource on the Operator; the stand-alone local path is the simplest of the three. The signals worth probing: awareness of the vault / vault key lifecycle, of the not-multi-user constraint, and of the clean split between authoring in Designer and running on a separate integration server.
 
 _References:_
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=designer-app-connect-enterprise-overview>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=designer-starting-app-connect-enterprise>
-- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=commands-designer-command>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=designer-app-connect-enterprise-overview>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=designer-starting-app-connect-enterprise>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=commands-designer-command>
+
+### Testing
+
+**Q: How do you run Toolkit unit tests against a custom integration server with policies and shared classes?**
+
+- By default, the Toolkit spins up a fresh default integration server for each test run. That works for flows with no external dependencies, and breaks the moment a flow needs a **policy**, a **user-defined node / plug-in**, or a **shared-classes JAR**. Typical symptom: test fails with a missing-policy or `ClassNotFoundException` before any assertion runs
+- The fix is to point the test at an **existing work directory** that already has what the flow needs. You prepare a custom integration server once (policies deployed, shared-classes directory populated, UDNs available, credentials loaded), then reuse its work directory for tests
+- In the Toolkit: Run Configurations, open your test configuration, go to the **Integration Server Settings** tab, select **Use an existing work directory**, and browse to the custom server's work directory (e.g. `C:\Users\<you>\IBM\ACET13\workspace\UnitTest\TEST_SERVER`). Apply and run
+- Prerequisite: the target integration server must be **stopped** when the test starts; the test process takes ownership of the work directory, and a running server holding the same directory gives a lock / in-use error
+- For shared-classes JARs: create a `shared-classes/` directory directly under the server's work directory and drop the JARs there (same pattern as standalone integration servers and containers). Policies live under the standard policy-project structure in the same work directory
+- Per-test-config setup: each new test configuration starts from defaults, so you will reset the 'Use an existing work directory' choice for every new test. Factor this into your test-config template if you maintain many tests
+- **Fake MQ for unit tests:** the same Integration Server Settings tab has an **Integration Server Override Options** section with a **Real/Fake MQ Manager Name for unit testing** field (default value `FakeQueueManagerName`). Setting it lets the launch config substitute a fake queue manager name into the flow at test time, so flows that touch MQ can be exercised without a live qmgr. The MQ nodes still need to validate configuration, but the runtime does not bind to a real broker
+
+This is the setup that turns 'my flow works when I deploy it, why does my test fail' into a useful test run. The key insight is that the Toolkit's default test runner ignores the custom server you built and uses a fresh one, so you have to redirect each test config to your work directory. Candidates who know this pattern have shipped testable flows with policies or shared classes; candidates who do not will typically claim ACE tests are unreliable.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=dit-developing-integration-tests-by-using-app-connect-enterprise-toolkit>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=tests-configuring-integration-server-run-test-case>
+
+**Q: What does `ignorePath()` do in ACE unit tests, and why is it essential?**
+
+- `ignorePath()` is a method on the **ACE message-assembly matcher** (which sits alongside JUnit, Hamcrest, JSONAssert, and XMLUnit support in the test framework). It chains off `equalsMessage(...)` and excludes a specific tree path from the expected-vs-actual comparison. Signature: `.ignorePath(String path, boolean ignoreSubpaths)`
+- Used as a chain: `assertThat(actualMessageAssembly.equalsMessage(expectedMessageAssembly).ignorePath("/Message/JSON/Data/requestSession", false));`. The boolean controls whether descendants of the path are ignored too
+- Essential for fields whose value changes on every run: **UUIDs**, generated IDs, **timestamps**, session tokens, signatures, anything keyed off `CURRENT_TIMESTAMP` or a random source. Without it, a passing test becomes a failing test the moment it runs again with a fresh runtime-generated value
+- Two convenience methods for the common cases: **`.ignoreTimeStamps()`** covers all TIMESTAMP-typed fields in one call, **`.ignoreDateTime()`** covers DATE and TIME fields. Chain them with `ignorePath` for targeted exclusions
+- Apply selectively: `ignorePath("/Message", true)` makes every assertion pass, which defeats the purpose. Pick the tightest path that covers the volatile field, and set `ignoreSubpaths: false` unless the whole subtree is legitimately volatile
+- PGP, encrypted payloads, and signed bodies are another classic case: the encrypted / signed bytes change every run even for identical input. Ignore the encrypted subtree, assert on the plaintext surround, or test the round-trip (encrypt then decrypt) rather than the encrypted wire value
+
+The test framework compares the actual message tree against a recorded expected tree, field by field. Any field with a non-deterministic value makes every run a failure even when the flow is correct. `ignorePath` (plus the two convenience methods for timestamp and datetime) is the surgical tool for excluding those fields. Candidates who name the three methods, describe when to use which, or mention testing the encrypt-decrypt round-trip instead of ignoring ciphertext, have actually written passing tests for real flows.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=dit-developing-integration-tests-by-using-app-connect-enterprise-toolkit>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=tests-integration-testing-overview>
+
+### Monitoring
+
+**Q: Can you include custom data from a message in an ACE monitoring event, and how is it added?**
+
+- Yes. Configure one or more **Data Location** XPath expressions in the **Event Payload** of the monitoring event, either in the Flow Editor (Monitoring tab on a node terminal) or in a Monitoring profile
+- XPath that resolves to a simple element produces an `applicationData.simpleContent` entry (`elementName`, `elementValue`, `elementDataType`); XPath to a subtree produces `applicationData.complexContent` with the subtree under `elementValue`
+- Repeating elements emit one entry per instance; a wildcard XPath emits one entry per matched element/attribute, each in its own folder
+- Data Location can target anything reachable from the message assembly, not just `$Body` / `$Root`: `$LocalEnvironment`, `$Environment`, `$ExceptionList`, MQMD headers, etc. Set values on `LocalEnvironment` upstream when you need flow-computed data (correlation keys, lookup results) without polluting the message body
+- The bitstream is a separate option, the **Include bitstream data in payload** checkbox, and is emitted as hex / CDATA alongside the application data
+- Cross-domain payloads are allowed (e.g. XPath into `$Root/XML/...` with a JSON event format), but watch the rules: element names must be valid in the target format, an element cannot have an attribute and child with the same name, and repeating children can produce JSON `duplicate key` errors
+- Gotcha: if constructing the event payload triggers a parser exception (forced parse of a malformed body, or bitstream inclusion when parsing fails), the event is **not** emitted, the parser exception is rethrown, and the message rolls back. Treat expensive or forced parses inside an event payload as a real cost
+
+The interviewer wants to hear that monitoring events are not fixed-shape; the payload is XPath-driven and can carry arbitrary message or environment data into `applicationData`. A strong answer mentions both `simpleContent` and `complexContent`, knows the bitstream is a separate option, and flags the practical traps around cross-domain naming and the fact that a failing payload XPath can roll the message back. Bonus points for reaching for `$LocalEnvironment` as the place to surface flow-computed values into the event without changing the business message.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=event-including-complex-content-in-payload-monitoring>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=basics-monitoring-events>
+
+### Configuration
+
+**Q: How do you use an environment variable in a node property inside a flow?**
+
+- Define the value in `server.conf.yaml` under `UserVariables:`, e.g. `UserVariables:` then `encodedvar: 'someValue'`. UserVariables are the canonical injection point for deploy-time values that flows can pick up without a Compute node
+- To pull the value from an OS environment variable, write the UserVariable as `'${ENV_VAR_ONE}'` and set `resolveUserVariableEnvVars: true` at the top level of `server.conf.yaml`. Use `${VAR}` syntax even on Windows, `%VAR%` does not work. Available from ACE 12.0.4+
+- **Reference it from a node property as `[iib.user-<varname>]`** (square brackets, `iib.user-` prefix, name matches the YAML key). Example: a UserVariable `encodedvar` is referenced in an MQInput **Match correlation ID** field as `[iib.user-encodedvar]`. Available from ACE 12.0.5.0+, and support is per-field per-version, verify per node
+- **Toolkit gotcha:** the design-time editor validates the literal placeholder against the field's expected type, so type-strict fields (e.g. correlation ID expects hex) will show a red 'Invalid hexadecimal number' error on `[iib.user-...]`. The runtime resolves the placeholder before the value is used, so the warning is cosmetic, do not let it block deployment
+- From ESQL: declare the UserVariable as a UDP, `DECLARE encodedvar EXTERNAL CHARACTER 'default';` then read the variable directly. Same UDP API in JavaCompute (`getUserDefinedAttribute`), .NETCompute (`GetUserDefinedProperty`), Mapping (`iib:getUserDefinedProperty(...)`)
+- For raw OS env vars without going through UserVariables, use `System.getenv(...)` from JavaCompute, or wrap it in ESQL once: `CREATE FUNCTION javaLangSystemGetenv(IN name CHARACTER) RETURNS CHARACTER LANGUAGE JAVA EXTERNAL NAME "java.lang.System.getenv";`
+- For container deploys, use `StartupScripts:` in `server.conf.yaml` to run a script at boot whose stdout returns YAML (`UserVariables:` / `EnvironmentVariables:` / Kubernetes-style `env:` stanzas). The server reads the script output back when `readVariablesFromOutput` is `auto` (default) or `true`, useful for pulling secrets from a vault or k8s mounted file at start
+
+Two questions in one: where does the value live, and how does the flow read it. The cleanest answer uses `UserVariables` in `server.conf.yaml` (optionally hydrated from OS env via `${VAR}` + `resolveUserVariableEnvVars: true`) and reads it either as `[iib.user-<name>]` directly in the node property, or as a UDP from ESQL/Java/Mapping. A weak answer stops at `System.getenv` in JavaCompute and misses that ACE has a first-class substitution path on the property fields themselves. A strong answer also flags the toolkit's cosmetic validation error on type-strict fields and the version gates (12.0.4 for `${VAR}` substitution, 12.0.5 for `[iib.user-...]` placeholders) because both are easy traps for someone debugging 'why does my placeholder not work in this property'.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0.x?topic=resources-integration-server-reference>
+- <https://github.com/trevor-dolby-at-ibm-com/ace-user-variable-examples>
+- <https://github.com/trevor-dolby-at-ibm-com/ace-esql-read-env-var>
+- <https://community.ibm.com/community/user/discussion/environmentvariables-in-serverconfyaml-file>
+
+**Q: Why is hardcoding IP addresses in ACE properties unsafe, and what are the two correct alternatives?**
+
+- Hardcoding IPs ties the BAR to a single environment, promotion to test / UAT / prod means editing the BAR or rebuilding, instead of treating the same artefact as deployable everywhere
+- IPs change underneath you, load-balancer rotations, DR cutover, network re-IPs, cloud-provider IP shuffles all break a hardcoded value with no warning and no code change to point at
+- Hardcoded IPs hide intent. `192.168.1.45` does not say what it is; `payments-api.svc.cluster.local` does. Reviewability suffers, and so does triage when something breaks
+- **Correct alternative #1: hostnames.** Let DNS do the per-environment mapping. Each environment resolves the same hostname to a different IP, the BAR does not care which. Zero code change between envs
+- **Correct alternative #2: promoted properties.** Expose the endpoint as a BAR override property (`[AppName]#[NodeLabel]/[PropertyName]`) and supply the per-environment value via `mqsiapplybaroverride` (or `ibmint apply overrides`). The BAR is identical across envs; only the override file changes
+- The two alternatives are complementary, not either-or. A production-grade ACE app uses a **promoted property whose value is a hostname**, the override file picks the right hostname per env, and DNS picks the right IP per env. Two layers of indirection, each at the right layer
+
+A hardcoded IP is the signal that says 'this BAR was tested in one environment, not built for promotion'. The two production-grade alternatives address two different problems: hostnames move the env-to-IP mapping into DNS where it belongs; promoted properties move the env-to-endpoint mapping into the deploy pipeline. Candidates who name only one alternative get half the story; candidates who explain why you want both layers understand environment promotion.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=files-overriding-properties-bar>
+
+**Q: What is the naming convention for promoted-property overrides, and what's wrong with `port=7800`?**
+
+- **Qualified key format** (from the IBM doc, note the **dot** before the property name): node properties use `FlowName#NodeName.PropertyName=NewValue` (e.g. `sampleFlow#MQInput.queueName=PROD_Q`); flow-level promoted properties use `FlowName#PromotedName=NewValue`; application-level configurable properties use a bare property name (e.g. `startMode=auto`) *plus* the `-k applicationName` parameter on `mqsiapplybaroverride` to scope it. The app name is **not** embedded in the key
+- **What is wrong with `port=7800`:** it is not a qualified key. There is no property literally named `port` in any deployment descriptor; the real property is something like `myFlow#HTTPInput.port`. The IBM-doc-defined `OldValue=NewValue` syntax would interpret this as 'find any property whose value is literally `port` and replace with `7800`', practically a no-op because nothing has that value
+- **The silent-failure trap (the real footgun):** `mqsiapplybaroverride` does **not validate that the key matches a real property**. If the key is malformed, unqualified, or misspelled, the line is simply ignored. **No warning, no error, exit code 0**. You think you set `port`; the BAR ships with the default. Build pipelines see green and push to prod, where the original value is still baked in
+- **The first sign of trouble** is usually a wrong-endpoint connection or auth failure in a higher environment, hours after the change supposedly landed, because the override never applied
+- **Verification step** (mandatory in any production override pipeline): run `mqsireadbar` (or `ibmint read bar`) on the output BAR and confirm the overridden value actually landed. Or unzip the BAR, open `META-INF/broker.xml`, grep for the expected value. **Trust nothing about exit codes**
+- **Two override-file dialects in the same file format:** per-property (precise, recommended) `FlowName#NodeName.PropertyName=NewValue`; value-replacement (global search-and-replace on the value column, fragile, easy to over-match) `OldValue=NewValue`. Avoid value-replacement in production unless you understand exactly what it touches
+- **v13 equivalent:** `ibmint apply overrides` is the modern command, same key syntax, same silent-failure behaviour when the key does not match. Switching command does not switch the trap
+
+Promoted-property overrides use `FlowName#NodeName.PropertyName` for node-level properties; the application name is supplied via `-k`, not embedded in the key. The real footgun is silent: `mqsiapplybaroverride` (and `ibmint apply overrides`) do not validate keys against the deployment descriptor, so a malformed or unqualified key is ignored and the override exits successfully. The BAR ships with the original value, the pipeline looks green, and the first incident lands in a higher environment when traffic hits the wrong endpoint. Candidates who add `mqsireadbar` verification to their pipeline have been burned by this; candidates who say 'the build passed so the override worked' have not.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=commands-mqsiapplybaroverride-command>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=commands-mqsireadbar-command>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=files-overriding-properties-bar>
+
+**Q: How should you name environment-specific BAR override files in ACE?**
+
+- **Trick answer first: there is no IBM-mandated naming convention.** The override file is just a properties file passed via `mqsiapplybaroverride -p <file>` (or `ibmint apply overrides`). IBM's docs do not prescribe a filename pattern. Anyone who quotes a hard rule is repeating their team's convention as if it were a standard
+- **Good naming is self-documenting.** The filename should make it obvious from one glance which environment (and / or which application) the file targets, so a reviewer reading a pipeline log instantly knows whether the right file landed in the right place
+- **Two conventions that work in practice:** environment-based (most common) `dev.properties`, `test.properties`, `uat.properties`, `prod.properties`, simple and scales when one BAR is the same across all envs; endpoint / integration-based (better when multiple apps share a pipeline) `payments-prod.properties`, `orders-uat.properties`, `inventory-dev.properties`, makes the 'which app, which env' pair obvious; combined directory hierarchy `overrides/<env>/<app>.properties` (e.g. `overrides/prod/payments.properties`), which lets the env be picked from the path and the app from the filename
+- **Anti-patterns:** `override.properties` (no environment context, useless in a multi-env pipeline); `myproperties.txt` (no convention at all, every reviewer has to open the file to know what it is); hardcoded version numbers (`override-1.2.3.properties`, they drift from the BAR version and lie within a release); environment encoded as a comment inside the file rather than the filename (comments are not visible in a `ls`, the filename is)
+- **Verification still matters.** Whichever convention you pick, pair it with `mqsireadbar` after `mqsiapplybaroverride` to confirm the values landed (see `ace-dev-051`). A good filename plus a verified BAR is the production-grade combination
+
+The trick is that ACE does not care what you name the override file, IBM never set the rule. So the right answer is not a specific filename but a principle: pick a convention that is self-documenting on the env and / or integration axis, and apply it consistently across the team. Candidates who name `dev/test/uat/prod` or `<app>-<env>` patterns and explain *why* (reviewability, multi-app safety) understand the goal; candidates who insist there is a mandated name are repeating their team's convention as if it were an IBM rule.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=commands-mqsiapplybaroverride-command>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=files-overriding-properties-bar>
+
+### Build
+
+**Q: Compare `mqsicreatebar`, `mqsipackagebar`, and `ibmint package`. When do you pick each?**
+
+- **`mqsipackagebar`**: lightweight, ships with the runtime (no Toolkit install needed). Packages **already-compiled** deployable objects; does **not** compile Java or message sets. Good when something upstream (Toolkit 'Build for mqsipackagebar', or a CI compile step) has already produced the binaries. Flags `-c` (precompile XMLNSC / DFDL schema and graphical data maps to binaries) and `-i` (include both deployable and non-deployable resources, i.e. files outside the default extension allowlist) partially bridge the gap
+- **`mqsicreatebar`**: ships with the Toolkit install. Starts a headless Eclipse and a runtime, validates, compiles Java and message sets, writes the BAR. Single command, fully self-contained, but you need a Toolkit on the build machine and it is the slowest / most resource-hungry option. On Linux CI you need a display: `xvfb-run mqsicreatebar -data ...` is the standard wrapper. Useful escape valve: `-skipWSErrorCheck` forces the build to run even when unrelated workspace errors exist
+- **`ibmint package`** (and its cousin `ibmint deploy`): the modern, recommended option from ACE 12.0.1.0 onwards. Ships with the runtime, no Toolkit needed, much faster than `mqsicreatebar` because there is no headless Eclipse to start. Compiles Java automatically **for self-contained Java projects**; cross-project Java references are NOT compiled by `ibmint package` and need to be built separately, then passed with `--do-not-compile-java`. For MRM message sets you have to run `ibmint compile msgset` first (or use `ibmint deploy` which chains compile + package). Maps and schemas are not compiled by default either; opt in with `--compile-maps-and-schemas`. Cross-version JVM target via `--java-version 17|8` (default 17)
+- Decision tree: greenfield CI / CD -> **`ibmint`** (fast, toolkit-free, modern). Need a BAR from pre-built binaries -> **`mqsipackagebar`**. Stuck with a Toolkit-based build box and want one-shot build -> **`mqsicreatebar`**
+- 'Build for mqsipackagebar' as a developer step is an anti-pattern: you either end up committing generated binaries, or the binaries drift when the developer forgets to re-run it after changing Java / msgset. Shift that compile step to `mqsicreatebar` with `-compileOnly`, or to `ibmint`, both avoid the problem
+- Workspace hygiene applies to `mqsicreatebar` and `ibmint` alike: a clean, small workspace with only the projects you are packaging. Unrelated errors elsewhere in the workspace can block an otherwise fine build
+
+The three commands solve the same problem (produce a BAR) with very different trade-offs on speed, compile capability, and dependencies. `mqsipackagebar` is the oldest and most limited, `mqsicreatebar` is the 'big hammer' that also needs a Toolkit, `ibmint` is the modern toolkit-free pipeline-friendly choice. Candidates who recommend `ibmint` by default, know `mqsipackagebar`'s 'no compile' limitation, can explain why the headless Eclipse of `mqsicreatebar` hurts CI throughput, and remember that `ibmint package` does not compile cross-project Java refs or maps / schemas without explicit opt-in flags are comfortable with real build pipelines.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=commands-ibmint-package-command>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=commands-mqsipackagebar-command>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=commands-mqsicreatebar-command>
+
+### Connectors
+
+**Q: What are Discovery Request and Discovery Input nodes in ACE v13, and how do they differ from traditional transport nodes?**
+
+- **Discovery Request nodes** are outbound, connector-style nodes that call a SaaS / platform endpoint (Salesforce, ServiceNow, Azure Service Bus, Pinecone, Databricks, Apache Pulsar, Freshservice, Google Gemini, IBM Aspera, and many more, **~80+ added across 13.x modification packs**). They wrap connector SDKs that IBM ships with ACE
+- **Discovery Input nodes** are the event-driven counterpart: they subscribe to a SaaS / platform stream (Azure Event Hubs, Amazon Event Bridge, Eventbrite, Apache Pulsar, AstraDB, Databricks, Amazon SQS) and emit one message per event into the flow
+- Difference vs traditional transport nodes (HTTPRequest, MQInput, KafkaProducer): transport nodes model the **protocol** (send HTTP, put an MQ message) and leave payload format, auth and semantics up to you. Discovery nodes model the **specific SaaS resource**, handle connector-specific auth, pagination, schema, and expose the operation set of the target service as node properties. Less code, more declarative
+- Connector catalogue lands piecemeal per modification pack: 13.0.1.0 first batch, 13.0.3.0 added vector DBs (Milvus, Pinecone), 13.0.4.0 added Azure Service Bus, 13.0.5.0 added Azure Event Hubs / Google Gemini / IBM Aspera, 13.0.6.0 added Apache Pulsar / AstraDB / Databricks, 13.0.7.0 added Freshservice / Azure DevOps / Google Analytics and more
+- Development model: start with a connector-oriented flow in Designer (low-code), optionally move it to the Toolkit for advanced logic (ESQL, Java, complex transformations). Designer and Toolkit both expose the same catalogue
+- Practical consequence for architects: v13 shifts 'how do I call service X from ACE' from 'write an HTTPRequest, handle auth, parse response' to 'drop the right Discovery node and configure it'. Where Discovery does not cover your case, you fall back to HTTPRequest / RESTRequest with OAuth 2.0 (also now native in v13)
+- **Connector Discovery wizard workflow:** launch from the node's property editor in the Toolkit, connect to your account for the endpoint application, discover and set properties. The wizard stores the credential in the **vault**, the other connection details in a **policy project**, and generates **`request.schema.json`** + **`response.schema.json`** under the project (controlled by the **Schema base name** node property). Mapping nodes can consume those schemas directly
+- **JSONata mapping built into Discovery Request nodes:** the Map Inputs table on the Request tab lets you populate request payload fields with static values or **JSONata expressions** without inserting a separate Mapping node. Same expression language as the standalone JSONata Mapping node
+- **Operational limits + claim check:** the per-request file size cap is **10 MB**. A subset of Request nodes (Salesforce, Box, S3, etc.) supports **claim check** for memory-efficient large-data transfers, streaming binary data only when required and capping size limits on the stream
+- **Trusted CA gotcha:** when going through TCP proxies (e.g. DataPower) or hitting endpoints with internal-CA certs, the Node.js runtime under the connector nodes ignores the OS trust store. Set **`NODE_EXTRA_CA_CERTS`** to a `.pem` with the extra CAs; applies to HTTPS via Node.js-based connector request nodes
+
+Discovery nodes are v13's answer to 'ACE is behind on SaaS connectivity vs cloud iPaaS'. The ~80+ connectors let you talk to modern SaaS, vector DBs and cloud event streams declaratively, without hand-rolling an HTTP call per service. The trade-off is that Discovery nodes only cover the operations IBM has packaged; edge cases still fall back to HTTPRequest. Candidates who frame this as 'low-code connector catalogue, with HTTPRequest / RESTRequest as the escape hatch', who mention the Connector Discovery wizard's vault + policy project + schema generation, and who know the JSONata-mapping / claim-check / `NODE_EXTRA_CA_CERTS` operational details show they understand the complementary positioning and have configured these in real flows.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=new-whats-app-connect-enterprise>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-discovery-connector-nodes>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=connector-discovery-connector-request-nodes>
+
+### Kafka
+
+**Q: What does the Kafka Schema Registry policy add in ACE v13, and what serialisation format does it unlock?**
+
+- ACE v13 adds **Avro serialisation with Schema Registry integration** for the `KafkaProducer`, `KafkaConsumer`, and `KafkaRead` nodes. Before v13 you had to hand-roll Avro handling in JavaCompute or pre / post-process in external apps
+- Configuration is driven by a new **Schema Registry policy** that tells the Kafka nodes where the registry lives, how to authenticate to it, and which serializer / deserializer to use. Reference the policy from the Kafka node properties as `{policyProjectName}:policyName`. Two registry types are supported: **`File`** (default, for file-based schema registries via `file://` URLs) and **`Confluent API`** (for REST-accessible Confluent / Apicurio-compatible registries via `http(s)://` URLs). Cache TTL defaults to 3600s
+- Benefits over custom Avro handling: schema is fetched and cached by the runtime; producers register new schema versions automatically if configured; consumers validate against the registry; schema evolution rules (BACKWARD / FORWARD / FULL) are enforced by the registry itself
+- v13 also adds **transactional support** for `KafkaProducer` and `KafkaConsumer` (Kafka-native exactly-once semantics within a transaction boundary), and a set of properties to configure **parallel consumer scaling** that previously required architectural changes
+- Kafka authentication in v13 also gained **SASL/OAUTHBEARER** support for all three Kafka nodes, via a policy and credential type, so OAuth-secured brokers (Confluent Cloud, OAuth-fronted on-prem) are now native
+- If you implemented custom Avro or external transaction coordination in v12, parts of that logic can move into native node configuration in v13; consider this during v13 migrations
+
+The v13 Kafka story is 'raise the Kafka nodes to parity with modern broker features', and the three pieces that matter most are Schema Registry / Avro, transactions, and OAuth. The Schema Registry + Avro combo is what shops running Confluent or Apicurio have been waiting for; before v13 they were stuck on JSON or on custom Avro code. Candidates who mention all three (Avro + registry, transactional support, OAuth bearer) and position them as 'less custom code, more declarative configuration' show they have been tracking the Kafka roadmap.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=policies-schema-registry-policy>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=kafka-using-avro-serialization>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-kafkaproducer-node>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-kafkaconsumer-node>
+
+**Q: How do you do 2-phase commit with Kafka in ACE?**
+
+- **Short answer: you cannot.** IBM's Transactional messaging with Kafka doc is explicit that 'the IBM App Connect Enterprise Kafka nodes do not support 2-phase commit'. Kafka is not an XA resource manager; ACE does not coordinate it with MQ or database transactions
+- **What you get instead in a mixed flow:** each resource manager runs its own independent transaction. Kafka commits / rolls back at end-of-flow; MQ commits / rolls back at end-of-flow; the database commits / rolls back at end-of-flow. Each commits or rolls back independently. If one fails after others have committed, you have a partial outcome to clean up
+- **Kafka-internal transactions are real, just not XA-bridged.** Set `Transaction Mode: Yes` and a non-empty `Transactional Id` on the KafkaProducer to publish transactionally. Multiple KafkaProducer nodes in the same flow with the same `Transactional Id` join the same Kafka transaction; different Ids = different transactions, each committed independently. `Transaction Mode: Automatic` reads the `Transactional` property from the message Properties folder
+- **Same-Id consumer + producer = atomic Kafka request/reply.** Setting the same `Transactional Id` on a KafkaConsumer + a KafkaProducer in the same flow makes the consume + produce occur or both not occur, the canonical Kafka request/reply atomicity pattern. Validation throws an exception if the two nodes have incompatible config (bootstrap servers, client Id, etc.)
+- **Multi-instance gotcha:** if a flow with `Transactional Id` set runs additional instances, ACE suffixes the Id with a thread identifier per thread to keep transactions distinct. You do not have to do this yourself. But you cannot reuse the same `Transactional Id` across different message flow instances; the transaction is scoped within the flow instance
+- **Transaction timeout** is a Kafka-side timeout: if commit takes longer than this from the start of the transaction, Kafka rolls it back automatically. Tune to match the longest realistic flow execution
+- **Design pattern when you need cross-RM atomicity:** use the transactional outbox pattern, idempotent consumers with deduplication, or saga-style compensations. ACE itself cannot give you Kafka + MQ + DB in a single 2PC; the application has to design around it
+
+The honest answer to 'how do I do 2PC with Kafka in ACE?' is 'you do not'. Kafka is not an XA resource manager and ACE is explicit about not coordinating Kafka with MQ or database transactions. Within Kafka itself you do get transactional producers + consumers, including the same-`Transactional Id` pattern that makes consumer + producer atomic in a request/reply flow, and that is the right answer to 'atomicity within Kafka'. Across resource managers, you design around it (outbox, idempotent consumers, sagas). Candidates who confidently say 'yes, set the transaction node' without flagging the no-2PC limitation have not hit a partial-outcome incident yet.
+
+_References:_
+- <https://matthiasblomme.github.io/blogs/posts/ace-v13-new-features-overview/v13-new-features/>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=kafka-transactional-messaging>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-kafkaproducer-node>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-kafkaconsumer-node>
+
+**Q: What is the default read mode (isolation level) for KafkaConsumer in ACE?**
+
+- The KafkaConsumer node's **`Isolation Level`** property controls which messages from transactional producers are delivered to the consumer
+- **Default is `read_uncommitted`.** The consumer receives messages as soon as they are published, **without waiting** for the publisher's transaction to commit. If the publisher later rolls back, the consumer has already seen and possibly processed a message that 'did not happen'
+- **Alternative is `read_committed`.** The consumer only receives messages from committed transactions; it blocks on uncommitted messages in the partition until they are committed or rolled back. This is what you want when end-to-end exactly-once semantics matter
+- The same `Isolation Level` property is on the **KafkaRead** node and behaves identically
+- Practical implication of the default: a fresh KafkaConsumer pointed at a topic written to by a transactional producer will not give you 'exactly once' semantics out of the box. Flip to `read_committed` to honour the publisher's transaction boundary
+- Pair `read_committed` with a transactional `Commit Message offset` mode (`Transactionally`) on the consumer if you want the read offset itself to participate in a Kafka transaction; otherwise the offset is saved separately by the consumer's own commit policy
+
+The default catches people: ACE's KafkaConsumer is set to `read_uncommitted`, which means a transactional producer's in-flight messages reach the consumer immediately. If the producer rolls back, the consumer has already acted on a message that should never have been visible. The fix is one property flip to `read_committed`. Candidates who know the default value and the Kafka transactional contract behind it have run real exactly-once flows; candidates who say 'Kafka just gives you exactly-once if you set transactional support' without naming the consumer side have read the marketing but not the docs.
+
+_References:_
+- <https://matthiasblomme.github.io/blogs/posts/ace-v13-new-features-overview/v13-new-features/>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=kafka-transactional-messaging>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-kafkaconsumer-node>
+
+### Nodes
+
+**Q: Which authentication types can the v13 HTTPRequest / RESTRequest nodes use directly, and what does that replace?**
+
+- v13 (specifically **13.0.6.0+**) modernised the outbound HTTP / REST auth surface across both the HTTPRequest node and Designer's REST request capability, so flows can speak modern SaaS auth without a JavaCompute token-fetch helper in front of the call
+- **HTTPRequest node (Toolkit)** classical set, via attached HTTP Request policy: **`basic`**, **`apiKey`**, **`basicApiKey`**. Plus **`client`** (mTLS) configured on the SSL tab via the **SSL client authentication key alias** property, not the policy
+- **RESTRequest node and Designer's outbound REST (13.0.6.0+)** add the OAuth-rich set: **`bearerToken`**; **`oauth`** OAuth 2.0 client credentials grant (client id + secret only); **`oauthPassword`** OAuth 2.0 password grant (username, password, client id, client secret); **basic OAuth** (basic credentials combined with access / refresh tokens)
+- For OAuth 2.0, the policy / credential carries the six parameters that handle token acquisition: **token endpoint, client id, client secret, username, password, access token, refresh token**. The node does the token lifecycle for you, no scripted fetch
+- The `ibmint set credential` CLI accepts these credential types too. The `http` credential type (HTTPRequest / HTTPAsyncRequest) supports `--auth-type basic | apiKey | basicApiKey`; the `rest` credential type (external REST API) adds `--auth-type bearerToken`. External Directory Vault workflows and Toolkit credential editing align with these
+- What it replaces: the pre-v13 pattern of `HTTPRequest -> JavaCompute that fetches a token -> HTTPRequest`, with all the caching, retry and error handling that implied. Now it is one node and a policy / credential reference
+- Companion v13 feature: built-in **HTTPRequest retry configuration** (`Retry Mechanism: No retry | Short retry`, `Retry threshold` default 1, `Short retry interval` default 5s, `Retry condition` defaults to 502, 503, ECONNRESET, ECONNREFUSED, ESOCKETTIMEDOUT). 13.0.6.0 mirrored the same Retry tab onto the **REST Request** node. Covers straightforward transient-failure retries without a custom wrapper flow
+
+13.0.6.0 turned HTTPRequest / RESTRequest from 'HTTP transport' into 'HTTP client that understands modern auth'. The killer addition is the OAuth 2.0 set on Designer's outbound REST and the RESTRequest node: BASIC / apiKey / bearer were fine for simple APIs, but every SaaS now expects OAuth, and before this you were writing a token-fetch helper in JavaCompute. The HTTPRequest node's HTTP Request policy remains focused on basic + apiKey credentials per IBM's policy doc, with mTLS via the SSL tab; the OAuth flavours arrived through the REST Request side. Candidates who name the OAuth grant flavours (client credentials vs password vs basic OAuth), mention the HTTP / REST split for where each auth type lives, and bring up the retry tab as the companion v13 feature have written real outbound integrations against modern APIs.
+
+_References:_
+- <https://community.ibm.com/community/user/blogs/ben-thompson1/2025/12/11/ace-13-0-6-0>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-httprequest-node>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-restrequest-node>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=policies-http-request-policy>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=security-credential-types>
+
+### Mapping
+
+**Q: What is the JSONata Mapping node in ACE v13, and how does it differ from Graphical Data Maps?**
+
+- **JSONata** is a lightweight query and transformation language for JSON data, analogous in purpose to XSLT for XML: declare what the output shape looks like, and the engine does the tree walk
+- The v13 **JSONata Mapping node** is a dedicated node that takes a JSON input, applies a JSONata expression, and emits the transformed JSON as output. Before v13 you could write JSONata, but it lived embedded in other processing logic or inside mapping expressions
+- Compared with **Graphical Data Maps** (`.map`): Graphical Data Maps are a visual mapping tool with a schema-based source and target, drag-and-drop connections, built-in type coercion. JSONata is a **text-based expression language** you write by hand, more compact, more expressive on deeply nested or computed transforms
+- Pick by shape of the problem: visual, schema-heavy, mostly linear mappings -> Graphical Data Map. Dynamic output shape, heavy filtering / grouping / computed fields, or JSON in / JSON out with an already-known JSONata expression -> JSONata node
+- Both are complementary, not exclusive. Many v13 flows use Graphical Data Maps for the bulk of message transformation and slot in a JSONata node for the one bit that would be ugly as a drag-and-drop diagram
+- **Configured via the JSONata Mapping wizard** (Configure button on the Basic tab), not raw JSONata authoring. The wizard scaffolds the message structure and mapping; you still drop into JSONata expressions for the computed bits
+- **Auto-generated output JSON schema:** the node produces a JSON schema representation of its output (controlled by the **Schema base name** property), which downstream nodes can consume. Same schema-driven pattern as Discovery Request nodes (see `ace-dev-043`), so it integrates cleanly with the rest of the v13 mapping ecosystem
+- **Map inputs table** lets you combine multiple input sources in one JSONata expression: each input gets a name, location in the message tree (e.g. `$Body`, `$LocalEnvironment`), message domain, schema location, and schema root. JSONata references them by name, no upstream Compute / Mapping node needed to pre-merge inputs
+- v13 also adds **Data Assist** and **Mapping Assist** in the Toolkit that generate JSONata expressions from natural language prompts (watsonx-backed, separate subscription), which turns 'I do not know JSONata' into less of a blocker
+
+The JSONata node is v13's answer to 'JSON transforms are clumsy in Graphical Data Maps for anything non-trivial'. JSONata is concise, expressive, and designed for JSON; having it as a first-class node, scaffolded by a wizard and producing its own output JSON schema for downstream consumption, means you can stop embedding expressions in other nodes or routing through JavaCompute just to reshape a payload. Candidates who position JSONata and Graphical Data Maps as complementary tools (JSONata for dynamic or deeply-nested JSON, maps for visual or schema-heavy work), and mention the wizard + auto-generated schema + Map inputs table, have picked between them on real flows.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=new-whats-app-connect-enterprise>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-jsonata-mapping-node>
+
+### Tooling
+
+**Q: What is Project Bob, and where does it fit compared with a generic Copilot for modernising ACE code?**
+
+- **Project Bob** is IBM's AI-first IDE, launched publicly at TechXchange 2025, aimed at **code modernisation**: refactor, test, document, and deploy existing codebases rather than greenfield scaffolding
+- Treats Java as a first-class citizen, which maps directly onto the v13 migration story: Java 17 cleanup (`javax.xml.bind.*` removals, `DatatypeConverter`, JNA version bumps, old JSoup / Jackson / Auth0 JWT / PDFBox), per-project trackers, first-pass identification of the usual suspects
+- Where Bob beats a generic Copilot for ACE work: opinionated on **modernisation workflows** (upgrade paths, deprecation sweeps, test-coverage fill-in) rather than just 'complete this function'; **integrated with ACE tooling** rather than being a language-only assistant; understands project layouts like shared libraries, policies and BAR structure; produces **trackers and diffs** you can hand to a reviewer, not just inline suggestions
+- What it does not try to replace: the human pass at the end, a candidate who has seen the code. Bob is a force multiplier on the repetitive Java 17 cleanup and test backfill, not a one-click migration button
+- Compare with embedded **Watsonx Code Assistant** in the Toolkit (v13): WCA lives inside the Toolkit for in-flow assistance (explain ESQL, generate Java snippets, produce schema sample data, write unit tests). Bob is a standalone IDE for larger modernisation projects. They overlap but do not conflict
+- Both require extra subscriptions; Bob is the external modernisation-focused tool, WCA is the embedded Toolkit assistant
+
+Project Bob is the IBM-branded answer to 'there is a lot of old Java and ESQL in our ACE estate, can AI help with the first pass of modernisation'. Generic Copilot is good at autocomplete but does not understand ACE's project layout or its Java 17 migration list; Bob does. The interview signal is whether the candidate frames Bob as 'force multiplier for modernisation, not a magic button', knows it is separate from the Toolkit-embedded Watsonx Code Assistant, and understands the subscription shape.
+
+_References:_
+- <https://bob.ibm.com/>
+
+### JSON Schema
+
+**Q: Which JSON Schema drafts does ACE v13 support, and which keywords are silently ignored?**
+
+- **Supported specifications** (from the IBM 'JSON validation' doc): JSON Schema **Draft 04**, JSON Schema **Draft 05** (Wright), Swagger 2.0, OpenAPI 3.0.x
+- **Unsupported drafts (Draft 06, 07, 2019-09, 2020-12) are NOT silently dropped.** If you declare an unsupported draft via `$schema` (e.g. `"$schema": "http://json-schema.org/draft-07/schema#"`), ACE throws **`BIP5754`** at first use of the deployed schema. The loud failure is by design
+- **Draft-07-only keywords inside a Draft-04 declared schema** also fail loudly: deployed schemas are validated against their meta-schema at first use, so an `if` / `then` / `else` / `$defs` / `contains` inside a `$schema: draft-04` file fails meta-schema validation and throws. Same loud-fail story, different trigger
+- **What IS silently ignored, across all supported drafts:** `default`, `format`, and `discriminator`. The IBM doc states this explicitly. They are accepted in the schema, they pass meta-validation, but they have **no effect on the validation result**
+- **The real footgun is `format`.** Schemas commonly use `"format": "email"` / `"format": "uri"` / `"format": "date-time"` to express shape constraints. ACE accepts the schema, validation reports success, and **malformed values pass through** because `format` was never applied. Authors assume 'schema validated -> email is well-formed'; ACE never made that promise
+- **Pair `additionalProperties: false` with explicit `pattern` regexes** when you need email / URI / date-time shape enforcement. Do not rely on `format` as a validator; treat it as documentation
+- **Schemas-correctness check happens at first use, not at deploy.** Bad schemas (unsupported draft, meta-schema violation) do not block deployment; they block the first message-flow invocation. Test the validation path before promoting
+
+ACE v13's JSON parser supports Draft 04 and Draft 05, plus Swagger 2.0 and OpenAPI 3.0.x, not the modern Draft 07 / 2019-09 / 2020-12 that most public tooling defaults to. An unsupported draft is not silently ignored; ACE raises `BIP5754` at first use. The real silent trap is the `default` / `format` / `discriminator` triplet, which is accepted in the schema and ignored at validation time. The `format` case is especially dangerous because authors write `"format": "email"` and assume ACE enforces email-shape; it does not, and bad data passes through validators that look green. Candidates who name both the loud BIP5754 path and the silent `format` ignore understand the two failure modes; candidates who say 'JSON Schema just works in ACE' have not deployed a Draft-07 schema yet.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=files-json-validation>
+
+### HTTP
+
+**Q: HTTP status codes in ACE: which to retry, and where does the code live after an `HTTPRequest`?**
+
+- **Where to read the status code in ACE:** after the request, the response status is on `InputLocalEnvironment.Destination.HTTP.ReplyStatusCode` (Compute node, downstream of HTTPRequest). For RESTRequest, the same convention applies. By default, a non-2xx response routes the message to the node's **Failure terminal** with the response body still available, your error-handler flow reads the code from there and decides what to do
+- **Permanent failures, log but do NOT retry by default:** `400 Bad Request`, the request itself is malformed (bad JSON, missing required field, validation failure); retrying sends the same payload, gets the same error, route to a data-quality error path. `401 Unauthorized`, credentials missing or invalid, exception is token-refresh flows (OAuth bearer expired) where a *single* re-auth-then-retry is justified, otherwise treat as permanent. `403 Forbidden`, auth was valid, the operation is not allowed, permanent. `404 Not Found`, resource does not exist, permanent. `501 Not Implemented`, server does not support the method, permanent
+- **Transient failures, retry with backoff:** `408 Request Timeout`, server gave up waiting, retry. `429 Too Many Requests`, rate-limited, retry but **respect the `Retry-After` header** if present; honour it as the minimum wait. Tight retries make the situation worse. `500 Internal Server Error`, bare-bones 'something went wrong', usually transient, retry with exponential backoff. `502 Bad Gateway` / `504 Gateway Timeout`, proxy / upstream-server transient failures, retry with backoff. `503 Service Unavailable`, server temporarily down, retry, **respect `Retry-After`** when present
+- **The retry pattern that works in ACE:** capture the status code on Failure terminal, classify (permanent vs transient), apply backoff before re-invoking the HTTPRequest. Tight retries with no backoff create thundering-herd problems against transient outages. Cap total retry budget (e.g. 3 attempts) and route to a definitive error path when exhausted
+- **What about network-level failures (DNS, connection refused, TCP reset)?** These do not have an HTTP status code at all, the request never reached the server. ACE surfaces them as exceptions on the Failure terminal with codes in `ExceptionList` rather than a status code. Treat them as transient and retry-with-backoff alongside 5xx/timeout codes
+- **Body still matters on a non-2xx.** Many APIs return a structured error body with a more specific code (e.g. an OAuth error type, or a per-field validation breakdown). Parse the body when present; the HTTP status code is the coarse classification, the body is the fine-grained one
+
+HTTP status codes split cleanly into permanent (4xx, mostly) and transient (5xx + 408 + 429). The interview tells: candidates who lump all 4xx as 'do not retry' miss 408 (timeout) and 429 (rate limit) which are transient; candidates who lump all 5xx as 'always retry' miss 501 which is permanent. ACE-specific: the status code lives on `InputLocalEnvironment.Destination.HTTP.ReplyStatusCode` after the request, the Failure terminal is the default route for non-2xx, and retry-with-backoff has to be wired into the error-handler flow because the node itself does not retry on response codes (only on connection-level failures via the Retry tab).
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-httprequest-node>
+
+### Parsing
+
+**Q: Which message domain (parser) do you pick for: namespaced XML, opaque binary, fixed-format SWIFT, JSON?**
+
+- **The common message domains in ACE v13, and when each one fits:** `XMLNSC`, XML, namespace-aware, compact in-memory tree, the modern default for any XML payload, `C` is for compact. `XMLNS`, XML, namespace-aware, full DOM-style tree, heavier, legacy, mostly kept for compatibility. `XML`, XML without namespace awareness, drops namespace context on parse, legacy only. `JSON`, JSON, pairs with JSON Schema validation (see `ace-dev-052`). `BLOB`, opaque bytes, no structured navigation, the payload is held as-is. `MRM`, model-driven parser for fixed / variable-format records (SWIFT MT, EDIFACT, X12, custom CWF / TDS), legacy tooling around message sets. `DFDL`, model-driven parser using the industry-standard DFDL schema, the intended modern successor to `MRM`; new fixed-format projects should target DFDL. `MIME`, multipart messages (SOAP attachments, MTOM, multipart/form-data), splits the message into parts. `DataObject`, used by v13 connector messages (Salesforce, SAP, Box, etc.), the connector frames the data; you usually do not pick this manually
+- **XML with namespaces -> `XMLNSC`.** Strongly preferred over the older `XMLNS` and the namespace-unaware `XML` domains, which are kept only for legacy compatibility. Picking `XML` (no NS) on namespaced input silently drops the namespace prefix metadata, downstream code that expects `ns:Element` sees just `Element` and routing logic breaks
+- **Opaque binary you do not parse -> `BLOB`.** Use `BLOB` when the message is a payload you forward as-is (a file you put on a queue, an image, a PDF, an encrypted blob). The parser stores the bytes; you cannot navigate fields. **Trap:** picking `BLOB` on a message you actually need to read leaves downstream Compute nodes with nothing to dereference; the workaround `ASBITSTREAM` round-trips through a real parser
+- **Fixed-format SWIFT / EDIFACT / X12 / custom CWF / TDS -> `DFDL` (modern) or `MRM` (legacy).** Both are model-driven parsers that consume a schema describing the bit-or-byte layout. **`DFDL`** is the newer parser (industry-standard DFDL language, with a Toolkit DFDL Schema editor); **`MRM`** is the legacy MRM message-set tooling. New projects should target DFDL; MRM is kept for migrated estates. Picking `BLOB` or `XML` on a SWIFT MT message leaves you parsing fixed-width fields by hand in ESQL, which is what these domains exist to avoid
+- **JSON -> `JSON`.** Native JSON parser. Picking `XMLNSC` on JSON input throws (loud, at least). The JSON domain integrates with JSON Schema validation (see `ace-dev-052`)
+- **Multipart messages (SOAP attachments, multipart/form-data, MTOM) -> `MIME`.** The MIME parser splits the message into parts that downstream nodes can navigate. Picking `BLOB` on a multipart message leaves the parts un-split
+- **The general failure modes when you pick the wrong domain:** silent data loss (`XMLNS`/`XML` on namespaced input drops namespace context; `BLOB` on structured data hides the structure). Loud parse failure (`XMLNSC` on JSON, `JSON` on XML). Forced ESQL by-hand parsing (`BLOB` on a message you need to read). Validation that does not actually validate (`format` / `default` / `discriminator` ignored on `JSON`, see `ace-dev-052`)
+- **In review, treat the message domain as a deliberate decision, not a default.** The Toolkit picks a domain based on file extensions and content sniffing; that is a starting guess. Confirm against the actual payload shape and the validation you need
+
+The message domain is the parser ACE applies to the wire bytes. Picking the right one buys you a structured tree you can navigate with ESQL field references; picking the wrong one either loses data silently (`XMLNS`/`XML` flattening namespaces, `BLOB` hiding structure), forces you to parse by hand, or fails loudly. The full common-domain set in v13 is `XMLNSC` / `XMLNS` / `XML` / `JSON` / `BLOB` / `MRM` / `DFDL` / `MIME` / `DataObject`, but the four cases that come up daily are `XMLNSC` for XML, `BLOB` for opaque pass-through, `DFDL` (or legacy `MRM`) for fixed-format records, and `JSON` for JSON. Candidates who recall the silent-data-loss failure modes (especially `XMLNS` vs `XMLNSC`) understand the cost of getting this wrong; candidates who say 'just use BLOB if you're not sure' do not.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=concepts-message-parsers-domains>
+
+**Q: When do you pick On Demand parsing vs Immediate vs Complete?**
+
+- **What 'parsing' actually means here.** ACE wire bytes arrive at an input node; the parser turns them into a navigable message tree. Parser Options controls **when** that work happens, eagerly at the input node, or lazily as ESQL reaches into the tree
+- **On Demand (default and the right default).** The parser parses **only the parts of the tree that ESQL actually touches**, when they are touched. If a flow reads three top-level fields, the parser walks only those three paths. The rest of the body is never parsed, the CPU cost is minimal. Best for high-volume flows that read a few well-known fields from large messages
+- **Immediate.** The **body** is fully parsed at the input node, eagerly. Used when you need the body's structure available before the flow logic runs (e.g. a generic router that inspects shape before deciding where to send the message, or a Trace node early in the flow that logs the full body). The Environment, LocalEnvironment, and ExceptionList are still on-demand
+- **Complete.** The **entire logical tree** (body, headers, properties, everything) is parsed upfront, fully. Used when you need strict upfront validation against a model, a malformed message should fail at the input node and route to Failure, not deep inside the flow. The expensive choice for large messages, justified only when you need the validation contract
+- **Example where On Demand saves real CPU.** A 5MB XML payment-clearing message with 500 line items, where the flow only reads `MessageId`, `Sender`, and `TotalAmount` from the header to make a routing decision. On Demand parses ~200 bytes of header; Complete parses 5MB. At 100 msg/s, the difference is hours of CPU per day
+- **When you should NOT use On Demand:** when you need **upfront validation**, a malformed body should be rejected at the input. With On Demand, a syntactically broken element halfway through the body does not fire until ESQL touches it, which might be three nodes later in a different branch. The error surfaces in the wrong place
+- **Validation is a separate property** on the same Parser Options tab (`Validate` set to `None` / `Content` / `Content and Value`). Validation only kicks in **at the points where the parser runs**, so On Demand + Content-Validation means content checks happen as fields are accessed, not at the input. To validate the entire message upfront, pair `Complete` parsing with `Content and Value` validation
+- **Decision rule:** high-volume flow reading a few fields -> On Demand. Schema-driven flow that must reject malformed input -> Complete + Validate Content and Value. Router that inspects body shape but does not need full validation -> Immediate
+- **Per-node override.** ESQL `CREATE` with a `PARSE` clause can force parsing of a specific subtree mid-flow, so you can stay On Demand at the input node and parse explicitly only where needed. Useful for 'lazy at input, eager just before the validator node' patterns
+
+Parser Options choose when the parser walks the bit stream into a tree: lazily as ESQL touches fields (On Demand), eagerly at the input for the body only (Immediate), or eagerly for everything (Complete). On Demand is the right default because most flows only read a small subset of a large message and the parser walking is the dominant CPU cost. The legitimate cases for Immediate or Complete are when validation correctness or shape-based routing requires the tree to exist before flow logic runs, you trade upfront CPU for clean failure semantics. Candidates who name the three modes, give the 'read three fields from 5MB' example for On Demand, and pair Complete with `Content and Value` validation for upfront rejection are reading the trade-off correctly; candidates who default to Complete 'to be safe' are paying CPU for a contract they probably do not need.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=concepts-parsing-message>
+
+### Flow design
+
+**Q: What are the seven Compute Modes, and which trees propagate in each?**
+
+- **What Compute Mode controls.** It selects which **output trees** (the ones built by your ESQL via `OutputRoot` / `OutputLocalEnvironment` / `OutputExceptionList`) are propagated downstream. **Trees not included in the selection pass the original input through** (`InputRoot` -> downstream as-is, `InputLocalEnvironment` -> downstream as-is, etc.), even if your ESQL wrote to the matching `Output*` correlation. Those writes are local to the node and dropped at propagation
+- **The full seven-mode propagation matrix** (Compute Mode -> trees actually propagated): `Message` (default): `OutputRoot`, `InputLocalEnvironment`, `InputExceptionList`. `LocalEnvironment`: `InputRoot`, `OutputLocalEnvironment`, `InputExceptionList`. `LocalEnvironment And Message`: `OutputRoot`, `OutputLocalEnvironment`, `InputExceptionList`. `Exception`: `InputRoot`, `InputLocalEnvironment`, `OutputExceptionList`. `Exception And Message`: `OutputRoot`, `InputLocalEnvironment`, `OutputExceptionList`. `Exception And LocalEnvironment`: `InputRoot`, `OutputLocalEnvironment`, `OutputExceptionList`. `All`: `OutputRoot`, `OutputLocalEnvironment`, `OutputExceptionList` (nothing flows from input automatically)
+- **The silent gotcha:** if the mode does not include a tree, ESQL writes to the corresponding `Output*` correlation are **discarded at propagation** and the downstream node sees the unchanged `Input*` instead. Classic symptom: 'I set `OutputLocalEnvironment.Destination.MQ.DestinationData.queueName` but the next node is using the old queue.' The Compute Mode was left at the default `Message`, so the LocalEnvironment write never propagated
+- **`All` mode is its own pitfall.** In `All`, nothing flows from input automatically; every tree must be explicitly copied if you want any input data: `SET OutputRoot = InputRoot; SET OutputLocalEnvironment = InputLocalEnvironment; SET OutputExceptionList = InputExceptionList;`. The tooling-generated skeleton's `CopyEntireMessage()` only copies the **body** (`OutputRoot = InputRoot`), so in `All` mode the LocalEnvironment and ExceptionList are silently dropped unless you add the other two lines yourself
+- **`Environment` is not controlled by Compute Mode.** The Environment tree (a flow-scoped scratchpad, distinct from LocalEnvironment) **always passes through** unchanged regardless of mode. Use `Environment` for state you want every node to see; use `LocalEnvironment` for routing / destination overrides that depend on the mode being right
+- **Compute Mode is the default for `PROPAGATE`.** A bare `PROPAGATE` statement in the same Compute uses the node's Compute Mode to decide which trees go out. A `PROPAGATE TO TERMINAL '...'` without `MESSAGE`/`ENVIRONMENT`/`EXCEPTION` clauses inherits the same defaults. To override per-call, use the `MESSAGE`/`ENVIRONMENT`/`EXCEPTION` clauses on the PROPAGATE itself (see `ace-dev-055`)
+- **Decision rule:** pick the mode that names every tree you intend to modify. If you write to `OutputLocalEnvironment` in any branch, the mode must include `LocalEnvironment`. If in doubt, set `All` and copy explicitly, verbose but unambiguous. The default `Message` is correct for 'transform the body, leave routing alone' which is most one-to-one flows
+
+Compute Mode is the propagation contract: it selects which output trees go downstream, and unselected trees fall back to the input versions, **regardless of what ESQL did to the matching `Output*` correlation**. The silent failure mode is modifying `OutputLocalEnvironment` in a Compute set to `Message` mode, the modification is real inside the node and discarded at propagation. The fix is matching the mode to the trees you write. `All` requires explicit copy of every input you want to keep, which is the second common pitfall. `Environment` is the exception to the whole rule (always propagated). Candidates who name the seven modes, surface the discard-on-propagation gotcha, and recall the `Environment` exception have debugged a 'my change didn't take' bug in a Compute node; candidates who say 'Compute Mode is just for the body' are operating on the default and have not yet hit the wrong-tree case.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-compute-node>
+
+**Q: What is the cost of chaining three Compute nodes when one would do?**
+
+- **What happens at each Compute -> Compute boundary.** Each Compute, when its ESQL finishes, **finalizes the output tree** (seals it so downstream nodes cannot mutate, see `ace-dev-055`), **propagates** the message to the next node, and (with default `DELETE DEFAULT`) **clears the output trees from memory**. Three Computes = three finalize+propagate+clear cycles, even if the work inside each is tiny
+- **Tree-copy cost.** When you write `OutputRoot.X = InputRoot.Y` in a Compute, the relevant subtree is **copied** into the output. With three Computes each copying their own slice, the same parts of the message tree get walked and copied more than once. The cost compounds with message size (10KB body = trivial; 5MB body = real wall-clock time)
+- **Transaction time stays open across all three.** The flow's unit of work is a single transaction from the input node to the final output node. Each intermediate Compute keeps the transaction **open**, holding MQ get-under-syncpoint locks, DB row locks, etc. until commit. Three Computes in series means the lock-hold window is N+N+N node-times rather than one combined node-time. On contention-heavy DBs or queues, this is what shows up as 'tail latency'
+- **Memory and rollback-buffer.** The transaction's rollback buffer grows with every step that mutates state. Three propagations = three tree-clear-and-reallocate cycles plus three rollback-buffer entries. Memory pressure rises, and if the flow rolls back, the buffer has more to replay
+- **CPU: the parser may re-parse.** If any of the three Computes touches a part of the tree that was not fully parsed yet (on-demand parsing), the parser walks further. Chained nodes that each touch a different sub-tree force the parser to do work three times instead of once
+- **The fix is the same as the cause: merge.** One Compute with audit + enrich + transform inside the same `CREATE FUNCTION Main()` body finalises once, propagates once, allocates once. The ESQL is the same lines, the wiring is shorter
+- **When chaining is the right call (and not a performance bug):** distinct responsibilities that must be reviewable as separate modules (a strict separation of concerns the team enforces in review). Different transactional behaviour (one Compute committing to a DB independently from the next), but this needs explicit `Transaction = Commit` on the DB-touching node. Different deployable lifetime (a shared subflow used by many flows, which uses an embedded Compute). In those cases the readability or modularity win pays for the propagation cost. The bug is *unconscious* chaining where adjacent Computes could be one
+- **How to spot it in review:** sequences of three or more Computes with no node in between (no MQOutput, no HTTPRequest, no Filter) and no separate-transaction reason are usually merge candidates. The fix is local: collapse into one Compute, no flow re-architecture needed
+
+Chaining Computes is not free: each finalize + propagate + clear cycle costs a tree copy, the transaction stays open across all of them holding locks longer, the rollback buffer grows with each propagation, and the parser may walk the same tree multiple times. Three Computes that could have been one are three times the propagation overhead for the same logical work. The fix is to merge logically-related steps into a single Compute body; the legitimate non-merge cases are when different transactional behaviour, distinct review-time responsibilities, or shared subflow reuse justify the cost. Candidates who can articulate the per-boundary cost (finalize, propagate, clear, transaction extension) and name the merge as a local optimisation have profiled flows; candidates who see Computes as free are usually shipping flows whose latency they cannot explain.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-compute-node>
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=statements-propagate-statement>
 
 ### Troubleshooting
 

@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import { ThemeToggle } from './ThemeToggle';
 import { AnswerLengthToggle } from './AnswerLengthToggle';
+import { Footer } from './Footer';
 
 export function Layout() {
   return (
@@ -16,9 +17,13 @@ export function Layout() {
         <NavLink to="/resources">Resources</NavLink>
         <ThemeToggle />
         <AnswerLengthToggle />
+        <div className="nav-credit">
+          Lovingly developed by Matthias Blomme and Francis Cocx
+        </div>
       </nav>
       <main className="main">
         <Outlet />
+        {false && <Footer />}
       </main>
     </div>
   );

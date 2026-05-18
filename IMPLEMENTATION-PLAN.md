@@ -6,26 +6,48 @@ once shipped.
 
 ## Current status
 
-**Bank:** 125 questions in `src/data/questions.json` (latest: `ace-adm-040`
-TAD). Export regenerated from JSON via `npm run gen:md` into
-`interview_questions.md`.
+**Bank:** 128 questions in `src/data/questions.json` (latest graduated:
+`ace-dev-035` Designer-local; the 3 OTel / cache / Designer stubs from
+the prior batch have all landed). Export regenerated from JSON via
+`npm run gen:md` into `interview_questions.md`.
 
 **Working tracks:**
 
 - **Pending drafts review** (this plan entry "Pending question drafts"):
-  the 10-item batch has been walked, 9 graduated, 1 dropped. 3 stubs
-  remain in `drafts/pending-questions.md` awaiting authoring (OTel, cache
-  options, Designer-local).
+  the original 10-item batch is fully closed (9 graduated, 1 dropped, 3
+  stubs since authored as `ace-dev-033/034/035`). A **new 24-item batch**
+  now sits in `drafts/pending-questions.md` awaiting the keep / tweak /
+  rewrite walk-through: 14 admin drafts (`ace-adm-041`..`054`) and 10
+  dev drafts (`ace-dev-036`..`045`), covering v13 migration, Operator /
+  cert-manager, BTM, Log Analyzer, unit testing, BAR build commands,
+  ESQL JSON arrays, Discovery / Kafka / HTTP auth / JSONata nodes,
+  Project Bob, Agent Preview, MCP support, and the IIB 10 policy
+  rewrite gotcha.
 - **Blog-sourced candidates** (`drafts/blog-sourced-candidates.md`): 75
   items with the author's verdicts filled in. User-half of the T items
   (16) walked interactively and graduated. Helper-half of the T items
-  (16) sent out in `drafts/blog-tweaks-helper.md`, awaiting return. K
-  items (22) still need batch-drafting into `questions.json`.
+  (16) sent out in `drafts/blog-tweaks-helper.md`, awaiting return.
+  **All 22 K items have been drafted** (21 sit in
+  `drafts/pending-questions.md` as `ace-adm-041..051` /
+  `ace-dev-036..045`; #66 Global Cache already graduated as
+  `ace-dev-034`); they graduate as part of the 24-draft walk-through
+  above, no separate batch-draft pass needed.
 - **Bob-sourced candidates** (`drafts/bob-sourced-candidates.md`): 79
   items generated from internal guidelines; Verdict column still empty,
   awaiting author pass.
 - **25 farmed-out review batch** (`D:\tmp\review-batch-25.md`): sent to
   an external reviewer, awaiting return.
+
+**Parked / future check-up:**
+
+- **mqseries.net forum references** in `mq-adm-011` and `mq-adm-026`
+  currently return Cloudflare HTTP 403 to scripts AND to a real
+  browser. Confirmed not just a bot-block; the forum itself is in a
+  Cloudflare-challenged state right now. Re-check periodically; if
+  still inaccessible, find a replacement source or drop the link.
+  - `mq-adm-011`: https://mqseries.net/phpBB/viewtopic.php?t=78106
+  - `mq-adm-026`: https://mqseries.net/phpBB/viewtopic.php?t=69195
+    (Morag Hughson REQONLY thread)
 
 **Project-wide rules in force:**
 
