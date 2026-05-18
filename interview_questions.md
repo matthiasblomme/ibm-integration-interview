@@ -2,14 +2,14 @@
 
 Generated from `src/data/questions.json`, edit the JSON and run `npm run gen:md`.
 
-**Total questions:** 177
+**Total questions:** 178
 
 ## Table of contents
 - [General (3)](#general)
 - [MQ, Admin (30)](#mq-admin)
 - [MQ, Dev (15)](#mq-dev)
 - [ACE, Admin (54)](#ace-admin)
-- [ACE, Dev (70)](#ace-dev)
+- [ACE, Dev (71)](#ace-dev)
 - [Cloud (5)](#cloud)
 
 ## General
@@ -2520,6 +2520,22 @@ Chaining Computes is not free: each finalize + propagate + clear cycle costs a t
 _References:_
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-compute-node>
 - <https://www.ibm.com/docs/en/app-connect/13.0?topic=statements-propagate-statement>
+
+**Q: Why is the order of multiple output-terminal connections non-deterministic, and how does FlowOrder fix it?**
+
+- **The runtime rule.** When a node propagates to multiple connections on the same terminal, **the order between those sibling connections is undefined**. The doc is explicit: 'the order in which the multiple connections on each terminal are processed is random and unpredictable'. Two wires off the same Out terminal can fire in any sequence
+- **Why this matters in production.** Any branch where one downstream step depends on the other having run first will work in dev (because the deploy happened to wire in one order), and fail in prod after a redeploy / reconnect that reshuffled the order. Classic shapes: write-DB + write-MQ both off the same Compute Out, if DB-write must happen before the MQ-publish (so the consumer sees consistent state), the implicit wire order is not a contract. Audit log + Forward off the same Out, the audit must persist before the forward routes the message, or you lose the audit on a crash
+- **What FlowOrder actually guarantees.** The FlowOrder node has **two output terminals (First and Second)**. It propagates the input message to **First**, waits for that whole branch to complete successfully, **then** propagates to **Second**. Any failure on First means Second is never reached. The serialization is between the two terminals, not within either
+- **What FlowOrder does NOT guarantee.** If you wire multiple downstream nodes to **the same** terminal (multiple targets off First, or multiple off Second), the order between those siblings is **still non-deterministic**. FlowOrder serialises First-vs-Second only; it does not order sibling connections. The fix for multi-sibling cases is to chain a second FlowOrder
+- **Second terminal sees the original input.** The message that flows from FlowOrder's Second terminal is the **input** to the FlowOrder node, not whatever the First branch produced. Changes from the First branch are not propagated to Second unless the First branch made them visible through references (LocalEnvironment / Environment). Useful for 'do step A on the original, then step B on the original' patterns
+- **Concrete fix for the 'write DB then write MQ' case:** insert a FlowOrder node between the Compute and the two outputs. Wire **First -> Database operation**, wait for completion, then **Second -> MQOutput** publishes only if the DB write succeeded. The transaction is still one UOW; FlowOrder controls the runtime ordering inside it
+- **The 'performance' angle from the IBM doc:** if one branch is significantly shorter than the other and may fail-early, put the short branch on First. Failures abort before the longer branch runs. This is a *secondary* use of FlowOrder; the primary motivation is correctness, not speed
+- **In review, treat multiple wires off one terminal as a bug if order matters.** No comment in the source code captures it, the wire diagram in the Toolkit is the only source of truth, and the wire diagram does not communicate order. FlowOrder makes the contract explicit and survives refactors
+
+ACE does not promise an order for sibling connections on the same terminal, it is a real 'the diagram is wrong' gotcha because the wire diagram looks deterministic but the runtime is not. FlowOrder makes the contract explicit by serializing First-completes-then-Second, and the failure of First short-circuits Second so dependent work never runs against partial state. The thing to remember is that FlowOrder only orders its **own** two terminals; wiring two targets to one terminal preserves the original non-determinism. The pattern for ordered DB-then-MQ flows is one FlowOrder per ordering boundary. Candidates who name the non-determinism rule, explain FlowOrder's actual guarantee, and know the same-terminal-siblings limitation have hit this in production; candidates who say 'the diagram shows the order' have not.
+
+_References:_
+- <https://www.ibm.com/docs/en/app-connect/13.0?topic=nodes-floworder-node>
 
 ### Troubleshooting
 
