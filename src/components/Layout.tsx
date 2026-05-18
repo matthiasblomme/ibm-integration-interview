@@ -17,10 +17,13 @@ export function Layout() {
         <NavLink to="/resources">Resources</NavLink>
         <ThemeToggle />
         <AnswerLengthToggle />
+        <div className="nav-credit">
+          Lovingly developed by Matthias Blomme and Francis Cocx
+        </div>
       </nav>
       <main className="main">
         <Outlet />
-        <Footer />
+        {/* <Footer /> */}
       </main>
     </div>
   );
